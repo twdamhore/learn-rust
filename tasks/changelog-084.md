@@ -71,3 +71,10 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 65-80min. **Pacing**: Moderate. **Issues**: None — prerequisites and gcc commands in place. **Changes**: Changelog only.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Expanded prerequisites to include Linux/macOS/Windows setup paths instead of Linux-only commands.
+- Added platform note for compilation tools (`clang` on macOS, `cl.exe`/WSL option on Windows).

@@ -70,3 +70,10 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 75-95min. **Pacing**: Heavy. **Issues**: None — FxHashMap note and platform notes verified. **Changes**: Changelog only.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Added a dedicated Prerequisites section covering lesson dependency and profiling tool setup.
+- Added explicit Windows fallback guidance (WSL/Linux VM or criterion-only path) for flamegraph workflows.

@@ -4,6 +4,11 @@
 
 ## Status: pending
 
+## Prerequisites
+- A GitHub repository where you can add workflow files under `.github/workflows/`
+- Basic familiarity with YAML syntax
+- For Exercise 3 (release workflow): permission to create git tags and GitHub Releases in the repository
+
 ## Added
 - Initial curriculum design
 

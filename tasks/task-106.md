@@ -4,6 +4,17 @@
 
 ## Status: pending
 
+## Prerequisites
+```bash
+# Add at least one non-default compilation target
+rustup target add wasm32-unknown-unknown
+
+# Tooling used in Exercise 1 to inspect output binaries
+file --version
+```
+
+> On Windows, if `file` is unavailable, use WSL `file`, `dumpbin`, or `llvm-readobj` for architecture inspection.
+
 ## Added
 - Initial curriculum design
 

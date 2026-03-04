@@ -70,3 +70,11 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 75-90min. **Pacing**: Heavy. **Issues**: None — setup checklist and 2-exercise scope well-calibrated. **Changes**: Changelog only.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Rewrote proc-macro setup checklist to a safer, explicit virtual-workspace flow (`usage` + `my_macros`).
+- Fixed `path` dependency example to `../my_macros` from the `usage` crate.
+- Added guardrail note to avoid replacing a package manifest with workspace-only contents accidentally.

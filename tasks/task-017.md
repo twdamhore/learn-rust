@@ -7,10 +7,10 @@
 ## Added
 - Split from task-016 [NEW - bridging lesson] due to overloaded pacing (~3-4 hr)
 - Part B focuses on advanced ownership refactoring with structs/methods (~1.5 hr)
-- This lesson previews structs and impl blocks (formally taught in lessons 19-20). Follow the provided patterns.
+- This lesson previews structs and impl blocks (formally taught in lessons 021-022). Follow the provided patterns.
 
 ## Objectives
-- [ ] Apply ownership thinking to struct design -- decide which fields should be owned (`String`) vs borrowed (`&str`) and understand the tradeoffs
+- [ ] Apply ownership thinking to struct design -- prefer owned fields (`String`) for long-lived struct data, and use borrowed parameters (`&str`) in methods when you only need temporary read access
 - [ ] Choose the correct self receiver for methods: `&self` for read-only access, `&mut self` for mutation, `self` for consumption/transformation
 - [ ] Recognize clone-heavy code and systematically reduce unnecessary clones by replacing them with borrows or restructuring
 
@@ -54,33 +54,27 @@
             println!("Name: {}", name);
         }
 
-        // Clone 3: unnecessary — could take a slice
-        // Note: This uses iterator/closure syntax (`iter().map(|n| ...).collect()`) —
-        // for now, treat it as a pattern that converts each element. These are covered
-        // in lessons 37 and 51.
+        // Clone 3: unnecessary — could iterate by reference
         let to_process = names.clone();
-        let upper: Vec<String> = to_process.iter().map(|n| n.to_uppercase()).collect();
+        let mut upper: Vec<String> = Vec::new();
+        for name in &to_process {
+            upper.push(name.to_uppercase());
+        }
         println!("Upper: {:?}", upper);
 
         println!("Original: {:?}", names);
     }
     ```
-- [ ] **Config vs ConfigView [OPTIONAL]**: Design two approaches to a configuration holder: (1) `struct Config { name: String, value: String }` that owns its data, and (2) `struct ConfigView<'a> { name: &'a str, value: &'a str }` that borrows from an existing Config. Write a function that creates a Config and then creates a ConfigView referencing it. Observe what happens if you try to drop the Config while the ConfigView is still alive. Use the following patterns:
+- [ ] **Owned vs borrowed API design [OPTIONAL]**: Define `struct Config { name: String, value: String }`. Implement methods showing both ownership and borrowing choices: `fn set_name(&mut self, name: &str)` (borrows input and stores an owned copy), `fn name(&self) -> &str` (returns a borrowed view), and `fn into_name(self) -> String` (consumes the config and returns owned data). Add comments explaining why each signature uses borrow vs ownership.
     ```rust
     struct Config {
         name: String,
         value: String,
     }
-
-    struct ConfigView<'a> {
-        name: &'a str,
-        value: &'a str,
-    }
     ```
-    Note: Lifetime annotations (`'a`) are formally taught in lesson 46. For now, just follow the pattern -- the `'a` means "this struct borrows data that must live at least as long as the struct does."
 
 ## Notes
-- This lesson previews structs and impl blocks (formally taught in lessons 19-20). Follow the provided patterns.
-- Lifetime annotations in Exercise 3 are a preview of lesson 46. Just follow the pattern for now.
+- This lesson previews structs and impl blocks (formally taught in lessons 021-022). Follow the provided patterns.
+- Exercise 3 intentionally avoids lifetime syntax so you can stay focused on ownership and borrowing decisions.
 - The goal is to build intuition for ownership in realistic code, not to master struct syntax.
 _Lesson not yet started._

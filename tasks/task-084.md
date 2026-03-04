@@ -9,9 +9,18 @@
 
 ## Prerequisites
 ```bash
-# Required for C compilation
+# Install prerequisites for your OS (pick one):
+
+# Linux (Ubuntu/Debian)
 sudo apt install build-essential
-# Verify gcc is available
+
+# macOS
+xcode-select --install
+
+# Windows (PowerShell / MSVC toolchain)
+# Install "Desktop development with C++" in Visual Studio Build Tools
+
+# Verify a C compiler is available
 gcc --version
 # Install cbindgen for generating C headers from Rust
 cargo install cbindgen
@@ -39,7 +48,7 @@ cargo install cbindgen
   ./main
   ```
 
-  > **Note:** Replace `<your_crate_name>` with the `lib` name from your Cargo.toml's `[lib]` section (with hyphens replaced by underscores).
+  > **Note:** Replace `<your_crate_name>` with the `lib` name from your Cargo.toml's `[lib]` section (with hyphens replaced by underscores). On macOS, `clang` usually works in place of `gcc`; on Windows use `cl.exe` (or run the example in WSL).
 - [ ] **String FFI boundary**: Handle strings across the FFI boundary -- write an `extern "C"` function that accepts `*const c_char` and returns `*mut c_char`; use `CString` and `CStr` for safe conversion; document the ownership contract (who allocates, who frees)
 
 ## Notes

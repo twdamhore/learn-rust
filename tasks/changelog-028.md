@@ -101,3 +101,10 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 65-85min. **Pacing**: Medium. **Issues**: None — v14 additions (dependency syntax, Cargo.toml lines) well-targeted. **Changes**: Changelog only.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Corrected prelude explanation in Exercise 4.
+- Clarified that `#[derive(...)]` is language-level syntax, not imported from the prelude.

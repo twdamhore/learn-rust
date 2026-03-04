@@ -109,3 +109,10 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 65-80min. **Pacing**: Moderate. **Issues**: None — DevOps-focused, acceptable trade-off. **Changes**: Changelog only.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Added a dedicated Prerequisites section for repository access, YAML familiarity, and release permissions.
+- Goal: reduce hidden setup blockers before starting CI/CD exercises.

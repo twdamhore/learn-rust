@@ -7,6 +7,11 @@
 ## Added
 - Initial curriculum design
 
+## Prerequisites
+- Optional tooling for Exercise 4 (`cargo expand`): install nightly and `cargo-expand`
+  - `rustup toolchain install nightly`
+  - `cargo install cargo-expand`
+
 ## Objectives
 - [ ] Write `macro_rules!` macros with basic matchers and understand the invocation syntax
 - [ ] Understand the available fragment specifiers: `expr`, `ident`, `ty`, `tt`, `literal`, `pat`, `path`, `stmt`, `block`, and when to use each
@@ -21,6 +26,6 @@
 - [ ] **Expand and inspect**: Install `cargo-expand` and run it on your macros from the previous exercises; study the expanded output and write comments in your code explaining any surprises in the expansion
 
 ## Notes
-> **Setup**: `cargo-expand` requires the nightly toolchain. Install it with: `rustup toolchain install nightly` and then `cargo install cargo-expand`. Run with: `cargo +nightly expand`
+> **Setup**: `cargo-expand` may require the nightly toolchain depending on your toolchain/crate version. If stable fails, run with nightly: `cargo +nightly expand`.
 
 _Lesson not yet started._

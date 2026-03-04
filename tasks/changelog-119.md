@@ -66,3 +66,11 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 60-80min. **Pacing**: Good. **Changes**: Changed retrospective counts from exact (10, 5, 3) to ranges (5-10, 3-5, 2-3). **Why**: Exact counts may feel arbitrary and pressure learner to pad list; ranges allow more natural reflection.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- Fixed stale reference: '100-lesson journey' → '119-lesson journey'
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Relaxed Miri objective/exercise wording to be conditional on project content and environment support.
+- Removed requirement to add synthetic unsafe code for safe-only projects; replaced with safe-design reflection path.
+- Kept unsafe-audit depth for projects that do include unsafe code.

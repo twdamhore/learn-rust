@@ -4,6 +4,18 @@
 
 ## Status: pending
 
+## Prerequisites
+```bash
+# Install wasm-pack
+cargo install wasm-pack
+
+# Add the WebAssembly target
+rustup target add wasm32-unknown-unknown
+
+# Needed for `wasm-pack test --node`
+node --version
+```
+
 ## Added
 - Split from lesson 104 (v6 pacing review)
 

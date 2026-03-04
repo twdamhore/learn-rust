@@ -72,3 +72,10 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 80-100min. **Pacing**: Heavy. **Changes**: Added clarifying note to Exercise 2 that it has two distinct parts (health endpoint Rust code + Dockerfile config). **Why**: Exercise conflates application code with deployment configuration; separating into sub-tasks improves clarity.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Added explicit Prerequisites section, including Docker as optional for local build/run verification.
+- Goal: reduce hidden environmental assumptions before deployment exercises.

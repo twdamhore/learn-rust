@@ -1,4 +1,4 @@
-# Changelog - Lesson 061: Cow and Weak References
+# Changelog - Lesson 061: Smart Pointers Part A - Cow and Weak References
 ## Section 12: Smart Pointers & Interior Mutability
 
 ### v1 - Created from split (2026-03-03)
@@ -69,3 +69,10 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 70-85min. **Pacing**: Medium-Heavy. **Issues**: None — good thematic grouping. **Changes**: Changelog only.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Fixed inaccurate Go comparison in Objective 3.
+- Replaced "implicit copy-on-write slice behavior" wording with an accurate description of Go's copy/reallocation behavior.

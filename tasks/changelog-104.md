@@ -66,3 +66,10 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 60-75min. **Pacing**: Good. **Issues**: None — clean Rust-only WASM intro. **Changes**: Changelog only.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Added explicit Prerequisites section for `wasm-pack`, `wasm32-unknown-unknown`, and Node availability.
+- Goal: make toolchain expectations explicit before exercises.

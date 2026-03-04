@@ -17,8 +17,16 @@
 
 Follow these steps exactly before starting the exercises:
 
-1. Create a workspace: `mkdir lesson-078 && cd lesson-078 && cargo init --name usage`
-2. Create the proc macro crate: `cargo new my_macros --lib`
+1. Create a workspace directory and two crates:
+   - `mkdir lesson-078 && cd lesson-078`
+   - `cargo new usage`
+   - `cargo new my_macros --lib`
+2. Create a virtual workspace `Cargo.toml` in the root:
+   ```toml
+   [workspace]
+   members = ["usage", "my_macros"]
+   resolver = "2"
+   ```
 3. Edit `my_macros/Cargo.toml` -- add under `[lib]`: `proc-macro = true`
 4. Add dependencies to `my_macros/Cargo.toml`:
    ```toml
@@ -27,17 +35,15 @@ Follow these steps exactly before starting the exercises:
    quote = "1"
    proc-macro2 = "1"
    ```
-5. Create workspace `Cargo.toml` in the root:
-   ```toml
-   [workspace]
-   members = ["my_macros", "."]
-   ```
-6. Add `my_macros` as dependency in the root `Cargo.toml`:
+5. Add `my_macros` as a path dependency in `usage/Cargo.toml`:
    ```toml
    [dependencies]
-   my_macros = { path = "my_macros" }
+   my_macros = { path = "../my_macros" }
    ```
-7. Verify: `cargo check` should compile both crates
+6. In `usage/src/main.rs`, add a small struct using your derive macro so both crates are exercised together.
+7. Verify: `cargo check --workspace` should compile both crates.
+
+> **Important**: Keep a separate `usage` crate for running examples/tests. Do not replace a package `Cargo.toml` with workspace-only contents unless you intentionally want a virtual workspace root.
 
 ## Exercises
 - [ ] **Derive HelloMacro**: Create a proc macro crate and implement `#[derive(HelloMacro)]` that adds a `hello()` method printing the type name; use `syn::DeriveInput` to extract the struct name and `quote!` to generate the impl; test with multiple structs

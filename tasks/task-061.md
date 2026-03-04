@@ -10,7 +10,7 @@
 ## Objectives
 - [ ] Use `Cow<'a, T>` (Clone on Write) to write functions that accept both owned and borrowed data, cloning only when mutation is actually needed
 - [ ] Understand when `Cow` avoids unnecessary allocations: the borrowed variant is used when no modification is needed, and the owned variant is produced only on first write
-- [ ] Compare `Cow` to Java's `String` (always owned, immutable but freely copied by GC) and Go's implicit copy-on-write slice behavior -- Rust makes the optimization explicit
+- [ ] Compare `Cow` to Java and Go string/slice behavior: Java `String` is immutable and owned, while Go strings/slices may reallocate and copy on append/concat but are not copy-on-write -- Rust makes clone-on-write behavior explicit via `Cow`
 - [ ] Use `Weak<T>` references (via `Rc::downgrade`) to break reference cycles and create non-owning references that don't prevent cleanup
 - [ ] Understand the relationship between `Rc::strong_count()` and `Rc::weak_count()` -- data is freed when strong count reaches zero, weak references become invalid at that point
 - [ ] Use `Weak::upgrade()` to safely attempt access to data that may have been freed (returns `Option<Rc<T>>`)

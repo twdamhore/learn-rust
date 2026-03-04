@@ -4,6 +4,14 @@
 
 ## Status: pending
 
+## Prerequisites
+- Lesson 094 (Criterion benchmark basics)
+- Install flamegraph tooling:
+  - `cargo install flamegraph`
+  - Linux: install `perf` (for example `linux-tools-common` / `linux-tools-generic`)
+  - macOS: use `dtrace` (may require elevated permissions)
+  - Windows: use WSL/Linux VM for `cargo flamegraph`, or do criterion-only profiling if native flamegraph tooling is unavailable
+
 ## Added
 - Split from task-094 during v7 review due to heavy pacing (~2+ hr estimated)
 - Part B focuses on flamegraph generation, profiling-driven optimization, and interpreting profiling results (~1-1.5 hr)
@@ -23,6 +31,5 @@
 ## Notes
 - This lesson requires lesson 094 to be completed first (criterion knowledge is used in Exercise 2).
 - **Platform-specific tooling**: `cargo flamegraph` requires `perf` on Linux (install via `linux-tools-common` / `linux-tools-generic`) or `dtrace` on macOS. On Linux you may also need to set `kernel.perf_event_paranoid` via sysctl.
-- Install flamegraph tooling: `cargo install flamegraph`.
 - Exercise 2 is iterative -- expect to go through 2-3 optimization rounds. Document each round with before/after benchmark numbers.
 _Lesson not yet started._

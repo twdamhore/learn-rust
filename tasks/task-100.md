@@ -8,14 +8,14 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Make HTTP GET and POST requests using `reqwest` in both blocking and async modes, parsing JSON responses with serde
+- [ ] Make HTTP GET and POST requests using `reqwest` (async as the primary path), parsing JSON responses with serde
 - [ ] Understand `hyper` as the lower-level HTTP library that `reqwest` builds on, and when you would use each (compare with Go's `net/http` which sits between the two in abstraction level)
 - [ ] Build a raw TCP client and server using `std::net::TcpListener` and `TcpStream`, handling connections with threads
-- [ ] Send and receive UDP datagrams using `std::net::UdpSocket`, understanding when UDP is appropriate vs TCP
 - [ ] Configure HTTP clients with custom headers, timeouts, and connection pooling using `reqwest::Client` builder
+- [ ] [OPTIONAL] Send and receive UDP datagrams using `std::net::UdpSocket`, understanding when UDP is appropriate vs TCP
 
 ## Exercises
-- [ ] **Exercise 1 - REST API Client**: Use `reqwest` to fetch data from a public REST API (e.g., `httpbin.org` or `jsonplaceholder.typicode.com`), deserialize the JSON response into a struct, and print formatted output -- do this with both the blocking client and the async client
+- [ ] **Exercise 1 - REST API Client**: Use `reqwest` async client to fetch data from a public REST API (e.g., `httpbin.org` or `jsonplaceholder.typicode.com`), deserialize the JSON response into a struct, and print formatted output. After that works, optionally add a blocking-client version and compare ergonomics.
 - [ ] **Exercise 2 - TCP Echo Server**: Build a TCP echo server that accepts multiple concurrent connections using `std::net::TcpListener` with `thread::spawn`, where the server reads a line from the client and sends it back uppercased; write a companion TCP client that connects, sends a message, and prints the response
 
   > **Server skeleton:**
@@ -46,5 +46,6 @@
 
 ## Notes
 > **Internet required**: Exercise 1 requires internet access to reach a public API (e.g., `httpbin.org` or `jsonplaceholder.typicode.com`). Ensure you have a working connection before starting.
+> **Scope recommendation**: Core path is Exercises 1-2 (~60-90 min). Pick at most one stretch exercise (3 or 4) in the same session.
 
 _Lesson not yet started._

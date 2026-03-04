@@ -9,9 +9,22 @@
 
 ## Prerequisites
 ```bash
-# Required system packages for bindgen
+# Install prerequisites for your OS (pick the section that matches your machine):
+
+# Linux (Ubuntu/Debian)
 sudo apt install libclang-dev build-essential
+
+# macOS
+xcode-select --install
+brew install llvm
+
+# Windows (PowerShell / MSVC toolchain)
+# Install "Desktop development with C++" in Visual Studio Build Tools
+# and install LLVM/Clang, then verify:
+clang --version
 ```
+
+> `bindgen` needs `libclang` to be discoverable on your system. If needed, set `LIBCLANG_PATH` to your LLVM `lib` directory.
 
 ## Objectives
 - [ ] Use `extern "C"` blocks to declare foreign functions from C libraries and call them from Rust

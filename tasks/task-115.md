@@ -4,6 +4,10 @@
 
 ## Status: pending
 
+## Prerequisites
+- Lesson 114 (Project 2 Part C: Async Patterns and Observability)
+- Docker installed (optional) if you want to actually build/run the container locally
+
 ## Added
 - Split from original lesson 114 (v7 pacing review)
 

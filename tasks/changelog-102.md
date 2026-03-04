@@ -26,3 +26,13 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 70-90min. **Pacing**: Good. **Issues**: None — async-trait note verified. **Changes**: Changelog only.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Fixed async-trait guidance to avoid trait-object confusion with async methods.
+- Added two explicit implementation paths:
+  - Path A: `async-trait` + `&dyn TaskRepository`
+  - Path B: generic service layer without `async-trait`
+- Added dependency note for Path A.

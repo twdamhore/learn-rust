@@ -74,3 +74,10 @@
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed. **Time**: 70-90min. **Pacing**: Good/Heavy. **Issues**: None — prerequisites, comparison targets, and setup notes verified. **Changes**: Changelog only.
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- No changes needed — reviewed for pacing, progression, and forward references
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Replaced Linux-centric profiling setup block with cross-platform setup guidance.
+- Added explicit fallback path when kernel/perf settings are unavailable: continue with criterion-only measurements and document limitation.

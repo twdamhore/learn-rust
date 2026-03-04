@@ -32,14 +32,10 @@
 _Lesson not yet started._
 _Split from original lesson 118 which was assessed as >2 hrs because benchmarking, profiling, and unsafe auditing are each time-consuming activities._
 _This part focuses exclusively on performance: establishing benchmarks, profiling, optimizing, and measuring improvement._
-_`cargo flamegraph` requires `perf` (Linux) or `dtrace` (macOS) to be installed._
+_`cargo flamegraph` depends on platform tooling (Linux `perf`, macOS `dtrace`). If unavailable, use criterion benchmarks and platform-native profilers as a fallback._
 
-> **Linux setup for profiling:**
-> ```bash
-> sudo apt install linux-tools-generic linux-tools-$(uname -r)
-> # Allow perf for non-root users:
-> echo 1 | sudo tee /proc/sys/kernel/perf_event_paranoid
-> # Install cargo-flamegraph:
-> cargo install flamegraph
-> ```
-> On macOS, `dtrace` is available by default but may require SIP adjustments.
+> **Profiling setup by platform:**
+> - **Linux**: install `perf` (for example: `sudo apt install linux-tools-generic linux-tools-$(uname -r)`), then install flamegraph tool: `cargo install flamegraph`
+> - **macOS**: install flamegraph tool (`cargo install flamegraph`) and use `dtrace`/Instruments (may require elevated permissions; SIP can limit some traces)
+> - **Windows**: `cargo flamegraph` is typically done via WSL/Linux VM; native fallback is criterion + Windows profilers (WPA/Visual Studio)
+> - If changing `kernel.perf_event_paranoid` is not allowed in your environment, continue with criterion-only measurements and document the limitation.

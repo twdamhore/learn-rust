@@ -86,3 +86,11 @@
 - **Pacing**: Heavy
 - **Changes made**: Added inline note to Exercise 2 clone 3 explaining iterator/closure syntax (.iter().map(|n| ...).collect()) and pointing to lessons 37/51
 - **Why**: Provided starter code uses iterator/closure patterns not taught until lessons 37 and 51
+
+### v16 (2026-03-04) — Full curriculum review (119 lessons)
+- Fixed stale lesson references: 'lessons 19-20' → 'lessons 021-022', 'lessons 37 and 51' → 'lessons 039 and 055', 'lesson 46' → 'lesson 048'
+
+### v17 (2026-03-04) — Human-learning clarity pass
+- Reworked Exercise 3 to avoid premature lifetime syntax (removed `ConfigView<'a>` preview) and replaced it with an owned-vs-borrowed API design exercise.
+- Simplified Exercise 2 starter code to avoid introducing iterator/closure-heavy syntax before those lessons.
+- Updated wording to keep this lesson focused on ownership decisions, not lifetime mechanics.
