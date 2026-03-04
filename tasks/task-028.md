@@ -1,4 +1,4 @@
-# Lesson 028: Publishing crates, documentation (///), cargo doc
+# Lesson 028: Crates, packages, use, re-exports, prelude pattern
 
 ## Section 6: Project Organization
 
@@ -8,17 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Write outer doc comments (`///`) for functions, structs, enums, and methods, and inner doc comments (`//!`) for modules and crate-level documentation
-- [ ] Use `cargo doc --open` to generate and browse HTML documentation, understanding how it renders Markdown formatting, links, and code blocks
-- [ ] Write code examples in doc comments using triple-backtick blocks that `cargo test` runs as doc tests, ensuring examples stay correct as code evolves
-- [ ] Understand the crates.io publishing workflow: `cargo login`, `cargo package` (inspect what gets included), `cargo publish`, and semantic versioning requirements
-- [ ] Use common doc comment sections (`# Examples`, `# Panics`, `# Errors`, `# Safety`) following Rust API documentation conventions
+- [ ] Understand the distinction between a crate (compilation unit -- either a binary or library), a package (one or more crates with a `Cargo.toml`), and a module (namespace within a crate)
+- [ ] Use `use` declarations to bring paths into scope with various styles: `use std::collections::HashMap`, `use std::io::{self, Read, Write}`, and glob imports `use std::collections::*`
+- [ ] Distinguish absolute paths (`crate::module::item`) from relative paths (`self::item`, `super::item`) and know when each is appropriate
+- [ ] Create re-exports with `pub use` to present a clean public API that hides internal module structure, similar to Go's single-package-level namespace
+- [ ] Understand the prelude concept -- what `std::prelude` auto-imports and how libraries define their own preludes
 
 ## Exercises
-- [ ] **Exercise 1 - Document a library**: Take the `core` library from lesson 027 (or create a small library with 2-3 public structs and functions). Add `//!` crate-level docs at the top of `lib.rs` explaining the library's purpose. Add `///` doc comments to every public item with descriptions, parameter explanations, and return value descriptions. Run `cargo doc --open` and browse the generated documentation.
-- [ ] **Exercise 2 - Doc tests**: Add `# Examples` sections to at least three doc comments with runnable code blocks. Ensure each example compiles and passes when running `cargo test`. Include one example that demonstrates error handling by using `# fn main() -> Result<(), Box<dyn std::error::Error>> {` hidden setup. (This `Box<dyn std::error::Error>` syntax will be explained in later lessons -- for now, treat it as boilerplate that lets your doc test use the `?` operator.) Intentionally break an example and observe how `cargo test` catches it.
-- [ ] **Exercise 3 - Advanced doc features**: Use `[`link syntax`]` in doc comments to cross-reference other items in the crate (e.g., `/// See [`OtherStruct`] for more details`). Add `# Panics` and `# Errors` sections where appropriate. Use `#` prefix in code examples to hide boilerplate lines. Generate docs with `cargo doc --document-private-items` and compare with the default output.
-- [ ] **Exercise 4 - Publish preparation**: Run `cargo package --list` to see what files would be included in a published crate. Ensure `Cargo.toml` has all required fields: `name`, `version`, `edition`, `description`, `license`, `repository`. Add a `README.md` that `cargo doc` will use as the crate landing page. Run `cargo package` to create the `.crate` file and inspect its contents. Do NOT actually publish -- just verify everything is ready. Compare this workflow with publishing a Java artifact to Maven Central or a Go module.
+- [ ] **Exercise 1 - Use statement styles**: In a single program, practice all `use` styles: import a single item (`use std::collections::HashMap`), a nested group (`use std::io::{self, BufRead, Write}`), an alias (`use std::collections::HashMap as Map`), and a glob (`use std::fmt::*` -- then discuss why glob imports are discouraged in production code). Write code that exercises each imported item.
+- [ ] **Exercise 2 - Re-exports for clean API**: Create a library with internal modules `internal::parser` and `internal::formatter`. In `lib.rs`, use `pub use internal::parser::parse;` and `pub use internal::formatter::format_output;` so users of the crate only need `use mycrate::{parse, format_output}` rather than knowing the internal structure. Write a binary crate that depends on this library and uses the re-exported API. To make a binary crate depend on a local library, add a path dependency to Cargo.toml: `mylib = { path = "../mylib" }`. Workspace setup (an alternative approach) is covered in lesson 029.
+- [ ] **Exercise 3 - External crates**: Add the `rand` crate to `Cargo.toml` dependencies. Use `use rand::Rng;` to bring the trait into scope and generate random numbers. Add the `chrono` crate and use nested imports. Practice the workflow: find a crate on crates.io, add it to `Cargo.toml`, import with `use`, and call its API. Add these to your `[dependencies]`: `rand = "0.8"` and `chrono = "0.4"`. Compare this with Go's `go get` and Java's Maven/Gradle dependency model.
+- [ ] **Exercise 4 - Exploring the prelude**: Write a program that uses `Vec`, `String`, `Option`, `Result`, `println!`, and `derive` macros -- all available without any `use` statements because they are in the prelude. Then write the explicit `use` paths for each to understand where they actually live (e.g., `std::vec::Vec`, `std::string::String`). Create a custom prelude module in a library crate: `pub mod prelude { pub use crate::MyType; pub use crate::MyTrait; }` and use it from a binary crate.
 
 ## Notes
 _Lesson not yet started._

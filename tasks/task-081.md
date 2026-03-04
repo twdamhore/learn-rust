@@ -1,6 +1,6 @@
-# Lesson 081: Unit tests in depth - organization, helpers, test modules
+# Lesson 081: Unsafe blocks, raw pointers, dereferencing
 
-## Section 18: Testing & Quality
+## Section 16: Unsafe & FFI
 
 ## Status: pending
 
@@ -8,17 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Organize unit tests in `#[cfg(test)] mod tests {}` blocks within each source file and understand why `#[cfg(test)]` means test code is excluded from release builds
-- [ ] Write test helper functions and constructors to reduce duplication across tests, using `pub(crate)` visibility where needed
-- [ ] Use setup/teardown patterns in Rust tests (helper functions called at the start of each test, RAII guards for cleanup) since Rust has no built-in `@Before`/`@After` like JUnit
-- [ ] Test private functions directly from within the same module (Rust allows this, unlike Java) and understand the debate around testing private vs public interfaces
-- [ ] Use `#[ignore]` for slow tests, `#[should_panic]` for expected panics, and `cargo test` filtering to run subsets of tests
+- [ ] Understand the five things `unsafe` unlocks: dereference raw pointers, call unsafe functions, access mutable statics, implement unsafe traits, access union fields
+- [ ] Create raw pointers (`*const T` and `*mut T`) from references and understand that creating them is safe but dereferencing is unsafe
+- [ ] Understand the difference between `unsafe {}` blocks (caller asserts invariants) and `unsafe fn` (caller must uphold invariants)
+- [ ] Know when `unsafe` is genuinely needed vs when there is a safe alternative
+- [ ] Understand the safety contract: `unsafe` does not turn off the borrow checker -- it only permits the five specific operations
 
 ## Exercises
-- [ ] **Exercise 1 -- Test organization**: Create a `math_utils` module with functions `gcd(a: u64, b: u64) -> u64` and `lcm(a: u64, b: u64) -> u64`. Write a `#[cfg(test)] mod tests` block with at least 6 tests covering normal cases, edge cases (0, 1, same number), and large numbers. Add a helper function `fn assert_gcd_lcm_identity(a: u64, b: u64)` that verifies `gcd * lcm == a * b`.
-- [ ] **Exercise 2 -- Testing private functions**: Create a module with a public `fn parse_and_validate(input: &str) -> Result<Config, ParseError>` that internally calls private helpers `fn parse_fields(input: &str) -> Vec<(&str, &str)>` and `fn validate_port(port: &str) -> Result<u16, ParseError>`. Write unit tests for both the private helpers and the public function. Discuss when testing privates is appropriate.
-- [ ] **Exercise 3 -- Test helpers and fixtures**: Build a `UserStore` struct with `add_user`, `get_user`, `delete_user` methods. Create a `fn test_store_with_sample_data() -> UserStore` helper that populates a store with 5 test users. Write 8+ tests using this helper: test retrieval, deletion, duplicate handling, missing user errors. Use `#[should_panic]` on one test that expects a panic on invalid input.
-- [ ] **Exercise 4 -- Ignore and filtering**: Add a `#[ignore]` test that performs a slow computation (e.g., compute the 40th Fibonacci number naively). Run `cargo test` and verify it is skipped. Run `cargo test -- --ignored` to run only ignored tests. Run `cargo test gcd` to filter by name. Document the cargo test CLI flags you discovered.
+- [ ] **Raw pointer basics**: Create `*const i32` and `*mut i32` from references using `as` casts; dereference them inside `unsafe` blocks; modify the value through the mutable raw pointer and verify the change
+- [ ] **Reference round-trip**: Convert a `&mut Vec<i32>` to a `*mut Vec<i32>`, then back to `&mut Vec<i32>` inside an `unsafe` block; push an element through the reconstituted reference and verify the vec was modified
+- [ ] **Mutable static**: Declare a `static mut COUNTER: u32 = 0`; write an unsafe function `increment_counter()` that increments it; call it from `main` inside an `unsafe` block and print the result; add a comment explaining why mutable statics are unsafe (data races in multithreaded code)
+- [ ] **Safe vs unsafe quiz**: Write 8 operations as comments (e.g., "index a slice with `[]`", "call `slice::get_unchecked`", "cast `&T` to `*const T`", "dereference `*const T`") and annotate each as safe or unsafe with an explanation; verify by writing the code and seeing which ones require `unsafe`
 
 ## Notes
 _Lesson not yet started._

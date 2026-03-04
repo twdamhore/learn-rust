@@ -1,6 +1,6 @@
-# Lesson 096: Project 1 - continued (testing, publishing)
+# Lesson 096: CI/CD for Rust - GitHub Actions, caching, release builds
 
-## Section 21: Capstone Projects
+## Section 18: Testing & Quality
 
 ## Status: pending
 
@@ -8,29 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Write comprehensive unit tests for all modules of the CLI tool: config parsing, text transformations, validation logic, and error formatting
-- [ ] Write integration tests that invoke the binary end-to-end using `assert_cmd` and `predicates`, verifying correct output and exit codes for success and error cases
-- [ ] Add documentation comments (`///`) with examples to all public functions and types, and verify examples compile with `cargo test` (doc tests)
-- [ ] Set up a GitHub Actions CI workflow that runs `cargo check`, `cargo clippy`, `cargo fmt --check`, and `cargo test` on push
-- [ ] Polish the CLI with a progress indicator for large files (using `indicatif`), colored error output (using `colored` or `anstream`), and a `--verbose` flag for debug information
+- [ ] Write a GitHub Actions workflow for a Rust project that runs `cargo test`, `cargo clippy`, and `cargo fmt --check` on every push and pull request
+- [ ] Configure dependency caching with `actions/cache` or `Swatinem/rust-cache` to avoid rebuilding all dependencies on every CI run
+- [ ] Set up a CI matrix to test against stable, beta, and nightly Rust toolchains, and optionally across multiple OS targets
+- [ ] Configure automated release builds that compile optimized binaries and optionally publish to crates.io with `cargo publish`
+- [ ] Understand cross-compilation in CI using `cross` or `cargo build --target` for Linux, macOS, and Windows targets
 
 ## Exercises
-- [ ] **Exercise 1 - Unit Tests for Config and Transformations**: Write unit tests for the config parsing and text transformation modules: test loading valid TOML config, missing required fields, invalid field values, and `#[serde(default)]` defaults -- test each transformation function (uppercase, keyword filter, line numbering, blank-line removal) with known input/output pairs -- use `tempfile` to create test config files or test from string literals
-- [ ] **Exercise 2 - Integration Tests with assert_cmd**: Write integration tests using `assert_cmd`: test that `fileproc process --config test.toml input.txt` produces expected output, that `fileproc stats input.txt` prints correct line/word/char counts, that invalid arguments print usage help, that missing files produce a clear error message, and that `--help` works for all subcommands
-- [ ] **Exercise 3 - Documentation and Doc Tests**: Add `///` doc comments to all public types and functions in the library portion of the crate, including at least two `# Examples` blocks that demonstrate usage -- run `cargo test` to verify doc examples compile and pass, then run `cargo doc --open` to review the generated documentation
-- [ ] **Exercise 4 - CI Workflow for fileproc**: Create a `.github/workflows/ci.yml` file for the `fileproc` project: run the test suite on Ubuntu latest with stable Rust, cache the cargo registry and target directory, and add steps for clippy (with `-D warnings` to fail on warnings) and rustfmt checking. _Note: Lesson 085 teaches generic CI/CD concepts (matrix builds, cross-compilation, release workflows). This exercise is about applying those concepts to your specific `fileproc` project -- a single-target CI pipeline with project-specific test steps, not the full matrix/release setup from 085._
-- [ ] **Exercise 5 - Dry-Run Publish**: Run `cargo publish --dry-run` to verify your crate is ready for publishing. Review the output for any warnings or errors. (Do NOT actually publish.)
-
-## New Crates Introduced
-
-These crates are used for the first time in this lesson. Brief introductions:
-
-- **`assert_cmd`** -- Provides a fluent API for testing CLI binaries from integration tests. Lets you invoke your compiled binary, pass arguments, pipe stdin, and assert on stdout, stderr, and exit codes.
-- **`predicates`** -- A companion to `assert_cmd` that provides composable boolean predicates for assertions (e.g., `predicate::str::contains("error")`, `predicate::str::is_empty()`). Used to write expressive test assertions on command output.
-- **`tempfile`** -- Creates temporary files and directories that are automatically cleaned up when dropped. Useful in tests for creating throwaway config files or input data without polluting the filesystem.
-- **`indicatif`** -- Provides progress bars, spinners, and multi-progress displays for CLI applications. Useful for showing processing progress on large files.
-- **`colored`** -- Adds ANSI color and style formatting to terminal output (e.g., `"error".red().bold()`). Used to make error messages and status output more readable in the terminal.
+- [ ] **Exercise 1 -- Basic CI workflow**: Write a `.github/workflows/ci.yml` that triggers on push and PR to main. It should: (1) check out code, (2) install Rust stable, (3) run `cargo fmt --check`, (4) run `cargo clippy -- -D warnings`, (5) run `cargo test`. Test it by examining the YAML for correctness. Add `RUSTFLAGS: -D warnings` as an env var to catch all warnings.
+- [ ] **Exercise 2 -- Caching and matrix**: Extend the CI workflow to: (1) use `Swatinem/rust-cache` for dependency caching, (2) test on a matrix of `{stable, beta, nightly}` x `{ubuntu-latest, macos-latest}`. Add a `continue-on-error: true` for nightly so nightly failures don't block the pipeline. Document expected cache hit savings.
+- [ ] **Exercise 3 -- Release workflow**: Write a `.github/workflows/release.yml` that triggers on git tags matching `v*`. It should: (1) build release binaries for Linux and macOS, (2) create a GitHub Release with the tag, (3) upload the binaries as release assets using `softprops/action-gh-release`. Include `cargo build --release` and strip the binary with `strip` on Linux.
+- [ ] **Exercise 4 [OPTIONAL] -- Cross-compilation**: Add a job to the CI workflow that cross-compiles for `x86_64-unknown-linux-musl` (static binary) and `aarch64-unknown-linux-gnu` (ARM64). Use `cross` or install the target with `rustup target add`. Verify the produced binaries are for the correct architecture using `file` command in the workflow.
 
 ## Notes
-- **SUPERSEDED**: This lesson was split into task-096a.md (testing) and task-096b.md (documentation, CI, publishing) during v13 pacing review (2026-03-04). Use those files instead.
-- _Lesson not yet started._
+_Lesson not yet started._

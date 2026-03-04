@@ -29,7 +29,7 @@
   >     _ => println!("{}", n),
   > }
   > ```
-  > This previews pattern matching from lesson 023 -- just follow the syntax for now.
+  > This previews pattern matching from lesson 025 -- just follow the syntax for now.
 - [ ] **Exercise 5 - Number guessing loop** [OPTIONAL]: Write a loop that reads a hardcoded "secret" number. Use a mutable counter to simulate guesses (e.g., incrementing by 7 each iteration). Break when the guess matches or exceeds the secret. Print the number of attempts. (Full interactive version will come after we cover I/O and Result)
 
 ## Notes

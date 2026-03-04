@@ -1,4 +1,4 @@
-# Lesson 038: Custom iterators, IntoIterator, lazy evaluation
+# Lesson 038: HashMap, HashSet, BTreeMap, entry API
 
 ## Section 8: Collections & Iterators
 
@@ -8,84 +8,19 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Implement the `Iterator` trait for a custom struct by defining `type Item` and `fn next(&mut self) -> Option<Self::Item>`
-- [ ] Understand the `IntoIterator` trait and how it enables `for item in collection` syntax for custom types
-- [ ] Provide `iter()`, `iter_mut()`, and `into_iter()` methods for a custom collection, matching the convention used by `Vec` and other std types
-- [ ] Understand that iterator adaptors are zero-cost abstractions: the compiler optimizes chained iterators to be as fast as hand-written loops
-
----
-
-> **Prerequisite Note: Implementing a Trait**
->
-> This lesson requires you to write `impl Iterator for YourType { ... }`, which is Rust's syntax for implementing a trait on a type. The general pattern is: `impl TraitName for TypeName { ... }`, where you provide concrete implementations for the methods the trait requires. You have seen traits used via `#[derive(...)]` in lesson 021, but here you are writing the implementation by hand.
->
-> Traits are formally taught in lesson 040, so do not worry about understanding every detail yet. For now, just follow the template below: define `type Item` to declare what your iterator yields, and implement `fn next(&mut self) -> Option<Self::Item>` to produce the next value (or `None` when finished). That is all you need for the exercises in this lesson.
-
----
-
-### Template: Implementing the Iterator Trait
-
-```rust
-struct Counter {
-    count: u32,
-    max: u32,
-}
-
-impl Counter {
-    fn new(max: u32) -> Self {
-        Counter { count: 0, max }
-    }
-}
-
-impl Iterator for Counter {
-    type Item = u32;  // What type does next() return?
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.count < self.max {
-            self.count += 1;
-            Some(self.count)
-        } else {
-            None
-        }
-    }
-}
-```
-
----
+- [ ] Create and use `HashMap<K, V>` with `insert`, `get`, `remove`, `contains_key`, and iteration
+- [ ] Use the entry API: `entry().or_insert()`, `entry().or_insert_with()`, and `entry().and_modify().or_insert()` for conditional insertion and update
+- [ ] Understand that `HashMap` keys must implement `Hash + Eq`, and know which standard types satisfy this (and that `f64` does not)
+- [ ] Use `HashSet<T>` for storing unique values and performing set operations (intersection, union, difference, symmetric_difference)
+- [ ] Use `BTreeMap<K, V>` when you need sorted key order, and understand its `Ord` requirement vs HashMap's `Hash + Eq`
 
 ## Exercises
-- [ ] **Exercise 1 - Fibonacci iterator**: Create a `Fibonacci` struct and implement `Iterator` for it. It should yield the infinite Fibonacci sequence (0, 1, 1, 2, 3, 5, 8, ...). Use `.take(10).collect::<Vec<u64>>()` to get the first 10 values. Also use `.take_while(|&x| x < 1000)` to get all Fibonacci numbers below 1000
-- [ ] **Exercise 2 - Custom collection with IntoIterator**: Create a `Playlist` struct that holds a `Vec<Song>` (where `Song` has `title: String` and `duration_secs: u32`). Implement the consuming `IntoIterator for Playlist` (which takes ownership and doesn't need lifetimes). Demonstrate using `for song in playlist`.
-
-  **Bonus (read-only preview)**: Here's what `IntoIterator for &Playlist` looks like -- we'll understand the `'a` lifetime syntax in lesson 046:
-  ```rust
-  impl<'a> IntoIterator for &'a Playlist {
-      type Item = &'a Song;
-      type IntoIter = std::slice::Iter<'a, Song>;
-      fn into_iter(self) -> Self::IntoIter {
-          self.songs.iter()
-      }
-  }
-  ```
-  For now, just implement the consuming `IntoIterator for Playlist` (which takes ownership and doesn't need lifetimes)
-- [ ] **Exercise 3 - Prime iterator**: Create a `Primes` struct that implements `Iterator` to yield prime numbers indefinitely. Use the provided trial-division helper below. Use it to collect the first 20 primes, find the first prime above 1000 (with `.find()`), and sum all primes below 100 (with `.take_while().sum()`)
-
-  ```rust
-  // Provided: simple primality check
-  fn is_prime(n: u64) -> bool {
-      if n < 2 { return false; }
-      if n < 4 { return true; }
-      if n % 2 == 0 || n % 3 == 0 { return false; }
-      let mut i = 5;
-      while i * i <= n {
-          if n % i == 0 || n % (i + 2) == 0 { return false; }
-          i += 6;
-      }
-      true
-  }
-  // Your job: implement Iterator for a Primes struct that yields consecutive primes
-  ```
-- [ ] **Exercise 4 [STRETCH] - Iterator vs loop benchmark**: Write a function that sums the squares of even numbers from 1 to 1_000_000 using (a) a `for` loop with `if` and accumulator, and (b) an iterator chain with `.filter().map().sum()`. Use `std::time::Instant` to time both approaches over 100 runs and compare. They should be nearly identical, demonstrating zero-cost abstraction
+- [ ] **Exercise 1 - Word frequency counter**: Write `fn word_count(text: &str) -> HashMap<String, usize>` that counts occurrences of each word (case-insensitive). Test with `"the cat sat on the mat the cat"` expecting `{"the": 3, "cat": 2, "sat": 1, "on": 1, "mat": 1}`
+- [ ] **Exercise 2 - Entry API mastery**: Rewrite the word counter using `entry().and_modify(|c| *c += 1).or_insert(1)`. Then write a function that groups words by their first letter using `entry().or_insert_with(Vec::new)` to build a `HashMap<char, Vec<String>>`
+- [ ] **Exercise 3 - Simple cache**: Implement a `Cache` struct wrapping a `HashMap<String, String>` with methods `get(&self, key: &str) -> Option<&String>`, `set(&mut self, key: String, value: String)`, and `get_or_insert(&mut self, key: String, value: String) -> &String`. Implement a `get_or_insert` method that takes a key and a default value (both `String`), returning a reference to the existing or newly inserted value. Test that calling `get_or_insert` with an existing key returns the original value, not the new default. (We use concrete `String` types here; generics are introduced in lesson 39. A more advanced version using closures (`FnOnce`) is covered after lesson 055.)
+- [ ] **Exercise 4 - Sets and sorted maps**: Given two `Vec<String>` representing students in two classes, use `HashSet` to find students in both classes (intersection), students in either (union), and students in only one class (symmetric difference). Then use `BTreeMap` to print all word counts from Exercise 1 in alphabetical order
 
 ## Notes
 _Lesson not yet started._
+
+> **Pacing note**: Lessons 038-037-038 (collections, iterators, custom iterators) form a dense cluster. If you feel fatigued after this lesson, take a break before continuing to lesson 039. These three lessons cover foundational patterns you'll use constantly, so it's worth taking the time to absorb them.

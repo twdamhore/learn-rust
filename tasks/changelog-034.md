@@ -1,6 +1,6 @@
-# Changelog - Lesson 034: Vec<T> - creating, updating, accessing, memory model
+# Changelog - Lesson 034: Error ecosystem - thiserror, anyhow, best practices
 
-## Section 8: Collections & Iterators
+## Section 7: Error Handling
 
 ### v1 - Initial creation
 - Lesson added to curriculum
@@ -12,30 +12,30 @@
 
 ### v3 - Concrete objectives and exercises (2026-03-03)
 - Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: vector creation methods, mutation operations, safe vs panicking access, memory model (ptr+len+cap), iteration modes, Java/Go comparison
-- **Exercises added**: capacity growth observation, safe vs unsafe access, stack implementation with Vec, sorting and deduplication
+- **Objectives added**: thiserror derive macros, anyhow for application errors, thiserror vs anyhow guidance, Context for enriching errors, downcasting
+- **Exercises added**: rewrite manual errors with thiserror, CLI app with anyhow, adding context to errors, library+binary pattern with both crates
 
 ### v4 - Comprehensive pacing and content review (2026-03-03)
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
 - **Pacing**: Moderate for 1-hour lesson
 - **Issues found**:
-  - 6 objectives is more than usual, but Vec is familiar territory for Java/Go developers
-- **Recommendations**: None - well-scoped given learner's background
+  - Requires internet access to download thiserror and anyhow crates
+- **Recommendations**: None - good progression, thiserror/anyhow simplify the manual approach from lesson 033
 
 ### v5 - Cross-curriculum review (2026-03-03)
 - Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
 - **Pacing**: Moderate (~1 hr) for 1-2 hour target
-- **Changes noted**: 6 objectives (more than most) but Vec is extremely familiar for Java/Go devs (ArrayList, slices). Memory model (ptr+len+cap) maps directly to Go slice internals. Balanced parentheses exercise is a classic.
-- **Why**: Familiar territory despite high objective count.
-- **v4 recommendations status**: N/A.
-- **Gradual progression**: Good section opener.
+- **Changes noted**: Actually simplifies lesson 31 by using thiserror to auto-generate boilerplate. Good teaching pattern (hard way first, then ecosystem solution). Internet access needed for crate downloads.
+- **Why**: Well-structured progression from lesson 31.
+- **v4 recommendations status**: Not yet applied -- v4 noted internet requirement.
+- **Gradual progression**: Good relief after heavy lesson 31.
 
 ### v6 - Pacing review and split assessment (2026-03-03)
 - Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
 - **Estimated time**: ~50-60 min
 - **Pacing verdict**: Moderate
 - **Split needed**: No
-- **Key issues**: None despite 6 objectives - Vec is extremely familiar (ArrayList/Go slices); good section opener
+- **Key issues**: None - simplifies lesson 033's boilerplate with thiserror; good "hard way first, then ecosystem" pattern; requires internet
 - **Action taken**: Changelog updated with pacing assessment
 
 ## v7 — Relaxed Pacing Review (2026-03-03)
@@ -47,8 +47,8 @@
 - Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
 - **Estimated time**: ~50-60 min (Moderate)
 - **Needs split**: No
-- **Progression**: Well-scoped opener. Vec maps directly to ArrayList/Go slices.
-- **Issues**: None
+- **Progression**: Excellent. The "manual boilerplate in 031, then thiserror eliminates it in 032" is one of the best teaching patterns in the curriculum.
+- **Issues**: None (requires internet for crate downloads).
 - **Changes made**: None
 
 ### v9 - Full curriculum review — pacing, progression, and content audit (2026-03-03)
@@ -56,7 +56,7 @@
 - **Estimated time**: ~50-60 min
 - **Pacing**: Good
 - **Needs split**: No
-- **Issues**: None. Despite 6 objectives, Vec maps to Java ArrayList and Go slices. Balanced parentheses exercise is a well-chosen classic.
+- **Issues**: None. Requires internet for thiserror/anyhow downloads. Excellent lesson pair with 031 — manual boilerplate first, then thiserror eliminates it.
 - **Changes made**: Changelog updated only
 
 ## v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
@@ -64,16 +64,16 @@
 - **Alignment**: Exact match
 - **Time estimate**: 50-60 minutes (Moderate)
 - **Needs splitting**: No
-- **Pacing context**: Good section opener. Vec is familiar from Java (ArrayList) and Go (slices).
+- **Pacing context**: Good relief after heavy lesson 033. Excellent "hard way first, then thiserror" pedagogy.
 - **Unresolved from prior reviews**: None
 - **New findings**: None
-- **Recommendation**: No changes needed. Well-scoped despite 6 objectives due to learner's prior experience.
+- **Recommendation**: No changes needed. One of the strongest lesson pairs in the curriculum (031+032).
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
-- **Estimated time**: 50-60min (Moderate)
+- **Estimated time**: 50-65min (Moderate)
 - **Needs split**: No
-- **Progression**: Solid section opener. Vec maps directly to ArrayList (Java) and slices (Go).
+- **Progression**: 031+032 pair praised as strongest teaching sequence. Internet needed for thiserror/anyhow.
 - **Changelog reconciliation**: All prior findings consistent
 - **Genuinely unresolved**: None
 - **Recommendation**: No changes needed
@@ -88,17 +88,17 @@
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 60-75min
+- **Estimated time**: 55-70min
 - **Pacing**: Good
-- **Issues**: Exercise 3 is effectively two exercises (stack impl + parentheses checker) — consider splitting or making checker part STRETCH
+- **Issues**: None
 - **Changes made**: Changelog updated only
 
 ### v14 - Full curriculum review (2026-03-04)
 - Reviewed task file for pacing, prerequisites, progression, and content quality
-- **Estimated time**: 60-75min
+- **Estimated time**: 55-70min
 - **Pacing**: Medium
-- **Issues**: Minor Exercise 3 parentheses portion concern (not fixed)
-- **Changes made**: Changelog updated only
+- **Issues**: None
+- **Changes made**: Added downcasting syntax (`error.downcast_ref::<YourErrorType>()` with example) to Exercise 4, task file updated
 
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. **Time**: 60-75min. **Pacing**: Medium. **Changes**: Marked parentheses checker in Exercise 3 as optional extension. **Why**: Exercise 3 effectively contained two exercises (stack + parentheses checker); marking checker as optional gives a clear stopping point.
+- Reviewed. **Time**: 55-70min. **Pacing**: Medium. **Issues**: None — excellent complement to lesson 033. **Changes**: Changelog only.

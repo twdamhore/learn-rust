@@ -1,6 +1,6 @@
-# Lesson 077: Associated types, GATs (generic associated types)
+# Lesson 077: Advanced macro_rules! - TT munching, push-down accumulation
 
-## Section 17: Advanced Type System
+## Section 15: Macros
 
 ## Status: pending
 
@@ -8,24 +8,18 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Understand associated types in traits (`type Item`) and how they differ from generic type parameters on the trait itself
-- [ ] Compare when to use associated types vs type parameters by examining real std traits (`Iterator`, `Add`, `Deref`) and articulating the "one impl per type" rule
-- [ ] Understand GATs (generic associated types) -- what they are, why they were stabilized, and the problems they solve (lending iterators, async-in-traits return types)
-- [ ] Write a GAT-based trait that returns references tied to `&self` lifetime (a lending iterator pattern), something impossible with plain associated types
-- [ ] Recognize the compile errors you get when you need a GAT but use a plain associated type, and know how to refactor
+- [ ] Understand the TT (token tree) munching pattern -- recursively consuming tokens one at a time to build complex output
+- [ ] Understand push-down accumulation -- passing an accumulator through recursive macro calls to build up the result
+- [ ] Build recursive macros that process variable-length input by matching the first token(s) and recursing on the rest
+- [ ] Use internal macro rules (prefixed with `@`) as helper arms for multi-phase macro expansion -- the `@` prefix is a community convention (not special syntax) that prevents external callers from reaching internal helper rules; e.g., `(@acc [$($reversed:expr),*] $first:expr, $($rest:expr),*) => { ... }`
+- [ ] Understand macro limitations: no runtime information, limited type introspection, lack of mutable state across invocations
 
 ## Exercises
-- [ ] **Exercise 1 -- Graph trait with associated types**: Define a `trait Graph { type Node; type Edge; ... }` with methods `nodes(&self) -> Vec<Self::Node>` and `edges(&self, from: &Self::Node) -> Vec<Self::Edge>`. Implement it for an adjacency-list struct. Compare this design to `trait Graph<N, E>` and explain why associated types are better here.
-- [ ] **Exercise 2 -- Refactor generic to associated**: Start with `trait Storage<K, V> { fn get(&self, key: &K) -> Option<&V>; }` where K and V are type parameters. Refactor to use associated types instead. Discuss: when would you keep the generics?
-- [ ] **Exercise 3 -- Iterator-like trait**: Implement `trait Summarizable { type Summary: Display; fn summarize(&self) -> Self::Summary; }` for at least two different types (e.g., `Article` returns `String`, `Tweet` returns a custom `TweetSummary` struct). Write a generic function `fn print_summary<T: Summarizable>(item: &T)` that works with any implementor.
-- [ ] **Exercise 4 [STRETCH] -- Lending iterator with GATs**: _You'll rarely write GATs yourself, but understanding them helps when you encounter them in libraries like lending iterators, async traits, and database query builders._ Implement a `WindowsMut` struct that yields overlapping mutable slices from a `Vec<i32>`. Use the provided trait definition below and implement it for `WindowsMut`. Verify that this cannot be done with the standard `Iterator` trait.
-  ```rust
-  // Provided trait definition — implement this for WindowsMut
-  trait LendingIterator {
-      type Item<'a> where Self: 'a;
-      fn next(&mut self) -> Option<Self::Item<'_>>;
-  }
-  ```
+- [ ] **Counting macro**: Implement a `count!` macro using TT munching that counts the number of token trees passed to it; e.g., `count!(a b c d)` evaluates to `4`; use a recursive approach that peels off one `$tt:tt` at a time
+- [ ] **Recursive type builder**: Write a macro `nested!` that generates nested `Option` types; e.g., `nested!(3, i32)` expands to `Option<Option<Option<i32>>>`; use recursion with a base case at 0
+- [ ] **Push-down accumulation**: Write a `reverse!` macro that takes a list of expressions and produces them in reverse order as a tuple; e.g., `reverse!(1, 2, 3)` produces `(3, 2, 1)`; use an internal `@acc` rule that accumulates items
+  Hint: `reverse!(1, 2, 3)` should expand to `reverse!(@acc [] 1, 2, 3)` where `@acc` is the internal helper rule and `[]` is the accumulator. Each recursive step moves one item from the input to the accumulator.
+- [ ] **Simple DSL [STRETCH]**: Implement a `calc!` DSL macro that supports basic arithmetic in a readable syntax; e.g., `calc!(add 2 to 3)` returns `5`, `calc!(mul 4 by 3)` returns `12`; use TT munching to parse the keyword-based syntax
 
 ## Notes
 _Lesson not yet started._

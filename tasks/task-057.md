@@ -1,25 +1,26 @@
-# Lesson 057: Cow<T>, Weak references, Pin<T>, PhantomData
+# Lesson 057: Functional patterns - map, filter, fold, method chaining
 
-## Section 12: Smart Pointers & Interior Mutability
+## Section 11: Closures & Functional Patterns
 
 ## Status: pending
+
+> **Note**: This lesson intentionally revisits iterator patterns from lessons 37-38, now combining them with closures for more idiomatic Rust.
 
 ## Added
 - Initial curriculum design
 
 ## Objectives
-- [ ] Use `Cow<'a, T>` (Clone on Write) to write functions that accept both owned and borrowed data, cloning only when mutation is actually needed
-- [ ] Use `Weak<T>` references (via `Rc::downgrade`) to break reference cycles and create non-owning references that don't prevent cleanup
-- [ ] Understand `Pin<T>` at a conceptual level: it prevents a value from being moved in memory, which is essential for self-referential types and async futures
-- [ ] Use `PhantomData<T>` to indicate that a struct logically owns or relates to a type `T` even though it doesn't physically contain one, affecting drop checking and variance
+- [ ] Use `map`, `filter`, `filter_map`, and `fold` on iterators to transform and aggregate data without mutable state
+- [ ] Chain multiple iterator adaptors together to build data processing pipelines that are both readable and zero-cost
+- [ ] Use `flat_map` to flatten nested structures (e.g., `Vec<Vec<T>>`, `Vec<Option<T>>`) into single iterators
+- [ ] Understand how `collect()` uses type inference to produce different collection types (`Vec`, `HashMap`, `String`, `Result<Vec<T>, E>`)
+- [ ] Compare Rust iterator chains with Java Streams and Go's manual loop approach, noting Rust's lazy evaluation and zero-cost abstraction advantage
 
 ## Exercises
-- [ ] **Cow for flexible APIs**: Write a function `normalize_name(name: &str) -> Cow<str>` that returns the input unchanged (borrowed) if it's already trimmed and lowercase, or returns a newly allocated trimmed-and-lowered version (owned) if modification is needed. Benchmark-style test: call it with already-normalized strings and verify no allocation occurs (check `Cow::is_borrowed()`).
-- [ ] **Breaking cycles with Weak**: Revisit the reference cycle from lesson 055. Replace one of the `Rc` links with a `Weak<T>` reference. Use `Weak::upgrade()` to access the data (returns `Option<Rc<T>>`). Verify that `strong_count()` now drops to zero and memory is properly freed when the owning `Rc` values are dropped.
-- [ ] **Pin exploration**: Create a struct that stores a `String` and an index into it. Attempt to move the struct after creation and observe the problem. Then wrap it in `Pin<Box<T>>` and demonstrate that `Pin` prevents moves. Explain in comments why this matters for `async`/`await` (futures are self-referential).
-- [ ] **PhantomData for type safety**: Create a generic `Id<T>` struct (containing just a `u64`) that uses `PhantomData<T>` to tie it to a specific entity type. Define `User` and `Product` types. Show that `Id<User>` and `Id<Product>` are different types at compile time -- you cannot accidentally pass an `Id<User>` where an `Id<Product>` is expected.
+- [ ] **Imperative to functional**: Given a list of `(name: String, age: u32, score: f64)` tuples, rewrite each imperative loop as an iterator chain: (a) filter to people over 18, (b) extract just the names. Verify both versions produce identical results.
+- [ ] **fold for aggregation**: Use `fold` to: (a) sum a list of integers, (b) build a `HashMap<char, usize>` counting character frequencies in a string.
+- [ ] **flat_map and collect magic**: Given a `Vec<String>` of sentences, use `flat_map` to split each into words and collect all unique words into a `HashSet<&str>`. Then use `collect()` on an iterator of `Result<i32, String>` values to get a `Result<Vec<i32>, String>` -- demonstrate how one `Err` short-circuits the whole collection.
+- [ ] **Data pipeline [STRETCH]**: Build a mini data pipeline: read a hardcoded `Vec<&str>` of CSV lines (e.g., `"Alice,85"`, `"Bob,72"`), parse each into a struct, filter by score threshold, sort by name, and format into a result string -- all using iterator chains with no intermediate mutable variables.
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 57a](task-057a.md) and [Lesson 57b](task-057b.md). Use those files instead._
-
 _Lesson not yet started._

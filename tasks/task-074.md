@@ -1,35 +1,63 @@
-# Lesson 074: Unsafe functions, unsafe traits, unsafe impl
+# Lesson 074: Pin, Unpin, and Executor Internals
 
-## Section 16: Unsafe & FFI
+## Section 14: Async Rust
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Split from lesson 073 (v6 pacing review)
+- Pin content from original lesson 061 consolidated here where it has proper async context
 
 ## Objectives
-- [ ] Write `unsafe fn` functions and understand that callers must ensure preconditions (documented as `# Safety` sections)
-- [ ] Implement `unsafe trait`s (like `Send` and `Sync`) and understand when `unsafe impl` is needed
-- [ ] Wrap unsafe code inside safe public APIs -- the "unsafe sandwich" pattern where unsafe internals are hidden behind a safe interface
-- [ ] Document safety invariants using `# Safety` doc comments on unsafe functions and `// SAFETY:` comments on unsafe blocks
-- [ ] Study how `unsafe` is used internally in `std` types like `Vec`, `String`, and `slice`
+- [ ] Understand why `Pin` exists (self-referential futures created by `async fn` with references across `.await` points)
+- [ ] Understand `Pin<&mut T>` vs `Pin<Box<T>>` and when to use each
+- [ ] Know which types are `Unpin` and what it means -- most standard types are `Unpin`; async fn futures are `!Unpin`
+- [ ] Build a minimal single-threaded executor (stretch goal)
+
+## Mental Model for Pin
+
+Think of `Pin<&mut T>` like pinning a document to a specific desk. While pinned, you can read and modify the document's *contents*, but you cannot pick it up and move it to another desk. In Rust terms: you can access `&mut T` methods, but you cannot call `std::mem::swap` or `std::mem::replace` to move the value. This matters because some futures contain self-references (pointers to their own fields) -- moving them would invalidate those internal pointers. `Unpin` is the opt-out: types that are `Unpin` (most types) are safe to move even when pinned, because they contain no self-references.
 
 ## Exercises
-- [ ] **Unsafe function with invariants**: Write an `unsafe fn get_unchecked(slice: &[i32], index: usize) -> i32` that indexes without bounds checking using `*slice.as_ptr().add(index)`; document the `# Safety` requirement that `index < slice.len()`; write tests that use it correctly and add a commented-out test showing UB
-- [ ] **Unsafe trait implementation**: Define a trait `ZeroInitializable` (marked `unsafe trait`) for types that are safe to initialize with all-zero bytes; implement `unsafe impl ZeroInitializable for u32` and `unsafe impl ZeroInitializable for f64`; write a generic function `fn zero_init<T: ZeroInitializable>() -> T` that uses `std::mem::zeroed()`
-  Think about why `String` or `bool` should NOT implement `ZeroInitializable` -- what invariants would all-zero bytes violate?
-- [ ] **Safe wrapper**: Write a `SafeBuffer` struct using a fixed-capacity stack buffer (this uses const generics -- `<const N: usize>` lets the buffer size be a compile-time parameter, similar to arrays `[T; N]`):
+- [ ] **Self-referential struct attempt**: Create a self-referential struct attempt and see why it fails; then explore how `Pin` prevents moving pinned values, understanding why this matters for async futures
+
+  Try creating this struct and observe the compiler error:
   ```rust
-  struct SafeBuffer<const N: usize> {
-      data: [u8; N],
-      len: usize,
+  struct SelfRef {
+      data: String,
+      // This won't work — slice would need to reference data
+      slice: &str,  // What lifetime goes here?
   }
   ```
-  Internally, use `get_unchecked` and `get_unchecked_mut` in unsafe blocks for the implementation. Provide safe public methods: `push(&mut self, byte: u8) -> Result<(), ()>` (bounds-checks before unsafe write), `get(&self, index: usize) -> Option<u8>` (bounds-checks before unsafe read), and `as_slice(&self) -> &[u8]` (returns `&data[..len]`). The point is the "unsafe sandwich" -- unsafe internals wrapped in a safe API that upholds all invariants. Test the safe API thoroughly, including full-buffer and out-of-bounds cases.
+  You'll find that Rust cannot express a struct where one field borrows from another field. This is exactly the problem that `Pin` solves for async futures (which are compiler-generated structs that may reference their own fields across `.await` points).
 
-  > **Note**: Const generics (`<const N: usize>`) are used here as a preview — they're formally covered in lesson 080. The syntax is straightforward: the generic parameter is a compile-time constant value rather than a type.
+  Then explore how `Pin` prevents moving a value after it has been pinned, using `Box::pin()` and `Pin::as_mut()`.
+- [ ] **Simple block_on**: Implement a simple `block_on` function that polls a future in a loop with a basic `Waker` (using `std::task::Wake` or `RawWaker`); test with the futures from lesson 073
 
-- [ ] **Study std source**: Use the Rust docs to look at the source of `Vec::push` and `String::from_utf8_unchecked`; write comments in your code summarizing what unsafe operations they perform and what invariants they maintain
+  > **Important**: This exercise uses `unsafe` code (covered in lesson 081) to construct a `Waker`. The unsafe scaffold is provided for you — **do not modify the unsafe code**. Focus entirely on the `block_on` polling loop logic. You'll understand the unsafe parts when you reach lesson 081.
+
+  **Provided scaffold** -- Use this provided waker implementation. Your job is to write the `block_on` function that uses it.
+
+  ```rust
+  use std::task::{RawWaker, RawWakerVTable, Waker};
+
+  // Minimal no-op waker — wakes by doing nothing (suitable for block_on that polls in a loop)
+  fn dummy_raw_waker() -> RawWaker {
+      fn no_op(_: *const ()) {}
+      fn clone(data: *const ()) -> RawWaker {
+          RawWaker::new(data, &VTABLE)
+      }
+      const VTABLE: RawWakerVTable = RawWakerVTable::new(clone, no_op, no_op, no_op);
+      RawWaker::new(std::ptr::null(), &VTABLE)
+  }
+
+  fn dummy_waker() -> Waker {
+      // SAFETY: RawWaker follows the contract — clone returns a valid RawWaker,
+      // wake/wake_by_ref/drop are no-ops which is safe.
+      unsafe { Waker::from_raw(dummy_raw_waker()) }
+  }
+  ```
+- [ ] **(Stretch) Task queue executor**: Extend `block_on` to support spawning multiple tasks with a simple task queue; poll tasks round-robin until all complete
 
 ## Notes
 _Lesson not yet started._

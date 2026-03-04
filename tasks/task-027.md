@@ -1,4 +1,4 @@
-# Lesson 027: Cargo workspaces, features, profiles
+# Lesson 027: Modules - mod, file structure, visibility (pub)
 
 ## Section 6: Project Organization
 
@@ -8,33 +8,41 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Create a Cargo workspace with a root `Cargo.toml` containing `[workspace] members = [...]` and multiple member packages that share a `target/` directory and `Cargo.lock`
-- [ ] Understand how workspace members depend on each other using `path` dependencies in their individual `Cargo.toml` files
-- [ ] Define and use Cargo features with `[features]` in `Cargo.toml` for conditional compilation using `#[cfg(feature = "...")]`, understanding that features are additive
-- [ ] Understand build profiles (`dev`, `release`, `test`, `bench`) and customize settings like `opt-level`, `debug`, `lto`, and `overflow-checks` in `[profile.*]`
-- [ ] Compare Cargo workspaces with Java multi-module projects (Maven/Gradle) and Go workspaces (`go.work`), noting shared lock files and unified builds
+- [ ] Declare inline modules with `mod name { ... }` and understand the module tree starting from the crate root (`main.rs` or `lib.rs`)
+- [ ] Organize modules into files using both the `mod.rs` convention (`foo/mod.rs`) and the newer file-based convention (`foo.rs` + `foo/` directory), knowing both are valid
+- [ ] Control visibility with `pub`, `pub(crate)`, `pub(super)`, and `pub(in path)`, understanding that everything is private by default in Rust (unlike Go's capitalization rule)
+- [ ] Navigate the module tree using `crate::`, `super::`, and `self::` path prefixes
+- [ ] Understand that structs have per-field visibility -- struct fields are private by default even if the struct is `pub`, unlike Go where the struct and field visibility are independent
 
 ## Exercises
-- [ ] **Exercise 1 - Workspace setup**: Create a workspace with three members: `shared` (library crate with shared types and logic), `cli` (binary crate depending on `shared`), and `server` (binary crate depending on `shared`). Add a shared struct and function in `shared`, use them from both `cli` and `server`. Run `cargo build` from the workspace root and verify all members compile together.
+- [ ] **Exercise 1 - Inline to file modules**: Start with a single `main.rs` containing two inline modules `mod math { pub fn add(...) }` and `mod strings { pub fn capitalize(...) }`. Refactor each module into its own file (`src/math.rs`, `src/strings.rs`) and verify everything compiles identically. Compare this with Go's package-per-directory model and Java's class-per-file convention.
+- [ ] **Exercise 2 - Nested module hierarchy**: Create a library crate with the structure: `src/lib.rs` declares `mod shapes;`, `src/shapes/mod.rs` declares `pub mod circle;` and `pub mod rectangle;`, each sub-module defines a struct and methods. Use `crate::shapes::circle::Circle` from `lib.rs`. Practice both `super::` and `crate::` paths to reference items across the hierarchy.
+- [ ] **Exercise 3 - Visibility controls**: In the shapes library, make `Circle`'s `radius` field private and provide a `pub fn new(radius: f64) -> Circle` constructor and a `pub fn radius(&self) -> f64` getter. Make a helper function `pub(crate)` so it is available within the crate but not to external users. Try accessing private fields from outside the module and observe the compiler error. Use `pub(super)` for a utility function only the parent module should see.
+- [ ] **Exercise 4 - Module organization project**: Create a small `calculator` project with modules: `operations` (with sub-modules `arithmetic` and `comparison`), `input` (parsing user input), and `display` (formatting output). Wire them together in `main.rs`. Practice the pattern of re-exporting key items from parent modules (e.g., `pub use arithmetic::add;` in `operations/mod.rs`) to create a clean public API. (preview of lesson 26 — re-exports are covered there in detail)
 
-  > **Starter skeleton**:
-  > ```toml
-  > # Root Cargo.toml
-  > [workspace]
-  > members = ["shared", "cli", "server"]
-  >
-  > # cli/Cargo.toml (similar for server/)
-  > [package]
-  > name = "cli"
-  > version = "0.1.0"
-  > edition = "2021"
-  >
-  > [dependencies]
-  > shared = { path = "../shared" }
-  > ```
-- [ ] **Exercise 2 - Feature flags**: In the `shared` library, add a feature called `verbose` that enables extra debug output. Use `#[cfg(feature = "verbose")]` to conditionally compile a `debug_info()` function. In `cli/Cargo.toml`, depend on `shared` with `features = ["verbose"]` while `server` does not enable it. Verify that `cargo build -p cli` includes the verbose code and `cargo build -p server` does not. Add a `default` feature and practice `default-features = false`.
-- [ ] **Exercise 3 - Build profiles** [STRETCH]: In the workspace `Cargo.toml`, configure `[profile.dev]` with `opt-level = 1` and `[profile.release]` with `lto = true`. Build the `cli` crate in both debug and release mode (`cargo build -p cli` vs `cargo build -p cli --release`). Compare the binary sizes. Add a custom profile `[profile.profiling]` that inherits from `release` but keeps `debug = true` for profiling with debug symbols.
-- [ ] **Exercise 4 - Workspace-level commands**: Practice running workspace-wide commands: `cargo test --workspace` (runs tests in all members), `cargo clippy --workspace`, `cargo check --workspace`. Then run commands for individual members: `cargo test -p shared`, `cargo run -p cli`. Understand how `Cargo.lock` is shared across the workspace and why this matters for reproducible builds.
+## Skeleton Directory Structures
+
+> **Exercise 2** directory layout (create before coding):
+> ```
+> src/
+>   lib.rs          (declares mod shapes;)
+>   shapes/
+>     mod.rs        (declares pub mod circle; pub mod rectangle;)
+>     circle.rs
+>     rectangle.rs
+> ```
+
+> **Exercise 4** directory layout (create before coding):
+> ```
+> src/
+>   main.rs         (uses all modules)
+>   operations/
+>     mod.rs        (declares pub mod arithmetic; pub mod comparison;)
+>     arithmetic.rs
+>     comparison.rs
+>   input.rs
+>   display.rs
+> ```
 
 ## Notes
 _Lesson not yet started._

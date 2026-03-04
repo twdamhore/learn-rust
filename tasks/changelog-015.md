@@ -19,7 +19,7 @@
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
 - **Pacing**: Heavy for 1-hour lesson
 - **Issues found**:
-  - Exercise 2 has a sub-problem referencing `&mut self` and `&self` methods on structs -- but structs/impl blocks not taught until lessons 019-020
+  - Exercise 2 has a sub-problem referencing `&mut self` and `&self` methods on structs -- but structs/impl blocks not taught until lessons 021-020
   - Effectively 10 coding tasks across 4 exercises (Exercise 2 has 3 sub-problems, Exercise 3 has 3 fix approaches)
 - **Recommendations**:
   - Replace the struct method sub-problem in Exercise 2 with a standalone function equivalent

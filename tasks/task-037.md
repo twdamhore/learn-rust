@@ -1,4 +1,4 @@
-# Lesson 037: Iterators - Iterator trait, adaptors, collect, chaining
+# Lesson 037: String in depth - UTF-8, indexing, manipulation
 
 ## Section 8: Collections & Iterators
 
@@ -8,32 +8,18 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Understand the `Iterator` trait: the `next()` method returns `Option<Self::Item>`, and `None` signals the end
-- [ ] Use **core** iterator adaptors (master these): `map`, `filter`, `enumerate`, `collect`
-- [ ] Be aware of **reference** adaptors (know they exist, look them up when needed): `zip`, `take`, `skip`, `chain`, `flat_map`, `peekable`
-- [ ] Use `collect()` to build various collections (`Vec`, `HashMap`, `String`, `HashSet`) from an iterator, with turbofish syntax where needed
-- [ ] Chain multiple adaptors together to build data processing pipelines in a single expression
-- [ ] Understand iterator laziness: adaptors don't execute until a consuming method (`collect`, `for_each`, `sum`, `count`, `any`, `all`) is called
-
-> **Core adaptors** (master these): `map`, `filter`, `enumerate`, `collect`. The rest are reference -- know they exist, look them up when needed.
+- [ ] Understand `String`'s internal structure as a `Vec<u8>` wrapper that guarantees valid UTF-8
+- [ ] Work with UTF-8 encoding: understand why indexing by byte position can panic on multi-byte characters, and why `String` does not implement `Index<usize>`
+- [ ] Iterate over a `String` by `.chars()` (Unicode scalar values) vs `.bytes()` (raw bytes) and understand when to use each
+- [ ] Safely slice strings using byte ranges while ensuring you don't split a multi-byte character (and what happens if you do)
+- [ ] Use common string methods: `contains`, `replace`, `split`, `trim`, `starts_with`, `to_uppercase`, and `format!` macro for building strings
 
 ## Exercises
-- [ ] **Exercise 1 - Transform and collect**: Given `vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`, use `iter().filter().map().collect()` to produce a `Vec<i32>` of the squares of even numbers. Verify the result is `[4, 16, 36, 64, 100]`
-- [ ] **Exercise 2 - Chaining adaptors**: Given a `Vec<String>` of lines from a hypothetical file, write a pipeline that: (1) skips the first line (header), (2) filters out empty lines, (3) trims each line, (4) enumerates with line numbers starting at 2, (5) collects into `Vec<(usize, &str)>`. Test with sample input
-
-Note: The `|x| ...` syntax is Rust's closure syntax, similar to Java's `x -> ...` lambdas or Go's `func(x) { ... }` function literals. Full coverage comes in lesson 051.
-
-```rust
-// Starter code — complete steps 3-5
-let result: Vec<(usize, &str)> = data.iter()
-    .skip(1)                          // Step 1: skip header
-    .filter(|line| !line.is_empty())  // Step 2: filter empty lines
-    // TODO: Step 3 - trim each line
-    // TODO: Step 4 - enumerate with line numbers starting at 2
-    // TODO: Step 5 - collect into Vec<(usize, &str)>
-```
-- [ ] **Exercise 3 - Zip and enumerate**: Use `zip` to combine two vectors `names: Vec<&str>` and `scores: Vec<u32>` into a `Vec<(&str, u32)>`. Then use `enumerate` on the result to add rankings. Also use `zip` to build a `HashMap<String, u32>` from the two vectors using `.collect()`
-- [ ] **Exercise 4 - Lazy evaluation proof**: Write a custom function `fn noisy_double(x: &i32) -> i32` that prints a message and returns `x * 2`. Use it in a `.map()` chain followed by `.take(3)`. Demonstrate that only 3 calls to `noisy_double` happen (not N), proving laziness. Compare with an imperative loop that processes all elements
+- [ ] **Exercise 1 - Chars vs bytes**: Create a string containing English, emoji, and CJK characters (e.g., `"Hello world"`). Print its `.len()` (byte count) and `.chars().count()` (character count). Iterate with `.chars()` and `.bytes()` and print each, observing how multi-byte characters appear
+- [ ] **Exercise 2 - Safe slicing**: Write a function `fn safe_substring(s: &str, start: usize, end: usize) -> Option<&str>` that returns a slice only if both `start` and `end` fall on character boundaries (use `.is_char_boundary()`). Test with ASCII strings and multi-byte strings
+- [ ] **Exercise 3 - String building**: Concatenate strings three ways: (1) using `+` operator (note it takes ownership of the left side), (2) using `format!()`, (3) using `String::new()` + `push_str()`. Build the same sentence with each approach and discuss which is clearest and most efficient
+- [ ] **Exercise 4 - CSV line parser**: Write `fn parse_csv_line(line: &str) -> Vec<&str>` that splits a line by commas, trims whitespace from each field, and returns the fields. Handle edge cases: empty fields, trailing commas, leading/trailing whitespace. Write tests for each case
+  > **Hint**: If you encounter lifetime errors when returning `&str` slices from parsed lines, remember that the slice borrows from the input string. Consider whether your function should return owned `String` values or require the caller to keep the source string alive.
 
 ## Notes
 _Lesson not yet started._

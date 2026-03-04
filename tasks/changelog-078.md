@@ -1,103 +1,72 @@
-# Changelog - Lesson 078: Newtype pattern, type aliases, zero-sized types
+# Changelog - Lesson 078: Setup and Derive Macros
+## Section 15: Macros
 
-## Section 17: Advanced Type System
+### v1 - Created from split (2026-03-03)
+- Split from original lesson 078 which was rated OVERLOADED (~2-3 hrs)
+- **Reason for split**: Setting up a proc macro crate for the first time (separate crate, Cargo.toml with proc-macro = true, proc_macro2/quote/syn dependencies) is itself time-consuming. The original lesson had 4 exercises each requiring multi-crate setup, which was untenable in any single session. Most overloaded lesson in the 061-080 range
+- **Scope**: Proc macro vs declarative macro, proc macro crate setup, HelloMacro derive, FieldNames derive, TokenStream fundamentals
+- **Estimated time**: ~1-1.5 hours
 
-### v1 - Initial creation
-- Lesson added to curriculum
-
-### v2 - Review audit (2026-03-03)
-- Reviewed task file against CLAUDE.md curriculum
-- **Result**: Title, section assignment, and topic all align with curriculum
-- **Status**: pending (no content changes needed)
-
-### v3 - Concrete objectives and exercises (2026-03-03)
-- Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: Newtype for type safety, orphan rule workaround, type aliases vs newtypes, ZSTs, PhantomData for type relationships
-- **Exercises added**: Units of measure newtypes, Display/Deref on newtypes, type aliases for complex types, ZSTs and PhantomData tagged types
-
-### v4 - Comprehensive pacing and content review (2026-03-03)
-- Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
-- **Pacing**: Moderate for 1-hour lesson
-- **Issues found**: None
-- **Recommendations**: None - well-balanced with distinct, self-contained exercises
-
-### v5 - Cross-curriculum review (2026-03-03)
-- Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
-- **Pacing**: Moderate (~1 hr) for 1-2 hour target
-- **Changes noted**: No issues. Exercises self-contained and distinct. Newtype pattern resonates with Java value objects. PhantomData introduced concretely.
-- **Why**: Well-balanced with practical exercises.
-- **v4 recommendations status**: N/A. Gradual progression: Good relief after heavy lessons.
-
-### v6 - Pacing review and split assessment (2026-03-03)
-- Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
-- **Estimated time**: ~1 hour
-- **Pacing verdict**: Moderate - under 2hr threshold
-- **Split needed**: No
-- **Key issues**: None
-- **Action taken**: No changes needed. Welcome relief after heavy content. Newtype resonates with Java value objects
-
-### v7 — Relaxed Pacing Review (2026-03-03)
-- **Threshold change**: Lessons now OK at 1-2 hours; only split if >2hrs
-- **Pacing**: Moderate (~1 hr)
-- **Status**: No changes needed
-- Welcome relief in a heavy section
-
-### v8 - Full curriculum pacing review (2026-03-03)
-- Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
-- **Estimated time**: ~55-70 min (Moderate)
+### v2 - Full curriculum pacing review (2026-03-03)
+- Reviewed task file and changelog for pacing, progression, and 1-2hr achievability
+- **Estimated time**: ~70-90 min (Moderate-Heavy)
 - **Needs split**: No
-- **Progression**: Best-balanced lesson in 063-080 range. Welcome relief. Newtype resonates with Java value objects.
-- **Issues**: None
-- **Changes made**: None
+- **Issues**: First-time proc macro crate setup can take 20-30 min. Provide step-by-step setup checklist.
+- **Changes made**: None (scaffolding deferred to lesson start)
 
 ### v9 - Full curriculum review — pacing, progression, and content audit (2026-03-03)
 - Reviewed all 100 tasks for realistic human pacing (1-2 hr target, split if >2 hrs)
-- **Estimated time**: ~55-70 min
-- **Pacing**: Good
+- **Estimated time**: ~70-90 min
+- **Pacing**: Good to Heavy
 - **Needs split**: No
-- **Issues**: None. Best-balanced lesson in 063-080 range. Newtype resonates with Java value objects. PhantomData introduced with practical example. Excellent pacing relief.
+- **Issues**: First-time proc macro crate setup (separate crate, Cargo.toml with proc-macro=true, proc_macro2/syn/quote dependencies, workspace config) can take 20-30 min. Step-by-step setup checklist essential. Two exercises (HelloMacro, FieldNames) is right scope.
 - **Changes made**: Changelog updated only
 
-## v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
+### v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
 - **Reviewer**: Full curriculum audit (lessons 001-100 reviewed against CLAUDE.md)
-- **Alignment**: Exact match with CLAUDE.md
-- **Time estimate**: 55-70 minutes (Moderate)
+- **Alignment**: Correct (proc macro crate setup + two derive exercises)
+- **Time estimate**: 70-90 minutes (Heavy)
 - **Needs splitting**: No
-- **Pacing context**: Best-paced lesson in 063-080 range. Welcome relief after heavy 077
+- **Pacing context**: First-time proc macro crate setup can take 20-30 min; step-by-step checklist essential
 - **Unresolved from prior reviews**: None
-- **New findings**: None. Exercises self-contained and well-balanced
-- **Recommendation**: No action needed
+- **New findings**: Minor: setup checklist for proc macro crate (separate crate, Cargo.toml with proc-macro=true, workspace config) should be baked into task file before teaching
+- **Recommendation**: Add step-by-step proc macro crate setup checklist to task file at lesson start
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
-- **Estimated time**: 55-70min (Moderate)
+- **Estimated time**: 80-90min (Heavy)
 - **Needs split**: No
-- **Progression**: Best-paced lesson in range. Model lesson.
+- **Progression**: First-time proc macro crate setup is the bottleneck
 - **Changelog reconciliation**: All prior findings consistent
-- **Genuinely unresolved**: None
-- **Recommendation**: No action needed
+- **Genuinely unresolved**: Step-by-step proc macro crate setup checklist is essential and missing from task file
+- **Recommendation**: Add proc macro crate setup checklist (separate crate, Cargo.toml with proc-macro=true, proc_macro2/syn/quote deps, workspace config) to task file before lesson start
+
+### v11-fix - Added proc macro crate setup checklist (2026-03-04)
+- Added 7-step setup checklist for proc macro crate workspace
+- **Why**: Proc macro crate configuration is error-prone; step-by-step prevents 30+ min of trial and error
+- **Resolves**: Genuinely unresolved item from v11
 
 ### v12 - Full curriculum pacing and progression review (2026-03-04)
 - Reviewed all active tasks for realistic human pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 55-70min
-- **Pacing**: Good
+- **Estimated time**: 70-90min
+- **Pacing**: Heavy
 - **Issues**: None
 - **Recommendations**: None
 - **Changes made**: Changelog updated only
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 75-90min
-- **Pacing**: Good
+- **Estimated time**: 70-90min
+- **Pacing**: Good (borderline Heavy)
 - **Issues**: None
 - **Changes made**: Changelog updated only
 
 ### v14 - Full curriculum review (2026-03-04)
 - Reviewed task file for pacing, prerequisites, progression, and content quality
-- **Estimated time**: 65-80min
-- **Pacing**: Moderate
-- **Issues**: None (best-paced in range)
+- **Estimated time**: 75-90min
+- **Pacing**: Heavy
+- **Issues**: None
 - **Changes made**: Changelog updated only
 
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. **Time**: 65-80min. **Pacing**: Moderate. **Issues**: None — model lesson for pacing. **Changes**: Changelog only.
+- Reviewed. **Time**: 75-90min. **Pacing**: Heavy. **Issues**: None — setup checklist and 2-exercise scope well-calibrated. **Changes**: Changelog only.

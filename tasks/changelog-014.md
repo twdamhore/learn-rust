@@ -19,7 +19,7 @@
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
 - **Pacing**: Moderate for 1-hour lesson
 - **Issues found**:
-  - Exercise 1 previews `&str` preference pattern formally taught in lesson 017
+  - Exercise 1 previews `&str` preference pattern formally taught in lesson 018
 - **Recommendations**: None - preview is fine and practical
 
 ### v5 - Cross-curriculum review (2026-03-03)

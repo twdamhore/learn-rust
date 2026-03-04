@@ -1,24 +1,58 @@
-# Lesson 033: Testing with ownership, Result, and custom types
+# Lesson 033: Custom error types, From trait, error conversion
 
 ## Section 7: Error Handling
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design [NEW - bridging lesson]
+- Initial curriculum design
 
 ## Objectives
-- [ ] Write tests for functions that take ownership, borrow, or return owned data, understanding how test code interacts with the ownership system
-- [ ] Test functions that return `Result<T, E>`, using both `assert!(result.is_ok())` and the `?` operator directly in test functions that return `Result`
-- [ ] Test custom error types by verifying specific error variants, error messages, and error source chains
-- [ ] Use `#[should_panic]` and `#[should_panic(expected = "message")]` to test code that is supposed to panic
-- [ ] Organize test modules with helper/fixture functions that create test data, avoiding repetition across tests
+- [ ] Define custom error enums with multiple variants, including variants that carry data (e.g., `InvalidInput(String)`, `IoError(std::io::Error)`)
+- [ ] Implement `std::fmt::Display` for custom error types to produce human-readable error messages
+- [ ] Implement `std::error::Error` for custom error types, including the `source()` method for error chaining. The return type `Option<&(dyn Error + 'static)>` means 'an optional reference to any error type.' The `dyn Error` and `'static` syntax will be fully explained in later lessons (043 and 046) -- for now, follow the pattern.
+- [ ] Implement `From<OtherError>` for your custom error to enable automatic conversion with `?`
+- [ ] Design an error hierarchy for a small application, deciding which errors wrap others
+
+---
+
+### Prerequisite: Implementing a Trait
+
+This lesson requires implementing traits for your types. Here's the template:
+
+```rust
+use std::fmt;
+
+// Define a trait (or use one from std)
+trait MyTrait {
+    fn my_method(&self) -> String;
+}
+
+// Implement it for your type
+struct MyType { /* fields */ }
+
+impl MyTrait for MyType {
+    fn my_method(&self) -> String {
+        // implementation
+        String::from("hello")
+    }
+}
+
+// Example: implementing Display (from std::fmt)
+impl fmt::Display for MyType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "MyType")
+    }
+}
+```
+
+---
 
 ## Exercises
-- [ ] **Exercise 1 - Testing owned data**: Create a `UserProfile` struct with `name: String` and `email: String`. Write functions `create_profile()`, `update_email()`, and `merge_profiles()`. Write tests that demonstrate Rust enforces ownership at compile time: write a test showing data is correctly accessible after a move to the new owner. In a comment, note that trying to use the original variable after a move produces a compile error (the compiler, not the test runner, enforces this)
-- [ ] **Exercise 2 - Testing Result paths**: Write a function `fn parse_age(input: &str) -> Result<u8, AgeError>` with custom error variants for empty input, non-numeric input, and out-of-range values (0 or >150). Write tests covering every Ok and Err path, using `assert_eq!` on error variants and test functions that return `Result<(), AgeError>`
-- [ ] **Exercise 3 - Testing panics**: Write `fn divide_or_panic(a: i32, b: i32) -> i32` that panics on division by zero. Write tests using `#[should_panic]` and `#[should_panic(expected = "division by zero")]`. Also test that non-panic inputs work correctly
-- [ ] **Exercise 4 - Test fixtures and helpers**: Create a test module with helper functions: `fn sample_config() -> Config`, `fn sample_config_with_errors() -> Config`, `fn assert_error_contains(result: Result<Config, ConfigError>, expected_msg: &str)`. Use these helpers across 4+ tests to verify config parsing, demonstrating DRY test organization. (Tip: You can reuse the `Config`/`ConfigError` types from lesson 031 Exercise 4 if you completed it, for cross-lesson continuity.)
+- [ ] **Exercise 1 - Custom error enum**: Create an `AppError` enum with variants `NotFound { item: String }`, `ParseFailure(std::num::ParseIntError)`, and `InvalidConfig(String)`. Implement `Display` to give each variant a readable message
+- [ ] **Exercise 2 - Error trait implementation**: Implement `std::error::Error` for `AppError`. For the `ParseFailure` variant, return the inner error from `source()`. Verify error chaining works by printing the source
+- [ ] **Exercise 3 - From trait for conversion**: Implement `From<std::io::Error>` and `From<std::num::ParseIntError>` for `AppError`. Write a function that reads a file and parses its first line as an integer, using `?` to automatically convert both error types
+- [ ] **Exercise 4 [STRETCH] - Config parser errors**: Build an error type `ConfigError` for a simple key=value config file parser. It should handle: missing file, malformed line (no `=`), missing required key, and invalid value type. Write the parser and demonstrate each error case
 
 ## Notes
 _Lesson not yet started._

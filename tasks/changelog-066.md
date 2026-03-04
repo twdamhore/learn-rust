@@ -1,6 +1,6 @@
-# Changelog - Lesson 066: Streams, async iterators, async channels
+# Changelog - Lesson 066: Send and Sync traits, thread safety guarantees
 
-## Section 14: Async Rust
+## Section 13: Concurrency
 
 ### v1 - Initial creation
 - Lesson added to curriculum
@@ -12,96 +12,92 @@
 
 ### v3 - Concrete objectives and exercises (2026-03-03)
 - Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: Stream trait as async Iterator, tokio-stream utilities, mpsc channels for async producer-consumer, backpressure concepts
-- **Exercises added**: Channel-to-stream conversion, stream processing pipeline with filter/map/take, rate-limited consumer with backpressure, multi-producer async pipeline with statistics
+- **Objectives added**: Send trait for cross-thread transfer, Sync trait for shared references, which std types are/aren't Send+Sync, using Send+Sync bounds in generics, auto-trait derivation
+- **Exercises added**: Rc !Send compiler error vs Arc, Cell !Sync error vs AtomicI32, compile-time assertions on custom structs with various fields, thread-safe trait objects with Send+Sync bounds
 
 ### v4 - Comprehensive pacing and content review (2026-03-03)
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
-- **Pacing**: Heavy for 1-hour lesson
-- **Issues found**:
-  - Streams are conceptually dense with tokio-stream as additional dependency
-  - Exercise 4 (multi-producer pipeline with statistics) is essentially a mini-project
-- **Recommendations**:
-  - Simplify Exercise 4 or make it a stretch goal
+- **Pacing**: Moderate for 1-hour lesson
+- **Issues found**: None
+- **Recommendations**: None - well-scoped, natural progression from lesson 065
 
 ### v5 - Cross-curriculum review (2026-03-03)
 - Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
-- **Pacing**: Heavy (~1.5-2 hr) for 1-2 hour target
-- **Changes noted**: tokio-stream adds dependency complexity. Exercise 4 (3 producers, 1 consumer, statistics) is a mini-project. Backpressure needs experimentation time
-- **Why**: Additional crate dependency + mini-project exercise
-- **v4 recommendations status**: Not yet applied -- v4 recommended simplifying Exercise 4 or making it stretch. Gradual progression: Heavy continuation
+- **Pacing**: Moderate (~1 hr) for 1-2 hour target
+- **Changes noted**: No issues. Exercises focus on observing compiler errors and understanding -- short and focused
+- **Why**: Novel concepts but low implementation burden
+- **v4 recommendations status**: N/A. Gradual progression: Well-paced; appropriate
 
 ### v6 - Pacing review and split assessment (2026-03-03)
 - Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
-- **Estimated time**: ~1.5-2 hours
-- **Pacing verdict**: Heavy - borderline 2hr threshold
+- **Estimated time**: ~1 hour
+- **Pacing verdict**: Moderate - under 2hr threshold
 - **Split needed**: No
-- **Key issues**:
-  - Exercise 4 (3 producers, merge, statistics) is a mini-project
-  - Backpressure needs experimentation time
-- **Action taken**: No split required. Previous v4 recommendation to simplify Exercise 4 or make it stretch should be applied when lesson is started
+- **Key issues**: None
+- **Action taken**: No changes needed. Low implementation burden -- mostly observing compiler errors
 
 ### v7 — Relaxed Pacing Review (2026-03-03)
 - **Threshold change**: Lessons now OK at 1-2 hours; only split if >2hrs
-- **Pacing**: Heavy (~1.5-2 hr borderline)
-- **Status**: No changes needed under relaxed threshold
-- Exercise 4 (3-producer pipeline) still flagged as heavy but within the 2hr limit
+- **Pacing**: Moderate (~1 hr)
+- **Status**: No changes needed
+- Low implementation burden remains well under relaxed threshold
 
 ### v8 - Full curriculum pacing review (2026-03-03)
 - Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
-- **Estimated time**: ~90-110 min (Heavy, borderline 2hr)
+- **Estimated time**: ~60 min (Moderate)
 - **Needs split**: No
-- **Issues**: Exercise 4 (3-producer pipeline) should be marked [STRETCH] (flagged since v4, unresolved).
-- **Changes made**: None (content fix deferred to lesson start)
+- **Progression**: Conceptual lesson with low implementation burden. Good relief before heavy 062.
+- **Issues**: None
+- **Changes made**: None
 
 ### v9 - Full curriculum review — pacing, progression, and content audit (2026-03-03)
 - Reviewed all 100 tasks for realistic human pacing (1-2 hr target, split if >2 hrs)
-- **Estimated time**: ~90-110 min
-- **Pacing**: Heavy
+- **Estimated time**: ~55-65 min
+- **Pacing**: Good
 - **Needs split**: No
-- **Issues**: Exercise 4 (3 producers, 1 consumer, merge, statistics) is a mini-project. Should be marked [STRETCH]. Unresolved since v4.
+- **Issues**: None
 - **Changes made**: Changelog updated only
 
 ## v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
 - **Reviewer**: Full curriculum audit (lessons 001-100 reviewed against CLAUDE.md)
 - **Alignment**: Exact match
-- **Time estimate**: 90-110 minutes (Heavy)
+- **Time estimate**: 55-65 minutes (Moderate)
 - **Needs splitting**: No
-- **Pacing context**: Streams and async channels are conceptually dense. tokio-stream adds dependency complexity. Borderline but under 2hr threshold.
-- **Unresolved from prior reviews**: Exercise 4 (3 producers, merge, statistics) should be [STRETCH]. Flagged 6 consecutive times since v4, still unresolved.
+- **Pacing context**: Good conceptual relief before heavy lesson 067. Low implementation burden -- mostly observing compiler errors.
+- **Unresolved from prior reviews**: None
 - **New findings**: None
-- **Recommendation**: Mark Exercise 4 as [STRETCH] when lesson is started -- this is the most-flagged unresolved item in this range
+- **Recommendation**: No changes needed
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
-- **Estimated time**: 90-100min (Heavy)
+- **Estimated time**: ~60min (Moderate)
 - **Needs split**: No
-- **Progression**: Streams and async channels are conceptually dense but cohesive
-- **Changelog reconciliation**: "Exercise 4 should be [STRETCH]" flagged 6 consecutive times since v4 — already in task file. Resolved.
+- **Progression**: Good breather before heavy 062
+- **Changelog reconciliation**: All prior findings consistent
 - **Genuinely unresolved**: None
 - **Recommendation**: No action needed
 
 ### v12 - Full curriculum pacing and progression review (2026-03-04)
 - Reviewed all active tasks for realistic human pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 90-100min
-- **Pacing**: Heavy
+- **Estimated time**: 55-65min
+- **Pacing**: Good
 - **Issues**: None
 - **Recommendations**: None
 - **Changes made**: Changelog updated only
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 65-80min
+- **Estimated time**: 55-70min
 - **Pacing**: Good
-- **Issues**: tokio-stream crate introduced without prior mention — add brief setup note for Cargo.toml dependency
+- **Issues**: Exercise 2 uses AtomicI32 (lesson 62) as fix for Cell<i32> that is !Sync — add preview note for the atomic type
 - **Changes made**: Changelog updated only
 
 ### v14 - Full curriculum review (2026-03-04)
 - Reviewed task file for pacing, prerequisites, progression, and content quality
-- **Estimated time**: 65-80min
-- **Pacing**: Moderate-Heavy
-- **Issues**: Added tokio-stream dependency note at top of Exercises section
-- **Changes made**: Task file updated — added setup instruction for `cargo add tokio-stream --features sync`
+- **Estimated time**: 55-70min
+- **Pacing**: Moderate
+- **Issues**: Added AtomicI32 preview note to Exercise 2 (forward reference to lesson 067)
+- **Changes made**: Task file updated — added note to Exercise 2 explaining AtomicI32 preview and Arc<Mutex<i32>> alternative
 
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. **Time**: 70-85min. **Pacing**: Medium-Heavy. **Changes**: Added stream creation hint (`tokio_stream::iter(1..=100)`) to Exercise 2. **Why**: Learner has no prior stream creation experience and needs the API hint to avoid getting stuck.
+- Reviewed. **Time**: 55-70min. **Pacing**: Moderate. **Issues**: None — good conceptual breather. **Changes**: Changelog only.

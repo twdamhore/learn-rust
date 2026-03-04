@@ -1,4 +1,4 @@
-# Lesson 024: Advanced patterns - guards, bindings, nested patterns, @
+# Lesson 024: Enums - basic, with data, Option<T>
 
 ## Section 5: Structuring Data
 
@@ -8,18 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Use match guards (`if` conditions in match arms) to add extra conditions beyond what the pattern alone can express
-- [ ] Use `@` bindings to capture a value while simultaneously testing it against a pattern (e.g., `id @ 1..=5 => ...`)
-- [ ] Match on nested enums and structs, destructuring multiple levels deep in a single pattern
-- [ ] Use or-patterns (`|`) to handle multiple patterns in a single match arm
-- [ ] Understand pattern matching on references and the difference between `&val` pattern and matching on `ref val` (Note: `ref` in patterns is largely superseded by Rust 2018+ match ergonomics and is included here for reading older code and documentation)
+- [ ] Define basic C-style enums with named variants and understand they can be cast to integers with `as`
+- [ ] Create enums with data attached to variants (tuple variants like `V4(u8,u8,u8,u8)` and struct variants like `Move { x: i32, y: i32 }`)
+- [ ] Understand `Option<T>` -- Rust's replacement for null -- and why the language has no null values, comparing with Java's `Optional<T>` and Go's zero-value approach
+- [ ] Use core `Option` methods: `unwrap()`, `expect()`, `unwrap_or()`, `unwrap_or_else()`, `is_some()`, `is_none()`, `map()`, and `and_then()`
+- [ ] Compare Rust enums (algebraic data types / tagged unions) with Java enums (fixed set of constants) and Go's `iota` pattern (untyped integer constants), noting that Rust enums are far more powerful
 
 ## Exercises
-- [ ] **Exercise 1 - Match guards for ranges**: Create a `grade_letter(score: u32) -> &'static str` function that uses match with range patterns and guards: `90..=100 => "A"`, `80..=89 => "B"`, etc. Note: `90..=100` is a **range pattern** (not a guard). A **match guard** uses `if`: `n if n > 0 => ...`. In this exercise you'll use both: range patterns for score ranges, and a match guard like `n if n <= 100 => ...` on the catch-all arm to distinguish invalid scores. Also write a function that matches a tuple `(x, y)` with guards like `(x, y) if x == y => "on diagonal"`.
-- [ ] **Exercise 2 - @ bindings**: Write a function `categorize_age(age: u32) -> String` that uses `@` bindings: `child @ 0..=12 => format!("{child} is a child")`, `teen @ 13..=19 => ...`, etc. Then write a function matching an `Option<i32>` with `Some(n @ 1..=100) => ...` to both capture and range-check in one step.
-- [ ] **Exercise 3 - Nested patterns**: Define a `Config` enum: `Config::Database(DbConfig)` where `DbConfig` has nested `ConnectionType::Tcp { host: String, port: u16 }` or `ConnectionType::Socket { path: String }`. Write a match that destructures through all layers in one arm: `Config::Database(DbConfig { conn: ConnectionType::Tcp { host, port }, .. }) => ...`. Use or-patterns to combine arms where appropriate.
-- [ ] **Exercise 4 - Expression evaluator** [STRETCH]: Define an `Expr` enum with `Num(f64)`, `Add(Box<Expr>, Box<Expr>)`, `Mul(Box<Expr>, Box<Expr>)`, and `Neg(Box<Expr>)`. Write `fn eval(expr: &Expr) -> f64` using recursive pattern matching. Add a `fn simplify(expr: Expr) -> Expr` that uses patterns with guards to apply rules like "multiply by 0 gives 0" and "add 0 gives the other operand". This exercise brings together nested patterns, guards, `@` bindings, and recursive matching.
-  > **Preview**: `Box<T>` is explained in lesson 54. Here it enables recursive types — the compiler needs a known size, and `Box` provides that by storing data on the heap.
+- [ ] **Exercise 1 - IP address enum**: Define an `IpAddr` enum with `V4(u8, u8, u8, u8)` and `V6(String)` variants. Write a function `display_addr(addr: &IpAddr) -> String` that formats each variant appropriately. Create several addresses and display them. Note how this differs from the approach in Java (separate classes or subclasses) and Go (interface with two struct implementations).
+- [ ] **Exercise 2 - Message enum**: Create a `Message` enum with four variants: `Quit` (no data), `Echo(String)`, `Move { x: i32, y: i32 }`, and `ChangeColor(u8, u8, u8)`. Write a function `process_message(msg: Message)` that prints what each message does. This demonstrates mixing unit, tuple, and struct variants in one enum.
+- [ ] **Exercise 3 - Option fundamentals**: Write a function `find_first_even(numbers: &[i32]) -> Option<i32>` that returns the first even number or `None`. Call it with various inputs and use `unwrap_or(0)`, `is_some()`, and `map(|n| n * 2)` on the result. Rewrite a Java-style null check pattern (`if (result != null) { use(result); }`) using `Option` and `if let`. Use `if let Some(value) = option { ... }` to extract the value -- this is Rust's equivalent of Java's `if (obj != null)`. Full coverage of `if let` comes in lesson 025.
+- [ ] **Exercise 4 - Option chaining** [STRETCH]: Write a function `get_username_length(db: &HashMap<u32, String>, id: u32) -> Option<usize>` that looks up a user by ID and returns the length of their name using `map()`. Then write `get_first_char(db: &HashMap<u32, String>, id: u32) -> Option<char>` using `and_then()` with `String::chars().next()`. Demonstrate chaining multiple Option operations without any unwrap calls.
 
 ## Notes
 _Lesson not yet started._

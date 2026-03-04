@@ -1,6 +1,6 @@
-# Lesson 064: Tokio basics - tasks, spawn, select!, join!
+# Lesson 064: Message passing - channels, mpsc, patterns
 
-## Section 14: Async Rust
+## Section 13: Concurrency
 
 ## Status: pending
 
@@ -8,21 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Set up a tokio runtime using `#[tokio::main]` and understand the difference between `current_thread` and `multi_thread` flavors
-- [ ] Spawn concurrent tasks with `tokio::spawn` and understand that spawned tasks require `'static + Send` bounds
-- [ ] Use `tokio::select!` to race multiple futures and handle whichever completes first
-- [ ] Use `tokio::join!` (and `tokio::try_join!`) to run multiple futures concurrently and wait for all of them
-- [ ] Explain the difference between a tokio task and an OS thread, including the cooperative scheduling model
+- [ ] Use `std::sync::mpsc::channel()` to create an unbounded channel with a `Sender` (tx) and `Receiver` (rx) for message passing between threads
+- [ ] Send various data types through channels, understanding that `send()` transfers ownership of the value to the receiver
+- [ ] Clone the `Sender` to enable multiple producer threads sending to a single consumer (the "mpsc" pattern: multiple producer, single consumer)
+- [ ] Use `sync_channel` for bounded/synchronous channels where the sender blocks when the buffer is full
+- [ ] Compare Rust channels with Go channels: both transfer ownership, but Go channels are multi-producer multi-consumer while Rust's `mpsc` is multi-producer single-consumer; Rust has no `select!` in std (but `crossbeam` does)
 
 ## Exercises
-- [ ] **Concurrent tasks**: Spawn 5 tasks with `tokio::spawn`, each sleeping for a random duration (100-500ms) and printing its ID; use `JoinHandle` to await all of them and collect their results
-- [ ] **Select racing**: Use `tokio::select!` to race two `tokio::time::sleep` futures (200ms vs 500ms); print which branch won; add a third branch that receives from an `mpsc` channel
-
-  > **Note:** `tokio::sync::mpsc` is the async equivalent of `std::sync::mpsc` from lesson 059. The API is similar but `send()` and `recv()` are async (you `.await` them).
-- [ ] **Join all**: Simulate 4 concurrent "API calls" using `async fn`s that sleep for different durations; use `tokio::join!` to run them all concurrently and print the total elapsed wall-clock time (should be close to the longest sleep, not the sum)
-- [ ] **Task vs thread comparison**: Write the same workload (spawn 1000 units of work that each sleep 10ms) once with `tokio::spawn` and once with `std::thread::spawn`; compare wall-clock time (primary metric) and optionally memory usage
-
-  > **Tip:** Compare wall-clock time first (this alone is dramatic at 1000 units). For optional memory comparison on Linux: `cat /proc/self/status | grep VmRSS` from within the program, or observe with `htop` in another terminal.
+- [ ] **Basic producer-consumer**: Spawn a producer thread that sends the numbers 1..=10 through a channel. The main thread receives and prints each value. Use both `rx.recv()` (blocking) and iteration over `rx` (which ends when all senders are dropped).
+- [ ] **Sending structs**: Define a `LogEntry { level: String, message: String, timestamp: u64 }` struct. Spawn a thread that creates and sends 5 log entries through a channel. The receiver collects them into a `Vec` and prints a formatted summary. Demonstrate that the sender no longer owns the entries after sending.
+- [ ] **Multiple producers**: Clone the sender 3 times, giving each clone to a different thread. Each thread sends its thread ID and a sequence of messages. The single receiver prints all messages in arrival order. Observe interleaving. Count total messages received to verify none were lost.
+- [ ] **Bounded channel task queue**: Use `sync_channel(2)` to create a bounded channel. Spawn a "slow" consumer that sleeps briefly between processing items. Spawn a fast producer that sends 10 items. Observe that the producer blocks when the buffer is full. Print timestamps to demonstrate the backpressure behavior.
 
 ## Notes
 _Lesson not yet started._

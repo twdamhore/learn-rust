@@ -1,26 +1,32 @@
-# Lesson 071: Procedural macros - function-like, derive macros
+# Lesson 071: Async I/O Part B: Async Networking
 
-## Section 15: Macros
+## Section 14: Async Rust
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Split from original lesson 070 (v7 pacing review)
 
 ## Objectives
-- [ ] Understand the three types of procedural macros: function-like, derive, and attribute macros
-- [ ] Set up a proc macro crate with `proc-macro = true` in `Cargo.toml` and understand why proc macros must live in their own crate
-- [ ] Use `syn` to parse Rust code into an AST (`DeriveInput`, `ItemFn`, etc.) and `quote` to generate `TokenStream` output
-- [ ] Write a basic derive macro that auto-implements a trait for structs
-- [ ] Understand `TokenStream` as the input/output currency of proc macros and how `proc_macro2` bridges compile-time and test-time
+- [ ] Build an async TCP server using `tokio::net::TcpListener` and `TcpStream`, accepting multiple connections concurrently
+- [ ] Use `tokio::spawn` to handle each connection in its own task, reading and writing lines with `tokio::io::BufReader` and `AsyncBufReadExt`/`AsyncWriteExt`
+- [ ] Understand why async networking is more efficient than spawning a thread per connection (event-driven, non-blocking, OS epoll/kqueue under the hood)
+- [ ] Extend a basic echo server toward a real protocol (line-based framing, graceful shutdown, or multi-client interaction)
 
 ## Exercises
-- [ ] **Derive macro - Hello trait**: Create a proc macro crate; define a `Hello` trait with a `fn hello() -> String` method; write a `#[derive(Hello)]` macro that implements it by returning `"Hello, I am <StructName>!"`; test with multiple structs
-- [ ] **Function-like proc macro**: Write a function-like proc macro `make_getter!` that takes a struct definition as input and generates getter methods for each field; e.g., a struct with `name: String` gets a `fn name(&self) -> &str` method
-- [ ] **Parse struct fields**: Write a derive macro `FieldNames` that implements a trait method `fn field_names() -> Vec<&'static str>` returning the names of all fields; use `syn::DeriveInput` and iterate over `fields` in `syn::Data::Struct`
-- [ ] **Quote templating**: Explore `quote!` by writing a derive macro `Builder` that generates a builder struct with setter methods for each field; the builder has a `build()` method that returns the original struct; test with a struct having 3+ fields
+- [ ] **Echo TCP server**: Build an async TCP echo server that binds to a port, accepts multiple connections concurrently using a loop over `listener.accept()`, and spawns a task per connection that reads lines (using `BufReader`) and echoes them back. Test with `telnet localhost <port>` or a simple async client you write
+
+> **Build it step by step:**
+> 1. `TcpListener::bind("127.0.0.1:8080").await?` — bind the listener
+> 2. Loop with `listener.accept().await?` — accept connections
+> 3. For each connection, `tokio::spawn` a task to handle it
+> 4. Inside the task: wrap the stream in `BufReader::new(stream)`
+> 5. Use `reader.read_line(&mut buf).await?` in a loop to read lines
+> 6. Write each line back with `writer.write_all(buf.as_bytes()).await?`
+> 7. Test with: `telnet 127.0.0.1 8080` or `nc localhost 8080`
+- [ ] **Multi-client chat or protocol extension** (pick one):
+  - *Option A - Chat server*: Extend the echo server so that messages from any client are broadcast to all connected clients using `tokio::sync::broadcast` channel
+  - *Option B - Line-based protocol*: Extend the echo server to support simple commands: `UPPER <text>` echoes back uppercased, `REVERSE <text>` echoes back reversed, `QUIT` closes the connection gracefully
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 71a](task-071a.md) and [Lesson 71b](task-071b.md). Use those files instead._
-
 _Lesson not yet started._

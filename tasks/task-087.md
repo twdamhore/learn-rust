@@ -1,6 +1,6 @@
-# Lesson 087: Logging and tracing - log, tracing, structured logging
+# Lesson 087: Newtype pattern, type aliases, zero-sized types
 
-## Section 19: Ecosystem & Tooling
+## Section 17: Advanced Type System
 
 ## Status: pending
 
@@ -8,18 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Use the `log` crate facade with `env_logger` backend to add leveled logging (error, warn, info, debug, trace) to a Rust application, and configure log levels via `RUST_LOG`
-- [ ] Understand the `tracing` crate and how it improves on `log` with structured fields, spans for context, and async-awareness
-- [ ] Add spans with `#[instrument]` and manual `span!`/`enter()` to create hierarchical context that shows the call chain in log output
-- [ ] Configure log filtering by module path (e.g., `RUST_LOG=my_app=debug,hyper=warn`) and understand how filtering works with both `log` and `tracing`
-- [ ] Use `tracing_appender` for file-based log output, composing it as a layer in `tracing-subscriber`
-- [ ] Set up `tracing-subscriber` with a JSON formatter for production-style structured logging that can be consumed by log aggregation tools
+- [ ] Use the newtype pattern to create type-safe wrappers (e.g., `Meters(f64)` vs `Kilometers(f64)`) that prevent accidental mixing of units at compile time
+- [ ] Implement foreign traits on foreign types by wrapping them in newtypes -- the "orphan rule workaround"
+- [ ] Create type aliases with `type` and understand that aliases are transparent (no type safety) vs newtypes which are opaque (full type safety)
+- [ ] Understand zero-sized types (ZSTs) like `()`, `PhantomData<T>`, and empty structs -- why they exist, that they have zero runtime cost, and how the compiler optimizes them away
+- [ ] Use `PhantomData` to express type relationships without storing data (e.g., marking a struct as owning a `T` or being covariant/invariant over a lifetime)
 
 ## Exercises
-- [ ] **Exercise 1 -- log + env_logger basics**: Create a multi-module application (modules: `auth`, `db`, `api`) where each module uses `log::{info, warn, error, debug}`. Initialize `env_logger` in `main()`. Run with `RUST_LOG=info`, `RUST_LOG=debug`, `RUST_LOG=my_app::db=debug,my_app::api=warn` and observe how filtering changes the output. Document the difference between `log` (facade) and `env_logger` (implementation).
-- [ ] **Exercise 2 -- tracing spans and events**: Rewrite the application from Exercise 1 using `tracing` instead of `log`. Add `#[instrument]` to key functions. Use `tracing::info!(user_id = %id, action = "login", "User logged in")` with structured fields. Set up `tracing_subscriber::fmt()` and observe how spans appear in the output showing the call hierarchy.
-- [ ] **Exercise 3 -- Filtering and layering**: Configure `tracing-subscriber` with an `EnvFilter` that reads from `RUST_LOG`. Add a filter that logs `auth` module at debug level, `db` at info, and everything else at warn. Add a second layer that writes error-level events to a separate file using `tracing_appender`. Demonstrate how layers compose.
-- [ ] **Exercise 4 [STRETCH] -- JSON structured logging**: Set up `tracing-subscriber` with `fmt::layer().json()` to output JSON-formatted log lines. Each line should include timestamp, level, target, span context, and structured fields. Write a function that processes a batch of items with a span per item, and show that the JSON output includes the span's item ID. Compare this output to what Go's `slog` or `zap` would produce.
+- [ ] **Exercise 1 -- Units of measure**: Create `Meters(f64)`, `Kilometers(f64)`, and `Seconds(f64)` newtypes. Implement `Add` for same-unit addition, a `to_kilometers()` method on `Meters`, and a `Speed` newtype computed from `Kilometers` and `Seconds`. Verify that `Meters + Kilometers` does not compile without explicit conversion.
+- [ ] **Exercise 2 -- Display on a newtype**: Create a `Username(String)` newtype. Implement `Display` to show the username, `From<String>` and `From<&str>` for construction, and `Deref<Target=str>` so string methods work transparently. Discuss the tradeoff of implementing `Deref` on newtypes.
+- [ ] **Exercise 3 -- Type aliases for complex types**: Define `type Result<T> = std::result::Result<T, AppError>` for a custom error type. Also create `type Callback = Box<dyn Fn(i32) -> i32>`. Write functions using these aliases and verify they work identically to the expanded types. Show that you CAN accidentally pass a `Result<T, OtherError>` where `type Result<T>` is expected (because aliases are transparent).
+- [ ] **Exercise 4 -- ZSTs and PhantomData**: Create a `Tagged<T, Tag>` struct where `Tag` is a ZST marker (`struct Verified;` / `struct Unverified;`). The struct holds a `T` value and a `PhantomData<Tag>`. Write a function that only accepts `Tagged<String, Verified>`. Confirm with `std::mem::size_of` that `Tagged<String, Verified>` is the same size as `String`.
 
 ## Notes
 _Lesson not yet started._

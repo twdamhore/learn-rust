@@ -1,6 +1,6 @@
-# Lesson 060: Shared state - Mutex<T>, RwLock, Arc<Mutex<T>>
+# Lesson 060: RefCell<T>, Cell<T> - interior mutability, runtime borrow checking
 
-## Section 13: Concurrency
+## Section 12: Smart Pointers & Interior Mutability
 
 ## Status: pending
 
@@ -8,17 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Use `Mutex<T>` for mutual exclusion: `lock()` returns a `MutexGuard` that auto-unlocks when dropped, ensuring data access is always synchronized
-- [ ] Combine `Arc<Mutex<T>>` to share mutable state across multiple threads (Arc for shared ownership, Mutex for synchronized mutation)
-- [ ] Use `RwLock<T>` for read-heavy workloads where multiple concurrent readers are allowed but writers get exclusive access
-- [ ] Handle lock poisoning: understand that a `Mutex` becomes poisoned if a thread panics while holding the lock, and how to recover with `into_inner()` or `PoisonError`
-- [ ] Compare Rust's `Mutex<T>` (protects data, not code) with Java's `synchronized` (protects code blocks) and Go's `sync.Mutex` (protects code, not data)
+- [ ] Understand the interior mutability pattern: obtaining `&mut` access to data inside an immutable reference, checked at runtime instead of compile time
+- [ ] Use `RefCell<T>` to borrow data mutably at runtime via `borrow()` and `borrow_mut()`, understanding that violating borrow rules causes a runtime panic (not a compile error)
+- [ ] Use `Cell<T>` for simple `Copy` types where you need interior mutability without the overhead of runtime borrow tracking
+- [ ] Combine `Rc<RefCell<T>>` to achieve shared mutable state in single-threaded code, the idiomatic Rust pattern for multiple owners that need mutation
+- [ ] Compare interior mutability with Java's approach (all objects mutable by default, synchronized for thread safety) and understand why Rust makes this explicit
 
 ## Exercises
-- [ ] **Shared counter**: Create an `Arc<Mutex<i32>>` counter. Spawn 10 threads, each incrementing the counter 1000 times. Join all threads and verify the final count is exactly 10000. Explain why this would be a data race without the Mutex.
-- [ ] **Thread-safe cache**: Build a `Cache` struct wrapping an `Arc<RwLock<HashMap<String, String>>>`. Implement `get(&self, key: &str) -> Option<String>` (uses `read()`) and `insert(&self, key: String, value: String)` (uses `write()`). Spawn reader and writer threads concurrently and verify correctness.
-- [ ] **Mutex vs RwLock comparison [STRETCH]**: Create a shared `Vec<i32>` behind both a `Mutex` and an `RwLock`. Spawn 8 reader threads and 2 writer threads for each. Time both approaches using `std::time::Instant` and compare throughput. Print results showing when `RwLock` wins.
-- [ ] **Poisoned lock recovery**: Spawn a thread that locks a `Mutex<Vec<String>>`, pushes a value, then panics. In the main thread, attempt to lock the mutex, observe the `PoisonError`, recover the inner data with `into_inner()`, and print the partially-modified data. Explain when you'd want to recover vs propagate the error.
+- [ ] **RefCell basics**: Create an `Rc<RefCell<Vec<String>>>` shared between two structs. Have each struct push items into the shared vec through its `Rc` reference. Print the final contents from both handles to verify shared mutation works.
+- [ ] **Runtime borrow panic**: Write code that deliberately creates two `borrow_mut()` calls on the same `RefCell` simultaneously (e.g., hold one `RefMut` while trying to get another). Catch or observe the panic. Then fix it by ensuring borrows don't overlap.
+- [ ] **Observer pattern**: Define an `Observer` trait with `fn update(&mut self, msg: &str)`. Implement an `EventBus` struct that holds a `Vec<Box<dyn Observer>>`. Add a `notify(&mut self, msg: &str)` method on `EventBus` that calls `update` on each observer. Create two concrete observers (e.g., `Logger` and `Counter`), register them with the `EventBus`, send a notification, and print each observer's state. (Note: `Rc<RefCell<>>` is already demonstrated in Exercises 1-2; this exercise focuses on trait objects with `Box<dyn Observer>`.)
+- [ ] **Cell for counters**: Create a struct with a `Cell<u32>` field that acts as an invocation counter. Implement a method `&self` (not `&mut self`) that increments the counter each time it's called. Demonstrate that this works even through shared references, and explain when `Cell` is preferred over `RefCell`.
 
 ## Notes
 _Lesson not yet started._

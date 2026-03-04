@@ -1,6 +1,6 @@
-# Lesson 100: Project 3 - continued (unsafe where needed, optimization, benchmarks)
+# Lesson 100: Networking - reqwest, hyper, raw TCP/UDP
 
-## Section 21: Capstone Projects
+## Section 19: Ecosystem & Tooling
 
 ## Status: pending
 
@@ -8,19 +8,43 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Set up benchmarks using `criterion` for all performance-critical operations in your capstone 3 project, establishing a baseline for optimization
-- [ ] Profile the project using `cargo flamegraph` or `perf` to identify hot paths and bottlenecks, then apply targeted optimizations
-- [ ] Audit all `unsafe` blocks for soundness: verify each one is necessary, document the safety invariant it relies on, and add `// SAFETY:` comments explaining why the code is correct
-- [ ] Write comprehensive documentation: crate-level docs (`//!`), module docs, public API docs with examples, and a README explaining what the project does and how to use it
-- [ ] Reflect on the full 100-lesson journey: identify which Rust concepts were hardest coming from Java/Go, which patterns are now natural, and what areas to explore next
+- [ ] Make HTTP GET and POST requests using `reqwest` in both blocking and async modes, parsing JSON responses with serde
+- [ ] Understand `hyper` as the lower-level HTTP library that `reqwest` builds on, and when you would use each (compare with Go's `net/http` which sits between the two in abstraction level)
+- [ ] Build a raw TCP client and server using `std::net::TcpListener` and `TcpStream`, handling connections with threads
+- [ ] Send and receive UDP datagrams using `std::net::UdpSocket`, understanding when UDP is appropriate vs TCP
+- [ ] Configure HTTP clients with custom headers, timeouts, and connection pooling using `reqwest::Client` builder
 
 ## Exercises
-- [ ] Add `criterion` benchmarks for your project: benchmark at least 3 operations at different input sizes (small, medium, large) -- for the executor, benchmark task throughput; for the parser, benchmark parsing speed on varying expression complexity; for the B-tree, benchmark insert/get/remove at different tree sizes; compare at least one operation against a standard library equivalent (e.g., `BTreeMap` vs your B-tree)
-- [ ] Generate a flamegraph of a realistic workload, identify the top 3 hottest functions, and implement at least one optimization (e.g., reducing allocations, improving cache locality, avoiding unnecessary clones) -- re-benchmark to measure the improvement and document what you changed and why
-- [ ] Review every `unsafe` block in your project: for each one, write a `// SAFETY:` comment explaining the invariant, consider whether a safe alternative exists, and write a test that would catch undefined behavior if the safety invariant were violated (e.g., using Miri with `cargo +nightly miri test` if possible)
-- [ ] Write a "lessons learned" retrospective (as comments in your `main.rs` or a dedicated module): list the top 10 Rust concepts that were most different from Java/Go, the 5 most useful patterns you learned, and 3 areas you want to explore further (e.g., embedded, advanced async, contribution to open-source Rust projects)
+- [ ] **Exercise 1 - REST API Client**: Use `reqwest` to fetch data from a public REST API (e.g., `httpbin.org` or `jsonplaceholder.typicode.com`), deserialize the JSON response into a struct, and print formatted output -- do this with both the blocking client and the async client
+- [ ] **Exercise 2 - TCP Echo Server**: Build a TCP echo server that accepts multiple concurrent connections using `std::net::TcpListener` with `thread::spawn`, where the server reads a line from the client and sends it back uppercased; write a companion TCP client that connects, sends a message, and prints the response
+
+  > **Server skeleton:**
+  > ```rust
+  > use std::net::{TcpListener, TcpStream};
+  > use std::io::{BufRead, BufReader, Write};
+  > use std::thread;
+  >
+  > fn handle_client(stream: TcpStream) {
+  >     let reader = BufReader::new(&stream);
+  >     let mut writer = stream.try_clone().expect("clone failed");
+  >     for line in reader.lines() {
+  >         let line = line.expect("read failed");
+  >         writeln!(writer, "{}", line.to_uppercase()).expect("write failed");
+  >     }
+  > }
+  >
+  > fn main() {
+  >     let listener = TcpListener::bind("127.0.0.1:7878").expect("bind failed");
+  >     for stream in listener.incoming() {
+  >         let stream = stream.expect("accept failed");
+  >         thread::spawn(|| handle_client(stream));
+  >     }
+  > }
+  > ```
+- [ ] **Exercise 3 - UDP Datagrams [STRETCH]**: Write a UDP program with two modes: a sender that sends timestamped messages to a target address, and a receiver that listens and prints incoming datagrams -- demonstrate that messages can arrive out of order or be lost
+- [ ] **Exercise 4 [STRETCH] - HTTP client with retries and configuration**: Build an HTTP client function using `reqwest::Client` that sets a custom `User-Agent` header, a 5-second timeout, and retries a request up to 3 times on failure, then use it to fetch from a URL passed as a command-line argument
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 100a](task-100a.md) and [Lesson 100b](task-100b.md). Use those files instead._
+> **Internet required**: Exercise 1 requires internet access to reach a public API (e.g., `httpbin.org` or `jsonplaceholder.typicode.com`). Ensure you have a working connection before starting.
 
 _Lesson not yet started._

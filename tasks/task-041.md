@@ -1,4 +1,4 @@
-# Lesson 041: Trait bounds, where clauses, impl Trait syntax
+# Lesson 041: Generic functions and structs
 
 ## Section 9: Generics & Traits
 
@@ -8,17 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Use trait bounds on generic functions to constrain type parameters (`fn print_it<T: Display>(item: T)`) and understand that bounds tell the compiler what capabilities a type must have
-- [ ] Refactor inline trait bounds to `where` clauses for readability, especially when there are multiple type parameters or complex bounds (`fn foo<T, U>(t: T, u: U) where T: Display + Clone, U: Debug`)
-- [ ] Use `impl Trait` in argument position as syntactic sugar for generic bounds (`fn print_it(item: impl Display)`) and understand that it is equivalent to the generic form for function arguments
-- [ ] Combine multiple trait bounds with `+` syntax (e.g., `T: Display + Clone + PartialOrd`) and understand that each bound further constrains which types are accepted
-- [ ] Understand `Sized` as an implicit default bound on all generic types, and use `?Sized` to opt out when you want to accept dynamically-sized types like `str` or `[T]`
+- [ ] Write generic functions with one or more type parameters (`fn foo<T>(x: T)`) and understand how the compiler monomorphizes them into concrete versions (zero-cost abstraction)
+- [ ] Create generic structs (`Point<T>`) and enums (`Either<L, R>`) with type parameters, and implement methods on them using `impl<T>`
+- [ ] Use multiple type parameters in a single function or struct (`Pair<T, U>`) and understand when multiple parameters are needed vs a single parameter
+- [ ] Compare Rust generics (monomorphization, no runtime cost) with Java generics (type erasure, boxing) and Go generics (stenciling/dictionaries), recognizing the trade-offs in compile time and binary size
+- [ ] Understand the turbofish syntax (`::<Type>`) for specifying generic types when the compiler cannot infer them
 
 ## Exercises
-- [ ] **Exercise 1 - Bounded print function**: Write a function `fn print_labeled<T: Display + Clone>(label: &str, item: T)` that prints a label and the item, then returns a clone of the item. Test with `String`, `i32`, and a custom struct that derives both traits
-- [ ] **Exercise 2 - Where clause refactoring**: Start with a function signature that has 3 type parameters with inline bounds (making the signature hard to read), then refactor it to use a `where` clause. Verify both versions compile identically
-- [ ] **Exercise 3 - impl Trait parameter**: Write a function `fn summarize_all(items: &[impl Summary])` that calls `summarize()` on each item in a slice. Compare this with the explicit generic form `fn summarize_all<T: Summary>(items: &[T])` and note that `impl Trait` in argument position means all items must be the same concrete type
-- [ ] **Exercise 4 - ?Sized exploration**: Write a function `fn print_ref<T: Display + ?Sized>(item: &T)` that can accept both `&String` and `&str`. Then try removing `?Sized` and observe which calls no longer compile, understanding why `Sized` matters
+- [ ] **Exercise 1 - Generic max function**: Write a generic `fn largest<T>(list: &[T]) -> &T` that returns the largest item in a slice -- observe the compiler error about missing trait bounds, then fix it by adding `PartialOrd` (preview of lesson 043)
+- [ ] **Exercise 2 - Generic Point struct**: Create a `Point<T>` struct with `x: T` and `y: T` fields, implement a `new()` associated function and a method that returns a reference to `x`, then test it with `Point<i32>`, `Point<f64>`, and `Point<String>`
+- [ ] **Exercise 3 - Mixed-type Pair**: Create a `Pair<T, U>` struct where `T` and `U` can be different types, implement a `mixup()` method that takes another `Pair` and returns a new `Pair` combining fields from both (like the Book example), and verify it works with `Pair<i32, String>` mixed with `Pair<f64, char>`
+- [ ] **Exercise 4 [OPTIONAL] - Monomorphization investigation**: Write a generic function used with 3 different concrete types, compile with `cargo build --release`, and use `cargo nm` or `nm` to observe that the compiler generated separate functions for each type (confirming zero-cost monomorphization). *Note: `nm` may not be available on all systems (it is a Unix/Linux binary inspection tool). If you cannot run it, the key takeaway is that Rust monomorphizes generics -- the compiler generates a separate copy of the function for each concrete type used, resulting in zero runtime overhead but increased binary size.*
 
 ## Notes
 _Lesson not yet started._

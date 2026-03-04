@@ -1,6 +1,6 @@
-# Lesson 097: Project 2 - Web API (axum, sqlx, auth, middleware)
+# Lesson 097: Serde - Serialize/Deserialize, JSON, TOML, custom
 
-## Section 21: Capstone Projects
+## Section 19: Ecosystem & Tooling
 
 ## Status: pending
 
@@ -8,19 +8,19 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Set up an `axum` web server with a Tokio runtime, defining routes with the Router, extractors (Path, Query, Json), and response types
-- [ ] Design a REST API for a resource (e.g., "notes" or "bookmarks"): GET list, GET by ID, POST create, PUT update, DELETE -- following REST conventions
-- [ ] Integrate `sqlx` with SQLite for persistence: set up a connection pool, pass it to handlers via axum's State extractor, run migrations at startup
-- [ ] Implement authentication middleware: issue and validate JWT tokens using `jsonwebtoken`, protect routes with an extractor that verifies the Authorization header
-- [ ] Structure the project with clean separation: handlers (HTTP concerns), services (business logic), and repositories (database access) in separate modules
+- [ ] Derive `Serialize` and `Deserialize` on structs and enums using serde, and understand what the derive macro generates under the hood
+- [ ] Use `serde_json` to serialize Rust types to JSON and deserialize JSON strings/files back into Rust types, handling errors with `serde_json::Error`
+- [ ] Use the `toml` crate to read and write TOML configuration files, a common pattern in Rust CLI tools and services
+- [ ] Customize serialization behavior with serde attributes: `#[serde(rename)]`, `#[serde(default)]`, `#[serde(skip)]`, `#[serde(flatten)]`, `#[serde(tag)]`, `#[serde(untagged)]`
+- [ ] Write a custom `Deserialize` implementation for a type that needs special parsing logic (e.g., deserializing a date string into a custom `Date` struct)
+
+**Note on `DeserializeOwned`**: In generic functions, you'll see `T: DeserializeOwned` instead of `T: Deserialize<'de>`. `DeserializeOwned` means the type can be deserialized without borrowing from the input data (it owns all its data). Use it in generic contexts where the input lifetime is not available.
 
 ## Exercises
-- [ ] Create a new project `notesapi` with axum: define routes for a "notes" resource (`GET /notes`, `GET /notes/:id`, `POST /notes`, `PUT /notes/:id`, `DELETE /notes/:id`), initially returning hardcoded JSON responses, and verify with `curl` or a REST client
-- [ ] Add SQLite persistence: create a migration for a `notes` table (id, title, body, created_at, updated_at), implement a `NotesRepository` with async CRUD methods using `sqlx`, wire the pool into handlers via `State<SqlitePool>`, and verify end-to-end with curl
-- [ ] Implement JWT authentication: add a `POST /auth/login` endpoint that accepts username/password and returns a JWT, create an `AuthUser` extractor that validates the JWT from the `Authorization: Bearer <token>` header, and protect the write endpoints (POST/PUT/DELETE) while leaving read endpoints public
-- [ ] Add request validation and error handling: use a custom `ApiError` type that implements `IntoResponse` to return proper HTTP status codes and JSON error bodies (`{ "error": "message" }`), validate that note titles are non-empty and body length is under 10,000 characters, and return 400/401/404/500 as appropriate
+- [ ] **Exercise 1 -- JSON roundtrip**: Define a `#[derive(Serialize, Deserialize)]` struct `ApiResponse<T: Serialize + DeserializeOwned>` with fields `status: u16`, `message: String`, `data: Option<T>`, and a nested `User` struct with `name`, `email`, `age`. Serialize to JSON, deserialize back, and verify equality. Test with `data: None` and `data: Some(user)`.
+- [ ] **Exercise 2 -- TOML config**: Create an `AppConfig` struct with nested sections (`database: DbConfig`, `server: ServerConfig`, `logging: LogConfig`). Write a sample `config.toml` file. Deserialize it into `AppConfig` using `toml::from_str`. Add `#[serde(default)]` for optional fields so missing keys get sensible defaults. Serialize the config back to TOML and compare.
+- [ ] **Exercise 3 -- Serde attributes**: Create an enum `Event` with variants `UserCreated { user_id: u64, name: String }`, `OrderPlaced { order_id: u64, total: f64 }`, `SystemAlert(String)`. Use `#[serde(tag = "type", content = "payload")]` for adjacently tagged representation. Add `#[serde(rename_all = "camelCase")]`. Serialize each variant and verify the JSON shape. Then try `#[serde(untagged)]` and compare.
+- [ ] **Exercise 4 [STRETCH] -- Custom deserializer**: Create a `struct HexColor { r: u8, g: u8, b: u8 }` that should deserialize from a JSON string like `"#FF8800"`. Implement `Deserialize` manually (using a visitor or `deserialize_with`) to parse the hex string. Also implement `Serialize` to produce the `"#RRGGBB"` format. Write tests that round-trip through JSON.
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 97a](task-097a.md) and [Lesson 97b](task-097b.md). Use those files instead._
-
 _Lesson not yet started._

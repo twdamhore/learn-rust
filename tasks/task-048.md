@@ -1,4 +1,4 @@
-# Lesson 048: Struct lifetimes, 'static, lifetime bounds on generics
+# Lesson 048: What lifetimes are, lifetime annotations 'a
 
 ## Section 10: Lifetimes
 
@@ -8,17 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Add lifetime parameters to structs that hold references (`struct Excerpt<'a> { part: &'a str }`) and understand that the struct cannot outlive the data it borrows
-- [ ] Understand the `'static` lifetime: references that live for the entire program duration (string literals, leaked allocations), and know when `'static` is required vs when it appears in trait bounds
-- [ ] Use lifetime bounds on generic type parameters (`T: 'a` meaning "all references in T must live at least as long as `'a`") and understand how this constrains the types that can be used
-- [ ] Understand lifetime relationships in nested structs: when one struct holds a reference to data owned by another, the lifetimes must be correctly threaded through
-- [ ] Make informed decisions about when to use references in structs (borrows data, needs lifetime, more efficient) vs owned data (simpler API, no lifetime annotations, struct is self-contained)
+- [ ] Understand what lifetimes represent: every reference in Rust has a lifetime, which is the scope during which that reference is valid. Lifetimes are the compiler's tool for ensuring references never outlive the data they point to
+- [ ] Read and write lifetime annotations (`'a`, `'b`, etc.) on function signatures, understanding that annotations do not change how long values live -- they describe relationships between the lifetimes of references
+- [ ] Understand why the compiler needs lifetime hints: when a function takes multiple references and returns a reference, the compiler cannot always determine which input the return value borrows from without annotations
+- [ ] Write the classic `longest()` function with lifetime annotations and trace through how the compiler uses the annotations to validate calling code
+- [ ] Understand dangling reference prevention: Rust will not compile code where a reference could outlive the data it refers to, and compare this with Java (no dangling references due to GC) and Go (GC + escape analysis)
 
 ## Exercises
-- [ ] **Struct borrowing a string**: Create `struct ImportantExcerpt<'a> { part: &'a str }` and implement methods on it. Write code where the excerpt outlives the source string and observe the compiler error. Fix it by adjusting scopes
-- [ ] **"Does not live long enough" debugging**: Write 2 variations of code that produce "does not live long enough" errors -- (a) struct outlives borrowed local variable, (b) returning a struct that borrows a local. Fix each one
-- [ ] **'static exploration**: Verify that string literals have `'static` lifetime by assigning one to `let s: &'static str = "hello"`. Then try to assign a `String`'s borrow to `&'static str` and read the error. Discuss when `T: 'static` means "contains no non-static references" (not "lives forever"). Write a function `fn requires_static<T: 'static>(val: T) { println!("got it"); }` and show that `String` satisfies the bound (it owns its data), while `&'a str` with a non-static lifetime does not
-- [ ] **Exercise 4 - Owned vs borrowed design** (~15-20 minutes -- focus on the implementation differences rather than an exhaustive comparison): Create two versions of a `Config` struct -- one with `name: &'a str` (borrowed) and one with `name: String` (owned). Implement a `parse()` function for each that constructs a `Config` from a string. Compare the API ergonomics, lifetime complexity, and performance implications. Discuss when each is appropriate
+- [ ] **Trigger the error**: Write a function `fn first_word(s: &str) -> &str` that returns a substring -- it compiles fine (elision). Then write `fn pick(a: &str, b: &str) -> &str` that returns one of its arguments -- observe the "missing lifetime specifier" error and understand why elision cannot help here
+- [ ] **Annotate longest()**: Implement `fn longest<'a>(x: &'a str, y: &'a str) -> &'a str` that returns the longer string. Write test cases including one where `x` and `y` have different scopes, and verify the returned reference is only valid for the shorter of the two lifetimes
+- [ ] **Lifetime scope tracing**: Given this code pattern, predict whether it compiles and explain why: `let result; { let s = String::from("hello"); result = &s; } println!("{}", result);` -- then try variations where the string outlives the reference and verify your predictions
+- [ ] **Single-input lifetime**: Write `fn first_sentence(text: &str) -> &str` that returns everything up to the first period. Observe that this compiles without annotations (elision rule 1). Then write the explicitly annotated version and confirm both are equivalent
 
 ## Notes
 _Lesson not yet started._

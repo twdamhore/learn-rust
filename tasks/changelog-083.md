@@ -1,6 +1,6 @@
-# Changelog - Lesson 083: Property-based testing (proptest), fuzzing (cargo-fuzz)
+# Changelog - Lesson 083: FFI - calling C from Rust (extern C, bindgen)
 
-## Section 18: Testing & Quality
+## Section 16: Unsafe & FFI
 
 ### v1 - Initial creation
 - Lesson added to curriculum
@@ -12,85 +12,102 @@
 
 ### v3 - Concrete objectives and exercises (2026-03-03)
 - Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: Property-based testing philosophy, proptest strategies and generation, meaningful property invariants, cargo-fuzz setup, shrinking and failure reproduction
-- **Exercises added**: Proptest sort function properties, roundtrip encode/decode testing, custom strategies with prop_compose!, fuzzing a key-value parser
+- **Objectives added**: extern "C" for foreign function declarations, linking C libraries, bindgen for auto-generating bindings, C-compatible types (CString/CStr/c_int), unsafe FFI boundary
+- **Exercises added**: Call libc abs/sqrt/strlen, bindgen with custom C header, safe wrapper for getenv, C string conversion patterns module
 
 ### v4 - Comprehensive pacing and content review (2026-03-03)
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
 - **Pacing**: Heavy for 1-hour lesson
 - **Issues found**:
-  - Introduces two entirely new crate ecosystems (proptest and cargo-fuzz) in one lesson
-  - Exercise 4 (cargo-fuzz) requires nightly Rust -- should be explicitly noted
-  - Custom strategy exercise (Exercise 3) is particularly involved
+  - Requires system-level tooling (C compiler, libclang for bindgen)
+  - Setup steps could eat into lesson time significantly
 - **Recommendations**:
-  - Make Exercise 4 (fuzzing) optional
-  - Note nightly Rust requirement for cargo-fuzz
+  - Note prerequisite installations clearly at the top of the lesson
 
 ### v5 - Cross-curriculum review (2026-03-03)
 - Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
-- **Pacing**: Heavy (~1.5-2 hr) for 1-2 hour target
-- **Changes noted**: Two entirely new tool ecosystems (proptest + cargo-fuzz). proptest learning curve is significant (strategies, shrinking, configuration). Exercise 3 (custom strategy with prop_compose!) is involved. Exercise 4 requires nightly Rust.
-- **Why**: Two new crate ecosystems in one lesson is too much
-- **v4 recommendations status**: Not yet applied -- v4 recommended making Exercise 4 optional and noting nightly requirement. Gradual progression: Heavy spike.
+- **Pacing**: Heavy (~1.5 hr) for 1-2 hour target
+- **Changes noted**: Requires system-level tooling (C compiler, libclang for bindgen). Setup could consume 15-20 min. bindgen exercise requires writing C header + configuring build.rs.
+- **Why**: System tooling prerequisites not documented.
+- **v4 recommendations status**: Not yet applied -- v4 recommended noting prerequisites clearly. Gradual progression: Heavy; setup overhead significant.
 
 ### v6 - Pacing review and split assessment (2026-03-03)
 - Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
-- **Estimated time**: ~1.75-2.5 hours
-- **Pacing verdict**: OVERLOADED - split required
-- **Split needed**: Yes - split into 083a/083b
+- **Estimated time**: ~1.5 hours
+- **Pacing verdict**: Heavy - under 2hr threshold
+- **Split needed**: No
 - **Key issues**:
-  - Two entirely new crate ecosystems (proptest AND cargo-fuzz) in one lesson
-  - proptest alone has significant learning curve (strategies, shrinking, prop_compose!)
-  - Exercise 4 (cargo-fuzz) requires nightly Rust (not stated in original)
-- **Action taken**: Split into task-083a.md (Property-Based Testing with proptest) and task-083b.md (Fuzzing with cargo-fuzz). Each part is now ~1-1.5 hours. Nightly requirement explicitly noted in 083b.
+  - System tooling prerequisites (C compiler, libclang for bindgen) not documented
+  - Setup can take 15-20 min
+- **Action taken**: No split required. Previous v4 recommendation to document prerequisites clearly at the top should be applied when lesson is started
 
-## v7 — Relaxed Pacing Review (2026-03-03)
+### v7 — Relaxed Pacing Review (2026-03-03)
 - **Threshold change**: Lessons now OK at 1-2 hours; only split if >2hrs
-- **Pacing**: Already split in v6 into 083a/083b
-- **Status**: No changes needed
-- Prior split was adequate under relaxed threshold; no additional changes required
+- **Pacing**: Heavy (~1.5-2 hr)
+- **Status**: No changes needed under relaxed threshold
+- System tooling prerequisites (C compiler, libclang) still flagged -- learner has no C background so setup overhead remains a concern
 
 ### v8 - Full curriculum pacing review (2026-03-03)
-- Original lesson correctly split into 083a/083b at v6. Original was ~105-150 min.
-- **Changes made**: None (split already done)
+- Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
+- **Estimated time**: ~80-110 min (Heavy)
+- **Needs split**: No
+- **Issues**: Prerequisites (C compiler, libclang for bindgen) not documented in task file (flagged since v4). Learner has no C background. Add: "sudo apt install libclang-dev".
+- **Changes made**: None (content fix deferred to lesson start)
 
 ### v9 - Full curriculum review — pacing, progression, and content audit (2026-03-03)
 - Reviewed all 100 tasks for realistic human pacing (1-2 hr target, split if >2 hrs)
-- **Estimated time**: ~105-150 min (original)
-- **Pacing**: OVERLOADED
-- **Needs split**: Yes (already split into 083a/083b). Two different tool ecosystems (proptest, cargo-fuzz) separated cleanly.
-- **Issues**: None (split resolved the overload)
+- **Estimated time**: ~80-110 min
+- **Pacing**: Heavy
+- **Needs split**: No
+- **Issues**: Requires C compiler (gcc), libclang for bindgen. System prerequisites MUST be documented (sudo apt install libclang-dev build-essential). Exercise 2 (bindgen with custom C header + build.rs) has significant setup overhead. Unresolved since v4.
 - **Changes made**: Changelog updated only
 
 ## v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
 - **Reviewer**: Full curriculum audit (lessons 001-100 reviewed against CLAUDE.md)
-- **Alignment**: SUPERSEDED by 083a/083b
-- **Time estimate**: 105-150 minutes (original, before split)
-- **Needs splitting**: Already split into 083a/083b at v6
-- **Pacing context**: Original correctly identified as overloaded. Split cleanly separates proptest and cargo-fuzz.
-- **Unresolved from prior reviews**: None
+- **Alignment**: Exact match with CLAUDE.md
+- **Time estimate**: 80-110 minutes (Heavy)
+- **Needs splitting**: No
+- **Pacing context**: Heavy; system tooling setup can consume 15-20 min
+- **Unresolved from prior reviews**: System prerequisites (libclang-dev, build-essential) not documented in task file. Must add Prerequisites section with `sudo apt install libclang-dev build-essential`. Flagged since v4, still unresolved.
 - **New findings**: None
-- **Recommendation**: No changes needed — see 083a/083b changelogs
+- **Recommendation**: Add Prerequisites section to task file with system package install commands before teaching
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
-- **Estimated time**: SUPERSEDED by 083a/083b
-- **Needs split**: No (already split)
-- **Progression**: SUPERSEDED by 083a/083b. Split was correct.
-- **Changelog reconciliation**: All prior findings consistent
-- **Genuinely unresolved**: None (see 083a/083b)
-- **Recommendation**: No action on this file; see 083a and 083b changelogs
+- **Estimated time**: 90-120min (Heavy, borderline)
+- **Needs split**: No
+- **Progression**: Heavy but within threshold
+- **Changelog reconciliation**: "System prerequisites missing" -- Prerequisites section with `sudo apt install libclang-dev build-essential` has been added. Resolved.
+- **Genuinely unresolved**: Exercise 2 bindgen needs template build.rs and Cargo.toml snippet.
+- **Recommendation**: Provide template build.rs and Cargo.toml snippet for Exercise 2 before teaching
 
 ### v12 - Full curriculum pacing and progression review (2026-03-04)
 - Reviewed all active tasks for realistic human pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- SUPERSEDED by 083a/083b. No changes to parent.
+- **Estimated time**: 90-120min
+- **Pacing**: Heavy
+- **Issues**: Ex 2 needs template build.rs and Cargo.toml snippet for bindgen. UNRESOLVED.
+- **Recommendations**: MUST provide build.rs template
+- **Changes made**: Changelog updated only
+
+### v12-fix - Task file changes applied (2026-03-04)
+- Added starter build.rs template to Exercise 2 (bindgen basics) in task-083.md
+- Added Cargo.toml `[build-dependencies]` snippet showing `bindgen = "0.69"`
+- Added `include!` macro usage for main.rs/lib.rs to consume generated bindings
+- **Resolves** issue flagged since v11 requesting template build.rs and Cargo.toml snippet for bindgen exercise
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: N/A
-- **Pacing**: SUPERSEDED
-- **Issues**: SUPERSEDED by 083a/083b
+- **Estimated time**: 90-110min
+- **Pacing**: Heavy
+- **Issues**: build.rs not formally taught anywhere in curriculum — this is first encounter. System dependency setup (libclang-dev) adds friction. Consider adding build.rs primer to objectives and making Exercise 4 (C string conversions) STRETCH
 - **Changes made**: Changelog updated only
 
+### v14 - Full curriculum review (2026-03-04)
+- Reviewed task file for pacing, prerequisites, progression, and content quality
+- **Estimated time**: 90-110min
+- **Pacing**: Heavy
+- **Issues**: Added build.rs explanation (first encounter in curriculum) and marked Exercise 4 (C string conversions) as STRETCH to keep core content within time budget
+- **Changes made**: Added build.rs primer note before first mention; marked Exercise 4 as [STRETCH] in task file
+
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. Correctly superseded. **Changes**: Changelog only.
+- Reviewed. **Time**: 90-105min. **Pacing**: Heavy. **Changes**: Added explanatory comment for cargo:rerun-if-changed directive in build.rs primer. **Why**: First encounter with build scripts; the directive communication protocol should be explained.

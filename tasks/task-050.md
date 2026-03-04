@@ -1,4 +1,4 @@
-# Lesson 050: Advanced lifetimes - HRTBs, variance, subtyping
+# Lesson 050: Struct lifetimes, 'static, lifetime bounds on generics
 
 ## Section 10: Lifetimes
 
@@ -8,19 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Understand Higher-Rank Trait Bounds (HRTBs) using `for<'a>` syntax: a way to say "this works for any lifetime", which is needed when a closure or function pointer must accept references with arbitrary lifetimes
-- [ ] Grasp lifetime variance conceptually: covariance (can substitute a longer lifetime where a shorter one is expected, e.g., `&'static str` for `&'a str`), contravariance (rare, in function parameter position), and invariance (`&mut T` is invariant in `T` to prevent aliasing bugs)
-- [ ] Understand lifetime subtyping: `'a: 'b` means `'a` outlives `'b`, which means `&'a T` can be used wherever `&'b T` is expected (longer lifetimes are subtypes of shorter ones)
-- [ ] Know when HRTBs are needed in practice: primarily when passing closures that accept references to functions like `fn apply(f: impl for<'a> Fn(&'a str) -> &'a str)` or when working with trait bounds that involve borrowed data
-- [ ] Understand `PhantomData<&'a T>` as a way to tell the compiler that a struct logically borrows data with lifetime `'a` even though it does not hold an actual reference (e.g., raw pointer wrappers)
+- [ ] Add lifetime parameters to structs that hold references (`struct Excerpt<'a> { part: &'a str }`) and understand that the struct cannot outlive the data it borrows
+- [ ] Understand the `'static` lifetime: references that live for the entire program duration (string literals, leaked allocations), and know when `'static` is required vs when it appears in trait bounds
+- [ ] Use lifetime bounds on generic type parameters (`T: 'a` meaning "all references in T must live at least as long as `'a`") and understand how this constrains the types that can be used
+- [ ] Understand lifetime relationships in nested structs: when one struct holds a reference to data owned by another, the lifetimes must be correctly threaded through
+- [ ] Make informed decisions about when to use references in structs (borrows data, needs lifetime, more efficient) vs owned data (simpler API, no lifetime annotations, struct is self-contained)
 
 ## Exercises
-- [ ] **HRTB with closures**: Write a function `fn apply_to_ref<F>(f: F, data: &[String]) where F: for<'a> Fn(&'a str) -> &'a str` that applies `f` to each string in the slice. Demonstrate why `F: Fn(&str) -> &str` does not work without `for<'a>` by showing the compiler error, then fix it with the HRTB
-- [ ] **Variance observation**: Create examples showing covariance in action: assign a `&'static str` to a variable of type `&'a str`. Then demonstrate invariance: try to use a `&mut &'static str` where a `&mut &'a str` is expected, and observe the compiler rejection. Explain why `&mut` must be invariant
-- [ ] **PhantomData lifetime marker**: Create a struct `RawSlice<'a, T>` that wraps a raw pointer `*const T` and a length, with `PhantomData<&'a T>` to tie the struct to a lifetime. Implement a safe `from_slice()` constructor and a safe `get()` method. Show that the compiler prevents using the `RawSlice` after the original data is dropped
-- [ ] **Study real-world HRTBs**: Find and annotate examples of `for<'a>` in the standard library (e.g., `str::parse` requires `FromStr`, `Iterator::for_each`). For each, explain why the HRTB is necessary and what would break without it. Write your own small example demonstrating the same pattern
+- [ ] **Struct borrowing a string**: Create `struct ImportantExcerpt<'a> { part: &'a str }` and implement methods on it. Write code where the excerpt outlives the source string and observe the compiler error. Fix it by adjusting scopes
+- [ ] **"Does not live long enough" debugging**: Write 2 variations of code that produce "does not live long enough" errors -- (a) struct outlives borrowed local variable, (b) returning a struct that borrows a local. Fix each one
+- [ ] **'static exploration**: Verify that string literals have `'static` lifetime by assigning one to `let s: &'static str = "hello"`. Then try to assign a `String`'s borrow to `&'static str` and read the error. Discuss when `T: 'static` means "contains no non-static references" (not "lives forever"). Write a function `fn requires_static<T: 'static>(val: T) { println!("got it"); }` and show that `String` satisfies the bound (it owns its data), while `&'a str` with a non-static lifetime does not
+- [ ] **Exercise 4 - Owned vs borrowed design** (~15-20 minutes -- focus on the implementation differences rather than an exhaustive comparison): Create two versions of a `Config` struct -- one with `name: &'a str` (borrowed) and one with `name: String` (owned). Implement a `parse()` function for each that constructs a `Config` from a string. Compare the API ergonomics, lifetime complexity, and performance implications. Discuss when each is appropriate
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 50a](task-050a.md) and [Lesson 50b](task-050b.md). Use those files instead._
-
 _Lesson not yet started._

@@ -1,6 +1,6 @@
-# Changelog - Lesson 097: Project 2 - Web API (axum, sqlx, auth, middleware)
+# Changelog - Lesson 097: Serde - Serialize/Deserialize, JSON, TOML, custom
 
-## Section 21: Capstone Projects
+## Section 19: Ecosystem & Tooling
 
 ### v1 - Initial creation
 - Lesson added to curriculum
@@ -12,89 +12,96 @@
 
 ### v3 - Concrete objectives and exercises (2026-03-03)
 - Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: axum server setup with Router/extractors, REST API design for notes resource, sqlx SQLite integration with State extractor, JWT authentication middleware, handler/service/repo project structure
-- **Exercises added**: Define REST routes with hardcoded responses, add SQLite persistence with migrations and repository, implement JWT auth with login endpoint and protected routes, request validation and structured JSON error handling
+- **Objectives added**: Derive Serialize/Deserialize, serde_json for JSON, toml crate for config, serde attributes customization, custom Deserialize implementation
+- **Exercises added**: Generic ApiResponse JSON roundtrip, TOML config with nested sections and defaults, adjacently-tagged enum with rename_all, custom HexColor deserializer
 
 ### v4 - Comprehensive pacing and content review (2026-03-03)
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
-- **Pacing**: Overloaded for 1-hour lesson
+- **Pacing**: Heavy for 1-hour lesson
 - **Issues found**:
-  - Introduces axum (entirely new, not taught in any previous lesson) while simultaneously building full CRUD + auth
-  - jsonwebtoken crate is also entirely new
-  - Learning axum Router + extractors + response types while building a complete API is realistically 3-4 hours
-  - Exercise format uses unnumbered bullets (formatting inconsistency)
-  - **Most overloaded task in the 081-100 range**
+  - Covers derive basics, JSON, TOML, 6+ serde attributes, AND custom deserializer
+  - Exercise 4 (custom Deserialize with Visitor) is one of serde's hardest topics -- could take 30+ minutes alone
 - **Recommendations**:
-  - Rebalance split with lesson 098: move auth/JWT to 098, keep axum basics + CRUD in 097
-  - Or add an axum introduction lesson before the capstone
-  - Standardize exercise format
+  - Move custom deserializer to optional/stretch or provide heavy scaffolding
 
 ### v5 - Cross-curriculum review (2026-03-03)
 - Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
-- **Pacing**: OVERLOADED (~3-4 hr) for 1-2 hour target
-- **Changes noted**: MOST CRITICAL CURRICULUM GAP -- axum is never taught before this capstone. jsonwebtoken also entirely new. Learning axum from scratch while building complete REST API with auth is 3-4 hours minimum. Exercise format inconsistency.
-- **Why**: No introductory axum lesson exists in the curriculum.
-- **v4 recommendations status**: Not yet applied -- v4 recommended rebalancing with 098 or adding axum intro lesson. Gradual progression: CRITICAL -- biggest pacing problem in 081-100.
+- **Pacing**: Heavy (~1.5-2 hr) for 1-2 hour target
+- **Changes noted**: Exercise 4 (custom Deserialize with Visitor pattern) is one of serde's most complex topics, could take 30+ min alone. Six serde attributes + JSON + TOML + custom deserializer is too much.
+- **Why**: Custom Deserialize extremely advanced for first serde lesson
+- **v4 recommendations status**: Not yet applied -- v4 recommended moving custom deserializer to optional or providing heavy scaffolding. Gradual progression: Heavy; ambitious scope.
 
 ### v6 - Pacing review and split assessment (2026-03-03)
 - Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
-- **Estimated time**: ~3-4 hours
-- **Pacing verdict**: OVERLOADED - split required
-- **Split needed**: Yes - split into 097a/097b
+- **Estimated time**: ~1.75-2.5 hours
+- **Pacing verdict**: Heavy - TRIM (not split)
+- **Split needed**: No
 - **Key issues**:
-  - CRITICAL: axum is never taught in any previous lesson; learner must learn axum from scratch
-  - Simultaneously building complete REST API with CRUD, SQLite, JWT auth
-  - jsonwebtoken crate also entirely new
-  - Most overloaded task in the 081-100 range
-- **Action taken**: Split into task-097a.md (Axum Web API Basics -- axum introduction, Router, handlers, extractors, in-memory CRUD) and task-097b.md (Database and Authentication -- SQLite with sqlx, JWT auth, middleware). Part A provides the missing axum introduction using in-memory storage only. Part B adds database and auth. Each part is now ~1.5-2 hours.
+  - Exercise 4 (custom Deserialize with Visitor pattern) is one of serde's hardest topics; could take 30-45 min alone
+  - Six serde attributes + JSON + TOML + custom deserializer is too much for one lesson
+- **Action taken**: Exercise 4 (custom Deserialize with Visitor) should be marked as stretch/optional when task content is updated. No split needed -- trimming Exercise 4 to optional brings pacing within range.
 
 ## v7 — Relaxed Pacing Review (2026-03-03)
 - **Threshold change**: Lessons now OK at 1-2 hours; only split if >2hrs
-- **Pacing**: Already split in v6 into 097a/097b
+- **Pacing**: Heavy (~1.5-2 hr)
 - **Status**: No changes needed
-- Prior split was adequate under relaxed threshold; no additional changes required
+- Within relaxed threshold. Custom Deserialize exercise (Ex4) should be marked stretch/optional.
 
 ### v8 - Full curriculum pacing review (2026-03-03)
-- Original lesson correctly split into 097a/097b at v6. Original was ~180-240 min (most overloaded in 081-100).
-- **Changes made**: None (split already done)
+- Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
+- **Estimated time**: ~90-110 min (Heavy); ~70-80 min with Ex4 optional
+- **Needs split**: No
+- **Issues**: Exercise 4 (custom Deserialize with Visitor) MUST be marked [STRETCH/OPTIONAL] (flagged since v4 across 4 review rounds, STILL unresolved). This is the highest-impact unfixed issue in this lesson.
+- **Changes made**: None (content fix deferred to lesson start -- HIGH PRIORITY)
 
 ### v9 - Full curriculum review — pacing, progression, and content audit (2026-03-03)
 - Reviewed all 100 tasks for realistic human pacing (1-2 hr target, split if >2 hrs)
-- **Estimated time**: ~180-240 min
-- **Pacing**: OVERLOADED
-- **Needs split**: Already split into 097a/097b
-- **Issues**: Most overloaded in 081-100. axum never taught in any previous lesson.
+- **Estimated time**: ~90-110 min (with Ex4)
+- **Pacing**: Heavy
+- **Needs split**: No
+- **Issues**: HIGH PRIORITY: Exercise 4 (custom Deserialize with Visitor pattern) is one of serde's hardest topics, 30-45 min alone. MUST be marked [STRETCH/OPTIONAL]. Without this, lesson exceeds 2hrs. Unresolved since v4.
 - **Changes made**: Changelog updated only
 
-### v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
+## v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
 - **Reviewer**: Full curriculum audit (lessons 001-100 reviewed against CLAUDE.md)
-- **Alignment**: SUPERSEDED by 097a/097b
-- **Time estimate**: 180-240 minutes (Overloaded -- original)
-- **Needs splitting**: Already split into 097a/097b at v6
-- **Pacing context**: Most overloaded in 081-100. axum never taught previously. Split correctly separates axum intro (097a) from database/auth (097b).
-- **Unresolved from prior reviews**: None (issues resolved by split)
+- **Alignment**: Exact match
+- **Time estimate**: 90-110 minutes (Heavy)
+- **Needs splitting**: No (if Exercise 4 marked optional)
+- **Pacing context**: Section 19 opener. Heavy but manageable if trimmed.
+- **Unresolved from prior reviews**: HIGH PRIORITY: Exercise 4 (custom Deserialize with Visitor pattern) MUST be [STRETCH/OPTIONAL]. Flagged 6 consecutive times since v4. Highest-impact unfixed issue in lessons 090-090. Without this fix, lesson exceeds 2 hours.
 - **New findings**: None
-- **Recommendation**: No action needed on original; see 097a and 097b changelogs
+- **Recommendation**: Mark Exercise 4 [STRETCH/OPTIONAL] BEFORE lesson start — this is the single most important content fix in this range
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
-- **Estimated time**: N/A (SUPERSEDED)
-- **Needs split**: N/A
-- **Progression**: SUPERSEDED by 097a/097b. Split was correct. In-memory storage for axum intro was the key insight.
-- **Changelog reconciliation**: All prior findings consistent
+- **Estimated time**: 90-120min (Heavy)
+- **Needs split**: No
+- **Progression**: Section 19 opener. Serde concepts translate well from Jackson/encoding/json.
+- **Changelog reconciliation**: "Exercise 4 should be [STRETCH]" flagged v4-v10 as unresolved — task file already has [STRETCH] since v3. Resolved.
 - **Genuinely unresolved**: None
-- **Recommendation**: No action needed on original; see 097a and 097b changelogs
+- **Recommendation**: No action needed — Exercise 4 [STRETCH] already present in task file
 
 ### v12 - Full curriculum pacing and progression review (2026-03-04)
 - Reviewed all active tasks for realistic human pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- SUPERSEDED by 097a/097b. No changes to parent.
+- **Estimated time**: 90-120min
+- **Pacing**: Heavy
+- **Issues**: Ex 4 (custom Deserialize) correctly [STRETCH]
+- **Recommendations**: None
+- **Changes made**: Changelog updated only
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: N/A
-- **Pacing**: SUPERSEDED
-- **Issues**: SUPERSEDED by 097a/097b
+- **Estimated time**: 80-100min
+- **Pacing**: Heavy (Good without STRETCH)
+- **Issues**: DeserializeOwned vs Deserialize<'de> distinction not explained — common confusion point. Exercise 4 (custom visitor/Deserialize) appropriately marked STRETCH
 - **Changes made**: Changelog updated only
 
+### v14 - Full curriculum review (2026-03-04)
+- Reviewed task file for pacing, prerequisites, progression, and content quality
+- **Estimated time**: 80-100min
+- **Pacing**: Heavy
+- **Issues**: DeserializeOwned vs Deserialize<'de> distinction not explained — common confusion point
+- **Changes made**: Added DeserializeOwned explanation before exercises, task file updated
+
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. Correctly superseded. **Changes**: Changelog only.
+- Reviewed. **Time**: 80-100min. **Pacing**: Heavy. **Issues**: None — STRETCH and DeserializeOwned note verified. **Changes**: Changelog only.

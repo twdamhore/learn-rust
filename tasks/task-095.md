@@ -1,26 +1,28 @@
-# Lesson 095: Project 1 - CLI tool (file processor with clap, serde, error handling)
+# Lesson 095: Benchmarking Part B: Profiling and Optimization
 
-## Section 21: Capstone Projects
+## Section 18: Testing & Quality
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Split from task-094 during v7 review due to heavy pacing (~2+ hr estimated)
+- Part B focuses on flamegraph generation, profiling-driven optimization, and interpreting profiling results (~1-1.5 hr)
 
 ## Objectives
-- [ ] Design the architecture of a CLI file processing tool: decide on input format (CSV, JSON, or TOML), processing operations (filter, transform, aggregate), and output format (table, JSON, or CSV)
-- [ ] Implement command-line argument parsing with `clap` derive API: subcommands (e.g., `process`, `validate`, `stats`), required and optional flags, file path arguments, and help text
-- [ ] Implement configuration file loading with `serde`: deserialize a TOML or JSON config file into typed Rust structs, with defaults for optional fields using `#[serde(default)]`
-- [ ] Implement file reading and data processing: read input files, apply transformations based on config/flags, and produce structured output
-- [ ] Implement comprehensive error handling with `thiserror` for library errors and `anyhow` for application-level errors, providing user-friendly error messages with context
+- [ ] Use `perf` (or equivalent) and `cargo-flamegraph` to generate flamegraphs that visually show where time is spent in a program
+- [ ] Read and interpret flamegraph output: identify hot functions, understand call stack depth, distinguish application code from library/runtime code
+- [ ] Identify hot spots from profiling data and apply targeted optimizations (algorithmic changes, allocation reduction, cache-friendly access patterns)
+- [ ] Follow a profiling-driven optimization cycle: measure, identify bottleneck, optimize, re-measure, compare
 
 ## Exercises
-- [ ] Build `fileproc`, a CLI tool that reads a CSV file and applies operations based on a TOML config file -- the config specifies which columns to select, filter conditions (e.g., "age > 30"), and sort order; use `clap` for CLI: `fileproc process --config config.toml input.csv`
-- [ ] Implement the `validate` subcommand that checks whether an input CSV matches an expected schema (column names and types) defined in the config file -- report all validation errors at once rather than stopping at the first one
-- [ ] Implement the `stats` subcommand that computes summary statistics for numeric columns (count, min, max, mean, sum) and prints them in a formatted table using simple `println!`-based alignment or the `comfy-table` crate
-- [ ] Add proper error handling throughout: use `thiserror` to define error enums for config parsing, file I/O, CSV parsing, and validation errors; use `anyhow` with `.context()` in `main` to wrap errors with user-friendly messages; ensure the tool prints helpful messages (not raw stack traces) and exits with appropriate codes
+- [ ] **Exercise 1 -- Flamegraph**: Write a program that builds a large `HashMap<String, Vec<u64>>` (100K entries, each with 100 values), then iterates all values to compute a sum. Generate a flamegraph with `cargo flamegraph`. Identify the hottest functions. Optimize by switching to `FxHashMap` or pre-allocating capacity, re-profile, and compare the flamegraphs.
+
+  FxHashMap comes from the `rustc-hash` crate: `cargo add rustc-hash`, then `use rustc_hash::FxHashMap;`. It's a fast, non-cryptographic hash map used internally by the Rust compiler.
+- [ ] **Exercise 2 -- Optimization from profiling**: Write a deliberately slow `fn process_text(input: &str) -> HashMap<String, usize>` that counts word frequencies using unnecessary allocations (e.g., `to_uppercase()` on every comparison, cloning strings needlessly). Benchmark it with criterion (from lesson 094). Profile to identify waste. Optimize step by step (reuse allocations, use `&str` keys, avoid redundant work). Show benchmark improvement at each step.
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 95a](task-095a.md) and [Lesson 95b](task-095b.md). Use those files instead._
-
+- This lesson requires lesson 094 to be completed first (criterion knowledge is used in Exercise 2).
+- **Platform-specific tooling**: `cargo flamegraph` requires `perf` on Linux (install via `linux-tools-common` / `linux-tools-generic`) or `dtrace` on macOS. On Linux you may also need to set `kernel.perf_event_paranoid` via sysctl.
+- Install flamegraph tooling: `cargo install flamegraph`.
+- Exercise 2 is iterative -- expect to go through 2-3 optimization rounds. Document each round with before/after benchmark numbers.
 _Lesson not yet started._

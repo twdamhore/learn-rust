@@ -1,6 +1,6 @@
-# Lesson 072: Attribute macros, real-world macro patterns
+# Lesson 072: Streams, async iterators, async channels
 
-## Section 15: Macros
+## Section 14: Async Rust
 
 ## Status: pending
 
@@ -8,63 +8,20 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Write attribute macros that transform function or struct definitions (e.g., adding logging, timing, or validation)
-- [ ] Study how real-world attribute macros work: `#[tokio::main]`, `#[serde(rename)]`, `#[test]`
-- [ ] Combine derive macros and attribute macros (helper attributes) to create configurable derives
-- [ ] Know when to choose macros vs generics/traits: macros for code generation, traits for polymorphism, generics for type-level abstraction
+- [ ] Understand the `Stream` trait as the async equivalent of `Iterator` (yields items over time via `poll_next`)
+- [ ] Use `tokio-stream` crate utilities to create, transform, and consume streams (`StreamExt::map`, `filter`, `take`, `next`)
+- [ ] Use `tokio::sync::mpsc` channels to build async producer-consumer patterns and convert the receiver into a stream
+- [ ] Understand backpressure in async systems -- how bounded channels naturally apply it when the buffer is full
 
 ## Exercises
-- [ ] **#[log_calls] attribute macro**: Write an attribute macro that wraps a function body to print the function name and arguments before execution and the return value after; apply it to several functions and verify the output
-- [ ] **Study #[tokio::main]**: Use `cargo expand` on a `#[tokio::main] async fn main()` to see what the attribute macro generates; write a comment explaining the expansion (it creates a `fn main` that builds a runtime and blocks on the async body)
-- [ ] **Validation attribute**: Write an attribute macro `#[validate_positive]` for functions that take numeric parameters; the macro inserts assertions at the start of the function body to check that all numeric args are positive; test with both valid and invalid inputs
 
-  **Starter code** -- syn::ItemFn parsing scaffold:
-  ```rust
-  use proc_macro::TokenStream;
-  use quote::quote;
-  use syn::{parse_macro_input, ItemFn, FnArg, PatType, Pat};
+**Setup**: Add `tokio-stream` to your dependencies: `cargo add tokio-stream --features sync`. This crate provides stream adaptors and wrappers for tokio channels.
 
-  #[proc_macro_attribute]
-  pub fn validate_positive(_attr: TokenStream, item: TokenStream) -> TokenStream {
-      let input_fn = parse_macro_input!(item as ItemFn);
-
-      // Extract function signature details
-      let fn_name = &input_fn.sig.ident;
-      let fn_args = &input_fn.sig.inputs;
-      let fn_body = &input_fn.block;
-      let fn_vis = &input_fn.vis;
-      let fn_sig = &input_fn.sig;
-
-      // Iterate over parameters to find numeric ones
-      let checks = fn_args.iter().filter_map(|arg| {
-          if let FnArg::Typed(PatType { pat, .. }) = arg {
-              if let Pat::Ident(pat_ident) = pat.as_ref() {
-                  let name = &pat_ident.ident;
-                  // Generate a runtime check for this parameter
-                  return Some(quote! {
-                      if #name < 0 {
-                          panic!("{} must be positive, got {}", stringify!(#name), #name);
-                      }
-                  });
-              }
-          }
-          None
-      });
-
-      // Reconstruct the function with validation checks prepended
-      let output = quote! {
-          #fn_vis #fn_sig {
-              #(#checks)*
-              #fn_body
-          }
-      };
-
-      output.into()
-  }
-  ```
-
-  > **Note:** This scaffold shows the basic structure. Your task: refine it to only check numeric parameter types (i32, i64, f64, etc.) rather than all parameters.
-- [ ] **Macro vs trait comparison**: Implement the same feature two ways -- a `Describe` trait that returns a string description of a struct; first with a derive macro that generates it automatically from field names/types, then with a manual trait impl; compare the trade-offs in a code comment
+- [ ] **Channel to stream**: Create a `tokio::sync::mpsc::channel(10)`, spawn a producer that sends numbers 1-20 with small delays, and consume the receiver as a stream using `tokio_stream::wrappers::ReceiverStream`; print each item as it arrives
+- [ ] **Stream processing pipeline**: Create a stream of integers 1-100, use `filter` to keep only even numbers, `map` to square them, and `take(10)` to limit results; collect into a `Vec` and print it
+  Hint: Use `tokio_stream::iter(1..=100)` to create the initial stream of integers.
+- [ ] **Rate-limited consumer**: Create a producer that sends items as fast as possible into a bounded channel (capacity 5); in the consumer, add a 100ms delay per item; observe how the producer blocks when the channel is full (backpressure)
+- [ ] **Async producer-consumer [STRETCH]**: Build a system with 3 producer tasks each sending tagged messages into a single `mpsc` channel, and 1 consumer task that processes them; use the stream API to merge and process messages; print statistics (count per producer) at the end
 
 ## Notes
 _Lesson not yet started._

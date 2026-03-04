@@ -1,26 +1,63 @@
-_**SUPERSEDED**: This lesson has been split into [Lesson 83a](task-083a.md) and [Lesson 83b](task-083b.md). Use those files instead._
+# Lesson 083: FFI - calling C from Rust (extern C, bindgen)
 
-# Lesson 083: Property-based testing (proptest), fuzzing (cargo-fuzz)
-
-## Section 18: Testing & Quality
+## Section 16: Unsafe & FFI
 
 ## Status: pending
 
 ## Added
 - Initial curriculum design
 
+## Prerequisites
+```bash
+# Required system packages for bindgen
+sudo apt install libclang-dev build-essential
+```
+
 ## Objectives
-- [ ] Understand property-based testing philosophy: instead of testing specific examples, describe properties that must hold for ALL inputs and let the framework generate thousands of test cases
-- [ ] Use the `proptest` crate to generate random test inputs with strategies (`any::<T>()`, ranges, regex, `prop_oneof!`, custom strategies)
-- [ ] Write meaningful property checks that capture invariants (e.g., "sorting is idempotent", "encode then decode returns original", "output length <= input length")
-- [ ] Set up `cargo-fuzz` for fuzz testing to discover crashes, panics, and edge cases in parsing/deserialization code
-- [ ] Interpret proptest shrinking output to find minimal failing cases and use the persistence file to reproduce failures
+- [ ] Use `extern "C"` blocks to declare foreign functions from C libraries and call them from Rust
+- [ ] Link to system C libraries using `#[link(name = "...")]` and Cargo build script (`build.rs`) configurations
+
+**What is `build.rs`?** Cargo automatically compiles and runs a file named `build.rs` in your crate root before building your crate. Build scripts are used for code generation, linking native libraries, and setting `cfg` flags. The script communicates with Cargo through `println!("cargo:...")` directives. This is your first encounter with build scripts in this curriculum.
+- [ ] Use `bindgen` to automatically generate Rust FFI bindings from C header files
+- [ ] Handle C-compatible types: `std::ffi::c_int`, `c_char`, `CString`, `CStr`, and null pointer checks
+- [ ] Understand the unsafe boundary at FFI: all foreign function calls are inherently unsafe
 
 ## Exercises
-- [ ] **Exercise 1 -- Proptest a sort function**: Write a `my_sort(vec: Vec<i32>) -> Vec<i32>` function. Use proptest to verify: (1) output is sorted, (2) output has same length as input, (3) output contains exactly the same elements, (4) sorting twice gives the same result as sorting once. Generate vectors of varying lengths (0..=1000) with `prop::collection::vec(any::<i32>(), 0..1000)`.
-- [ ] **Exercise 2 -- Roundtrip property**: Create an `encode(input: &str) -> String` / `decode(encoded: &str) -> Result<String, DecodeError>` pair (e.g., run-length encoding). Use proptest with `any::<String>()` and `"[a-zA-Z0-9 ]{0,100}"` strategies to verify that `decode(encode(s)) == Ok(s)` for all inputs. Intentionally introduce a bug and observe proptest's shrinking find the minimal failing case.
-- [ ] **Exercise 3 -- Custom strategy and complex data**: Define a `struct Order { id: u64, items: Vec<Item>, total: f64 }` and write a custom proptest strategy that generates valid orders (total matches sum of item prices, at least 1 item, valid prices). Use `prop_compose!` to build the strategy. Test a `validate_order` function against these generated orders.
-- [ ] **Exercise 4 -- Fuzzing a parser**: Write a simple `fn parse_key_value(input: &[u8]) -> Result<(String, String), ParseError>` that parses `key=value` from raw bytes. Set up `cargo-fuzz` with a fuzz target that feeds random bytes to this parser. Run the fuzzer briefly and document any panics or unexpected behaviors found. Fix the issues and re-run.
+- [ ] **Call libc functions**: Use `extern "C"` to declare `abs`, `sqrt`, and `strlen` from libc; call each one from Rust inside `unsafe` blocks; for `strlen`, create a `CString` and pass its `.as_ptr()`; print all results
+- [ ] **Bindgen basics**: Write a simple C header file (e.g., `mylib.h` with a struct `Point { int x; int y; }` and a function `int add(int a, int b)`); use `bindgen` in a `build.rs` to generate Rust bindings; include the generated bindings and use the struct and function
+
+  **Starter `build.rs`:**
+  ```rust
+  // build.rs
+  fn main() {
+      // Tell Cargo to only re-run this build script if wrapper.h changes.
+      println!("cargo:rerun-if-changed=wrapper.h");
+
+      let bindings = bindgen::Builder::default()
+          .header("wrapper.h")
+          .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+          .generate()
+          .expect("Unable to generate bindings");
+
+      let out_path = std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap());
+      bindings
+          .write_to_file(out_path.join("bindings.rs"))
+          .expect("Couldn't write bindings!");
+  }
+  ```
+
+  **Add to `Cargo.toml`:**
+  ```toml
+  [build-dependencies]
+  bindgen = "0.69"
+  ```
+
+  **Include the generated bindings in `main.rs` (or `lib.rs`):**
+  ```rust
+  include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+  ```
+- [ ] **Safe wrapper for C function**: Wrap the C `getenv` function in a safe Rust function `fn get_env(key: &str) -> Option<String>` that handles `CString` conversion, null pointer checking, and `CStr`-to-`String` conversion; test with known environment variables like `HOME` and `PATH`
+- [ ] **Exercise 4 [STRETCH] -- C string conversions**: Write a module that demonstrates all the C string conversion patterns: `&str` -> `CString` -> `*const c_char` for passing to C; `*const c_char` -> `CStr` -> `&str` for receiving from C; handle the case where C returns a null pointer; handle invalid UTF-8
 
 ## Notes
 _Lesson not yet started._

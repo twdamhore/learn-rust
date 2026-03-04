@@ -1,6 +1,6 @@
-# Lesson 039: Generic functions and structs
+# Lesson 039: Iterators - Iterator trait, adaptors, collect, chaining
 
-## Section 9: Generics & Traits
+## Section 8: Collections & Iterators
 
 ## Status: pending
 
@@ -8,17 +8,32 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Write generic functions with one or more type parameters (`fn foo<T>(x: T)`) and understand how the compiler monomorphizes them into concrete versions (zero-cost abstraction)
-- [ ] Create generic structs (`Point<T>`) and enums (`Either<L, R>`) with type parameters, and implement methods on them using `impl<T>`
-- [ ] Use multiple type parameters in a single function or struct (`Pair<T, U>`) and understand when multiple parameters are needed vs a single parameter
-- [ ] Compare Rust generics (monomorphization, no runtime cost) with Java generics (type erasure, boxing) and Go generics (stenciling/dictionaries), recognizing the trade-offs in compile time and binary size
-- [ ] Understand the turbofish syntax (`::<Type>`) for specifying generic types when the compiler cannot infer them
+- [ ] Understand the `Iterator` trait: the `next()` method returns `Option<Self::Item>`, and `None` signals the end
+- [ ] Use **core** iterator adaptors (master these): `map`, `filter`, `enumerate`, `collect`
+- [ ] Be aware of **reference** adaptors (know they exist, look them up when needed): `zip`, `take`, `skip`, `chain`, `flat_map`, `peekable`
+- [ ] Use `collect()` to build various collections (`Vec`, `HashMap`, `String`, `HashSet`) from an iterator, with turbofish syntax where needed
+- [ ] Chain multiple adaptors together to build data processing pipelines in a single expression
+- [ ] Understand iterator laziness: adaptors don't execute until a consuming method (`collect`, `for_each`, `sum`, `count`, `any`, `all`) is called
+
+> **Core adaptors** (master these): `map`, `filter`, `enumerate`, `collect`. The rest are reference -- know they exist, look them up when needed.
 
 ## Exercises
-- [ ] **Exercise 1 - Generic max function**: Write a generic `fn largest<T>(list: &[T]) -> &T` that returns the largest item in a slice -- observe the compiler error about missing trait bounds, then fix it by adding `PartialOrd` (preview of lesson 041)
-- [ ] **Exercise 2 - Generic Point struct**: Create a `Point<T>` struct with `x: T` and `y: T` fields, implement a `new()` associated function and a method that returns a reference to `x`, then test it with `Point<i32>`, `Point<f64>`, and `Point<String>`
-- [ ] **Exercise 3 - Mixed-type Pair**: Create a `Pair<T, U>` struct where `T` and `U` can be different types, implement a `mixup()` method that takes another `Pair` and returns a new `Pair` combining fields from both (like the Book example), and verify it works with `Pair<i32, String>` mixed with `Pair<f64, char>`
-- [ ] **Exercise 4 [OPTIONAL] - Monomorphization investigation**: Write a generic function used with 3 different concrete types, compile with `cargo build --release`, and use `cargo nm` or `nm` to observe that the compiler generated separate functions for each type (confirming zero-cost monomorphization). *Note: `nm` may not be available on all systems (it is a Unix/Linux binary inspection tool). If you cannot run it, the key takeaway is that Rust monomorphizes generics -- the compiler generates a separate copy of the function for each concrete type used, resulting in zero runtime overhead but increased binary size.*
+- [ ] **Exercise 1 - Transform and collect**: Given `vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`, use `iter().filter().map().collect()` to produce a `Vec<i32>` of the squares of even numbers. Verify the result is `[4, 16, 36, 64, 100]`
+- [ ] **Exercise 2 - Chaining adaptors**: Given a `Vec<String>` of lines from a hypothetical file, write a pipeline that: (1) skips the first line (header), (2) filters out empty lines, (3) trims each line, (4) enumerates with line numbers starting at 2, (5) collects into `Vec<(usize, &str)>`. Test with sample input
+
+Note: The `|x| ...` syntax is Rust's closure syntax, similar to Java's `x -> ...` lambdas or Go's `func(x) { ... }` function literals. Full coverage comes in lesson 055.
+
+```rust
+// Starter code — complete steps 3-5
+let result: Vec<(usize, &str)> = data.iter()
+    .skip(1)                          // Step 1: skip header
+    .filter(|line| !line.is_empty())  // Step 2: filter empty lines
+    // TODO: Step 3 - trim each line
+    // TODO: Step 4 - enumerate with line numbers starting at 2
+    // TODO: Step 5 - collect into Vec<(usize, &str)>
+```
+- [ ] **Exercise 3 - Zip and enumerate**: Use `zip` to combine two vectors `names: Vec<&str>` and `scores: Vec<u32>` into a `Vec<(&str, u32)>`. Then use `enumerate` on the result to add rankings. Also use `zip` to build a `HashMap<String, u32>` from the two vectors using `.collect()`
+- [ ] **Exercise 4 - Lazy evaluation proof**: Write a custom function `fn noisy_double(x: &i32) -> i32` that prints a message and returns `x * 2`. Use it in a `.map()` chain followed by `.take(3)`. Demonstrate that only 3 calls to `noisy_double` happen (not N), proving laziness. Compare with an imperative loop that processes all elements
 
 ## Notes
 _Lesson not yet started._

@@ -1,24 +1,26 @@
-# Lesson 085: CI/CD for Rust - GitHub Actions, caching, release builds
+# Lesson 085: Exposing Rust to Python (PyO3)
 
-## Section 18: Testing & Quality
+## Section 16: Unsafe & FFI
 
 ## Status: pending
 
+## Prerequisites
+- Python 3 installed
+- pip available
+- Create and activate a virtual environment first: `python3 -m venv .venv && source .venv/bin/activate`
+
 ## Added
-- Initial curriculum design
+- Split from lesson 084 (v6 pacing review)
 
 ## Objectives
-- [ ] Write a GitHub Actions workflow for a Rust project that runs `cargo test`, `cargo clippy`, and `cargo fmt --check` on every push and pull request
-- [ ] Configure dependency caching with `actions/cache` or `Swatinem/rust-cache` to avoid rebuilding all dependencies on every CI run
-- [ ] Set up a CI matrix to test against stable, beta, and nightly Rust toolchains, and optionally across multiple OS targets
-- [ ] Configure automated release builds that compile optimized binaries and optionally publish to crates.io with `cargo publish`
-- [ ] Understand cross-compilation in CI using `cross` or `cargo build --target` for Linux, macOS, and Windows targets
+- [ ] Set up PyO3 with maturin for building Python extensions in Rust
+- [ ] Expose Rust functions to Python using `#[pyfunction]` and `#[pymodule]`
+- [ ] Expose Rust structs as Python classes using `#[pyclass]` with `#[pymethods]`
 
 ## Exercises
-- [ ] **Exercise 1 -- Basic CI workflow**: Write a `.github/workflows/ci.yml` that triggers on push and PR to main. It should: (1) check out code, (2) install Rust stable, (3) run `cargo fmt --check`, (4) run `cargo clippy -- -D warnings`, (5) run `cargo test`. Test it by examining the YAML for correctness. Add `RUSTFLAGS: -D warnings` as an env var to catch all warnings.
-- [ ] **Exercise 2 -- Caching and matrix**: Extend the CI workflow to: (1) use `Swatinem/rust-cache` for dependency caching, (2) test on a matrix of `{stable, beta, nightly}` x `{ubuntu-latest, macos-latest}`. Add a `continue-on-error: true` for nightly so nightly failures don't block the pipeline. Document expected cache hit savings.
-- [ ] **Exercise 3 -- Release workflow**: Write a `.github/workflows/release.yml` that triggers on git tags matching `v*`. It should: (1) build release binaries for Linux and macOS, (2) create a GitHub Release with the tag, (3) upload the binaries as release assets using `softprops/action-gh-release`. Include `cargo build --release` and strip the binary with `strip` on Linux.
-- [ ] **Exercise 4 [OPTIONAL] -- Cross-compilation**: Add a job to the CI workflow that cross-compiles for `x86_64-unknown-linux-musl` (static binary) and `aarch64-unknown-linux-gnu` (ARM64). Use `cross` or install the target with `rustup target add`. Verify the produced binaries are for the correct architecture using `file` command in the workflow.
+- [ ] **PyO3 setup and first function**: Set up `maturin` (`pip install maturin`), create a PyO3 project with `maturin init`, expose a simple `#[pyfunction] fn fibonacci(n: u64) -> u64` to Python; build with `maturin develop` and test from a Python script
+- [ ] **Rust struct as Python class**: Expose a Rust struct `Counter` as a `#[pyclass]` with `increment`, `decrement`, and `get` methods via `#[pymethods]`; add `__repr__` for Python string representation; test from Python
+- [ ] **Performance comparison**: Compare performance of pure Python vs Rust-backed Python for a compute-heavy task (e.g., fibonacci, prime sieve, or matrix operations); time both implementations from Python and observe the speedup
 
 ## Notes
 _Lesson not yet started._

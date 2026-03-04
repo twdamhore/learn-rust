@@ -1,4 +1,4 @@
-# Changelog - Lesson 024: Advanced patterns - guards, bindings, nested patterns, @
+# Changelog - Lesson 024: Enums - basic, with data, Option<T>
 
 ## Section 5: Structuring Data
 
@@ -12,49 +12,48 @@
 
 ### v3 - Concrete objectives and exercises (2026-03-03)
 - Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: Match guards with if conditions, @ bindings for capture-and-test, nested enum/struct matching, or-patterns with |, pattern matching on references
-- **Exercises added**: Grade letter function with guards and tuple matching, categorize_age with @ bindings, nested Config/DbConfig/ConnectionType destructuring, recursive Expr evaluator with eval and simplify using Box<Expr>
+- **Objectives added**: Basic C-style enums, data-carrying variants (tuple and struct), Option<T> as null replacement, Option methods (unwrap/map/and_then), comparison with Java enums and Go iota
+- **Exercises added**: IpAddr enum with V4/V6 data variants, Message enum mixing all variant types, Option fundamentals with find_first_even, Option chaining with map/and_then for HashMap lookups
 
 ### v4 - Comprehensive pacing and content review (2026-03-03)
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
 - **Pacing**: Heavy for 1-hour lesson
 - **Issues found**:
-  - Exercise 4 uses `Box<T>` for recursive types -- Box is covered in lesson 054
-  - Exercise 4 (evaluator + simplifier) could take 20-30 minutes alone
+  - Covers two major topics: basic enums AND the entire Option<T> API with 8+ methods
+  - Learner new to algebraic data types from Java/Go may need more time to absorb enums-with-data
 - **Recommendations**:
-  - Provide brief Box<T> explanation inline or acknowledge it as a preview
-  - Consider making the simplify() portion of Exercise 4 optional
+  - Consider splitting: basic enums + Option core in main exercises, Option chaining methods as stretch
 
 ### v5 - Cross-curriculum review (2026-03-03)
 - Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
-- **Pacing**: Heavy (~1.5 hr) for 1-2 hour target
-- **Changes noted**: Exercise 4 introduces Box<T> (not taught until lesson 54 -- 30 lessons later) for recursive Expr. Requires recursive enum + eval() + simplify() with pattern guards.
-- **Why**: Box<T> is a major forward reference; simplify() is too ambitious as required.
-- **v4 recommendations status**: Not yet applied -- v4 recommended making simplify() optional and noting Box<T> preview. Gradual progression: Heavy spike; Exercise 4 needs trimming.
+- **Pacing**: Heavy (~1.5-2 hr) for 1-2 hour target
+- **Changes noted**: Two major conceptual areas (Rust enums as ADTs + full Option<T> API with 8+ methods). Java/Go devs have never seen enum variants carrying heterogeneous data. Exercise 4 (Option chaining with HashMap and_then) is demanding while absorbing enum concepts.
+- **Why**: Enums + full Option API is too much for one lesson.
+- **v4 recommendations status**: Not yet applied -- v4 recommended splitting into core (enums + basic Option) and stretch (Option chaining). Gradual progression: Significant spike; should mark Option chaining exercises as stretch.
 
 ### v6 - Pacing review and split assessment (2026-03-03)
 - Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
-- **Estimated time**: ~1.5 hr
+- **Estimated time**: ~1.5-2 hr
 - **Pacing verdict**: Heavy - under 2hr threshold
 - **Split needed**: No
 - **Key issues**:
-  - Exercise 4 uses Box<T> (not taught until lesson 54 - major forward reference)
-  - simplify() is too ambitious as required
-  - v4 recommendation to make simplify() optional not applied
+  - Two major concepts (algebraic enums + full Option API with 8+ methods)
+  - Exercise 4 (Option chaining) is demanding
+  - v4 recommendation to mark Option chaining as stretch not applied
 - **Action taken**: Changelog updated with pacing assessment
 
 ## v7 — Relaxed Pacing Review (2026-03-03)
 - **Threshold change**: Lessons now OK at 1-2 hours; only split if >2hrs
 - **Pacing**: Heavy (~1.5-2 hr)
 - **Status**: No changes needed
-- No changes needed under relaxed threshold. Expression evaluator exercise (Box<T> forward ref) still flagged but within limit.
+- No changes needed under relaxed threshold. Option chaining exercise still flagged as stretch-worthy but within limit.
 
 ### v8 - Full curriculum pacing review (2026-03-03)
 - Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
 - **Estimated time**: ~90-120 min (Heavy)
 - **Needs split**: No
-- **Progression**: Exercises 1-3 are well-calibrated. Exercise 4 is the problem.
-- **Issues**: Exercise 4 uses Box<T> (not taught until lesson 054 -- 30-lesson forward reference). simplify() should be marked [STRETCH] (both flagged since v4, unresolved).
+- **Progression**: Two major conceptual leaps (algebraic enums + full Option API) in one lesson.
+- **Issues**: Exercise 4 (Option chaining with and_then on HashMap) should be marked [STRETCH] (flagged since v4, unresolved).
 - **Changes made**: None (content fix deferred to lesson start)
 
 ### v9 - Full curriculum review — pacing, progression, and content audit (2026-03-03)
@@ -62,7 +61,7 @@
 - **Estimated time**: ~90-120 min
 - **Pacing**: Heavy
 - **Needs split**: No (upper edge)
-- **Issues**: PREREQUISITE VIOLATION — Exercise 4 uses Box<T> for recursive Expr enum (Box not taught until lesson 54, 30 lessons away). Exercise 4 simplify() should be [STRETCH]. Unresolved since v4.
+- **Issues**: Exercise 4 (Option chaining with and_then on HashMap) should be marked [STRETCH]. Flagged since v4, never applied to task file.
 - **Changes made**: Changelog updated only
 
 ## v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
@@ -70,17 +69,17 @@
 - **Alignment**: Exact match
 - **Time estimate**: 90-120 minutes (Heavy)
 - **Needs splitting**: No
-- **Pacing context**: Exercises 1-3 are well-calibrated. Exercise 4 (recursive Expr with Box<T>) is the problem child.
-- **Unresolved from prior reviews**: (1) PREREQUISITE VIOLATION - Exercise 4 uses Box<T> (not taught until lesson 54), needs inline explanation. (2) simplify() portion should be marked [STRETCH]. Both flagged since v4, never applied.
+- **Pacing context**: Two major concepts (enums as ADTs + full Option API) in one lesson. Java/Go devs have never seen enum variants carrying heterogeneous data.
+- **Unresolved from prior reviews**: Exercise 4 (Option chaining with and_then) should be marked [STRETCH]. Flagged since v4, never applied to task file.
 - **New findings**: None
-- **Recommendation**: Add brief Box<T> explanation inline and mark simplify() as [STRETCH] when lesson begins
+- **Recommendation**: Apply [STRETCH] tag to Exercise 4 when lesson begins
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
 - **Estimated time**: 90-120min (Heavy, upper edge)
 - **Needs split**: No
-- **Progression**: Exercises 1-3 well-calibrated; Exercise 4 is the heavy hitter.
-- **Changelog reconciliation**: (1) "simplify() should be [STRETCH]" -- Exercise 4 IS already marked [STRETCH] in task file. Resolved. (2) Box<T> prerequisite violation (lesson 054) -- mitigated by inline preview note and [STRETCH] tag. Acceptable.
+- **Progression**: Two major conceptual areas (enums as ADTs + full Option API). Within 2hr limit with stretch tag.
+- **Changelog reconciliation**: "Exercise 4 should be [STRETCH]" flagged since v4 as never applied -- but task file Exercise 4 IS already tagged [STRETCH]. Resolved.
 - **Genuinely unresolved**: None
 - **Recommendation**: No changes needed
 
@@ -88,23 +87,23 @@
 - Reviewed all active tasks for realistic human pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
 - **Estimated time**: 90-120min
 - **Pacing**: Heavy
-- **Issues**: Ex 4 uses Box<T> (lesson 054) but marked [STRETCH] with preview note.
+- **Issues**: Dense — enums as ADTs + full Option<T> API. Ex 4 is [STRETCH].
 - **Recommendations**: None
 - **Changes made**: Changelog updated only
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 70-90min
+- **Estimated time**: 60-75min
 - **Pacing**: Good
-- **Issues**: Exercise 4 (STRETCH) uses Box<T> (lesson 54) for recursive types — preview note provided. Objective 5 `ref` pattern is largely obsoleted by Rust 2018+ match ergonomics
+- **Issues**: Minor if-let forward reference (lesson 23) in Exercise 3 — introduced with context so acceptable
 - **Changes made**: Changelog updated only
 
 ### v14 - Full curriculum review (2026-03-04)
 - Reviewed task file for pacing, prerequisites, progression, and content quality
-- **Estimated time**: 70-90min
-- **Pacing**: Medium-Heavy
-- **Issues**: None (v13 concerns resolved)
-- **Changes made**: Clarified range patterns vs match guards in Exercise 1 (90..=100 is a range pattern, `if` is a guard); noted `ref` as legacy in Objective 5, task file updated
+- **Estimated time**: 80-100min
+- **Pacing**: Heavy
+- **Issues**: None (if-let forward reference now has inline syntax guidance)
+- **Changes made**: Added if-let syntax inline (`if let Some(value) = option { ... }`) and lesson 025 cross-reference to Exercise 3, task file updated
 
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. **Time**: 70-90min. **Pacing**: Medium-Heavy. **Issues**: None — Exercises 1-3 well-scoped, Ex 4 STRETCH with Box preview. **Changes**: Changelog only.
+- Reviewed. **Time**: 80-100min. **Pacing**: Heavy. **Issues**: None — two major concepts (ADT enums + Option) managed with STRETCH tag on Ex 4 and inline if-let guidance. **Changes**: Changelog only.

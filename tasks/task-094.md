@@ -1,26 +1,35 @@
-# Lesson 094: Memory layout - repr, alignment, size optimization
+# Lesson 094: Benchmarking Part A: Criterion and Measurement
 
-## Section 20: Special Targets
+## Section 18: Testing & Quality
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Split from task-094 during v7 review due to heavy pacing (~2+ hr estimated)
+- Part A focuses on criterion benchmarks, comparing algorithms, debug vs release, and compiler flags (~1-1.5 hr)
 
 ## Objectives
-- [ ] Understand Rust's default struct layout (no guaranteed field order, compiler may reorder for optimal packing) vs `#[repr(C)]` which preserves declaration order with C-compatible padding
-- [ ] Use `std::mem::size_of::<T>()`, `std::mem::align_of::<T>()`, and `std::mem::offset_of!()` to inspect type sizes, alignment requirements, and field offsets
-- [ ] Know when and why to use `#[repr(packed)]` (remove padding, may cause unaligned access), `#[repr(transparent)]` (newtype with same layout as inner), and `#[repr(align(N))]` (force minimum alignment)
-- [ ] Optimize struct sizes by reordering fields to minimize padding -- understand that a `(u8, u64, u8)` wastes more space than `(u64, u8, u8)` due to alignment requirements
-- [ ] Understand enum layout: discriminant size, niche optimization (e.g., `Option<NonZeroU64>` is the same size as `u64`), and `#[repr(u8)]`/`#[repr(C)]` for enums
+- [ ] Set up the `criterion` crate for micro-benchmarking and understand its statistical approach (warm-up, sample collection, confidence intervals) vs naive timing
+- [ ] Interpret criterion benchmark results: mean, median, standard deviation, throughput, and comparison with previous runs (regression detection)
+- [ ] Write parameterized benchmarks that compare multiple implementations across different input sizes
+- [ ] Understand the impact of optimization levels (`--release` vs debug), LTO, `codegen-units`, and `opt-level` on performance
 
 ## Exercises
-- [ ] **Exercise 1 - Struct Field Ordering**: Create several structs with fields in different orders (e.g., `struct A { a: u8, b: u64, c: u8 }` vs `struct B { b: u64, a: u8, c: u8 }`) and use `std::mem::size_of` and `std::mem::align_of` to compare their sizes and alignments -- explain why Rust's default repr may give different results than you'd expect from C
-- [ ] **Exercise 2 - repr(C) Network Packet**: Write a `#[repr(C)]` struct that matches a C-style network packet header (e.g., version: u8, msg_type: u8, length: u16, sequence: u32, payload_size: u64) and verify its size and field offsets match what a C compiler would produce -- compare the size with the same fields in default Rust repr. (We use `msg_type` instead of `type` because `type` is a reserved keyword in Rust.)
-- [ ] **Exercise 3 - Enum Niche Optimization**: **Note**: `NonZeroU64` is from `std::num` — it represents a `u64` that is guaranteed to never be zero. Rust uses this guarantee for niche optimization: `Option<NonZeroU64>` is the same size as `u64` because the `None` variant can use the zero value. Explore enum layout optimization: create `Option<Box<T>>`, `Option<NonZeroU64>`, `Option<&T>`, and `Option<bool>`, and print their sizes to observe niche filling -- then create a `#[repr(u8)]` enum and verify the discriminant is exactly 1 byte
-- [ ] **Exercise 4 - Cache-Line Aware Struct**: Design a "cache-line aware" struct for a hypothetical hot loop: start with a poorly-ordered struct of mixed field sizes (10+ fields), measure its size, then reorder fields from largest alignment to smallest to minimize padding -- also try `#[repr(packed)]` and discuss when the tradeoff of potential unaligned access is worth it. **Warning**: `repr(packed)` can cause undefined behavior on architectures that require aligned memory access. Creating references to unaligned fields is UB in Rust. Use `addr_of!` or `read_unaligned` to safely access packed fields.
+- [ ] **Exercise 1 -- Criterion benchmark**: Create two implementations of "find all duplicates in a Vec<i32>": one using nested loops (O(n^2)) and one using a HashSet (O(n)). Write criterion benchmarks for both with input sizes of 100, 1000, and 10000 elements. Run `cargo bench`, interpret the HTML report criterion generates, and document the performance difference.
+- [ ] **Exercise 2 -- Debug vs release comparison**: Take the duplicate-detection implementations from Exercise 1 and benchmark them in both debug and release mode. Document the performance difference. Then experiment with these `Cargo.toml` profile settings and create a table showing how each affects runtime for the 10000-element input:
 
-> **Note**: The `offset_of!` macro requires Rust 1.77+. Check your version with `rustc --version`.
+  ```toml
+  [profile.release]
+  opt-level = 3        # max optimization (try 0, 1, 2, 3)
+  lto = true           # link-time optimization (try false, true, "thin")
+  codegen-units = 1    # single codegen unit for better optimization
+  # target-cpu = "native"  # uncomment in RUSTFLAGS, not Cargo.toml
+  ```
+  > **Tip**: To set `target-cpu=native`, use: `RUSTFLAGS="-C target-cpu=native" cargo bench`
 
 ## Notes
+- This lesson pairs with lesson 095 which covers profiling and flamegraphs.
+- Exercise 2 builds directly on Exercise 1 -- complete Exercise 1 first.
+- The `criterion` crate generates HTML reports in `target/criterion/` -- open them in a browser for detailed visualizations.
+- If `cargo bench` seems slow on debug builds, that is expected and part of the lesson.
 _Lesson not yet started._

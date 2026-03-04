@@ -1,6 +1,6 @@
-# Changelog - Lesson 040: Traits - defining, implementing, default methods
+# Changelog - Lesson 040: Custom iterators, IntoIterator, lazy evaluation
 
-## Section 9: Generics & Traits
+## Section 8: Collections & Iterators
 
 ### v1 - Initial creation
 - Lesson added to curriculum
@@ -12,104 +12,112 @@
 
 ### v3 - Concrete objectives and exercises (2026-03-03)
 - Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: Define traits with required methods, implement for types, default methods, orphan rule/coherence, comparison with Java interfaces and Go interfaces (implicit vs explicit)
-- **Exercises added**: Summary trait with default methods, default method override, orphan rule experiment with newtype wrapper, Drawable trait for multiple geometric types
+- **Objectives added**: implementing Iterator for custom structs, IntoIterator for for-loop support, iter/iter_mut/into_iter convention, zero-cost abstraction
+- **Exercises added**: Fibonacci iterator, custom Playlist collection with IntoIterator, prime number iterator, iterator vs loop benchmark
 
 ### v4 - Comprehensive pacing and content review (2026-03-03)
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
-- **Pacing**: Moderate for 1-hour lesson
+- **Pacing**: Heavy for 1-hour lesson
 - **Issues found**:
-  - Exercise format differs (descriptive titles without 'Exercise N' prefix)
-  - Exercise 4 is ambiguous about whether 'takes any Drawable' means trait bounds or trait objects (lesson 043)
+  - **Structural ordering issue**: Requires `impl Iterator for Type` before trait implementation syntax taught (lesson 042)
+  - Exercise 3 (prime iterator) is algorithmically complex on top of the Rust concepts
 - **Recommendations**:
-  - Standardize exercise format
-  - Clarify Exercise 4 to specify trait bounds (since trait objects are lesson 043)
+  - Provide scaffolding/template code for the Iterator trait implementation
+  - Consider making Exercise 3 (primes) optional or providing the algorithm
 
 ### v5 - Cross-curriculum review (2026-03-03)
 - Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
-- **Pacing**: Moderate (~1 hr) for 1-2 hour target
-- **Changes noted**: By this point, learner has already used impl Trait syntax in lessons 31 and 38 without instruction -- lesson is partially retroactive. Exercise format inconsistency. Exercise 4 ambiguity ("takes any Drawable" should specify trait bounds, not trait objects -- lesson 43).
-- **Why**: Curriculum ordering means this lesson retroactively solidifies concepts already encountered.
-- **v4 recommendations status**: Not yet applied -- v4 recommended clarifying Exercise 4 to use trait bounds.
-- **Gradual progression**: Good; finally formalizes concepts used since lesson 31.
+- **Pacing**: Heavy (~1.5 hr) for 1-2 hour target
+- **Changes noted**: SIGNIFICANT prerequisite ordering issue -- requires impl Iterator for Type syntax not formally taught until lesson 40 (2 lessons later). Exercise 3 (prime iterator) combines algorithmic complexity with unfamiliar syntax. Exercise 4 (benchmark) adds scope.
+- **Why**: Implementing a trait you've only seen via derive is confusing.
+- **v4 recommendations status**: Not yet applied -- v4 recommended scaffolding/template code and making prime iterator optional.
+- **Gradual progression**: Third heavy lesson in a row (036-037-038); learner fatigue risk.
 
 ### v6 - Pacing review and split assessment (2026-03-03)
 - Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
-- **Estimated time**: ~50-60 min
-- **Pacing verdict**: Moderate
+- **Estimated time**: ~1.5-2 hr
+- **Pacing verdict**: Heavy - under 2hr threshold
 - **Split needed**: No
 - **Key issues**:
-  - By this point learner has already used impl Trait syntax in lessons 031 and 038 - this lesson retroactively formalizes it
-  - Exercise 4 ambiguous on trait bounds vs trait objects
-  - Exercise format inconsistency
+  - SIGNIFICANT prerequisite ordering - requires impl Iterator for Type before traits taught (lesson 40)
+  - Exercise 3 (prime iterator) combines algorithmic complexity with unfamiliar syntax
+  - THIRD heavy lesson in a row (036-037-038) - learner fatigue risk
 - **Action taken**: Changelog updated with pacing assessment
 
 ## v7 — Relaxed Pacing Review (2026-03-03)
 - **Threshold change**: Lessons now OK at 1-2 hours; only split if >2hrs
-- **Pacing**: Moderate (~50-60 min)
+- **Pacing**: Heavy (~1.5-2 hr)
 - **Status**: No changes needed
+- No changes needed under relaxed threshold. impl Iterator forward reference still flagged. Note: THIRD heavy in a row — learner fatigue risk flagged. Consider taking a break after this cluster.
 
 ### v8 - Full curriculum pacing review (2026-03-03)
 - Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
-- **Estimated time**: ~50-60 min (Moderate)
-- **Needs split**: No
-- **Progression**: Retroactively formalizes trait syntax already used in 031 and 038. Java interfaces analogy helps.
-- **Issues**: Exercise 4 ambiguity -- "write a function that takes any Drawable" should explicitly specify trait bounds, not trait objects (lesson 043). Exercise format inconsistency.
-- **Changes made**: None (content fix deferred to lesson start)
+- **Estimated time**: ~90-120 min (Heavy, upper edge of 2hr limit)
+- **Needs split**: No (barely)
+- **Progression**: Third consecutive heavy lesson. SIGNIFICANT prerequisite gap: impl Iterator for Type requires trait knowledge not taught until lesson 042.
+- **Issues**: Must provide complete scaffolding/template code for impl Iterator (flagged since v4, CRITICAL). Exercise 3 (Primes) should provide the trial-division algorithm. Exercise 4 (benchmark) should be marked optional. Notes section should advise taking a break after 036-037.
+- **Changes made**: None (content fix deferred to lesson start -- HIGH PRIORITY)
 
 ### v9 - Full curriculum review — pacing, progression, and content audit (2026-03-03)
 - Reviewed all 100 tasks for realistic human pacing (1-2 hr target, split if >2 hrs)
-- **Estimated time**: ~50-60 min
-- **Pacing**: Good
-- **Needs split**: No
-- **Issues**: Format inconsistency same as 039. RETROACTIVE FORMALIZATION — by lesson 40, learner has already used impl Trait for Type in lessons 31 and 38. This lesson retroactively formalizes what was used ad-hoc. Exercise 4 is ambiguous on trait bounds vs trait objects (lesson 43). Should add note acknowledging prior informal usage. Unresolved since v4.
+- **Estimated time**: ~90-120 min
+- **Pacing**: Heavy (upper edge of 2hr)
+- **Needs split**: No (barely)
+- **Issues**: SIGNIFICANT PREREQUISITE VIOLATION: Requires impl Iterator for Type before trait impl taught in lesson 40 (2 lessons later). Exercise 3 (prime iterator) combines algorithmic complexity with unfamiliar syntax. Exercise 4 (benchmark) adds more scope. Must provide scaffolding for impl Iterator. Exercise 3 should provide trial-division algorithm. Exercise 4 should be [STRETCH]. FATIGUE WARNING — third consecutive heavy lesson (036-037-038). Unresolved since v4.
 - **Changes made**: Changelog updated only
 
 ## v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
 - **Reviewer**: Full curriculum audit (lessons 001-100 reviewed against CLAUDE.md)
 - **Alignment**: Good match
-- **Time estimate**: 50-60 minutes (Moderate)
+- **Time estimate**: 90-120 minutes (Heavy)
 - **Needs splitting**: No
-- **Pacing context**: Retroactively formalizes trait syntax already used ad-hoc in lessons 031 and 038.
-- **Unresolved from prior reviews**: (1) Should acknowledge learner already used impl Trait for Type in lessons 031/038. (2) Exercise format inconsistency (same as 039). (3) Exercise 4 ambiguous on trait bounds vs trait objects -- should specify trait bounds (trait objects are lesson 043). All unresolved since v4.
+- **Pacing context**: Third consecutive heavy lesson (036-037-038). Highest fatigue risk in Section 8.
+- **Unresolved from prior reviews**: (1) SIGNIFICANT: impl Iterator for Type before traits taught (lesson 042) -- must provide template code. (2) Exercise 3 (Primes) combines algorithm + Rust complexity -- provide trial-division algorithm. (3) Exercise 4 should be marked [STRETCH]. All unresolved since v4.
 - **New findings**: None
-- **Recommendation**: Add opening note acknowledging prior informal trait usage. Standardize exercise format. Clarify Exercise 4 to explicitly use trait bounds, not trait objects.
+- **Recommendation**: Provide complete impl Iterator scaffold. Supply algorithm for Exercise 3. Mark Exercise 4 as [STRETCH]. Consider adding a "take a break" note after this lesson.
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
-- **Estimated time**: 55-65min (Moderate)
+- **Estimated time**: 100-120min (Heavy, borderline)
 - **Needs split**: No
-- **Progression**: Retroactive formalization note already present in task file. Java interfaces and Go implicit interfaces provide strong conceptual bridge.
-- **Changelog reconciliation**: All prior findings consistent
-- **Genuinely unresolved**: Exercise 4 "write a function that takes any Drawable" should specify to use trait bounds, not trait objects (lesson 043 topic)
-- **Recommendation**: Clarify Exercise 4 to explicitly require trait bounds before lesson start
+- **Progression**: Third consecutive heavy lesson. Template/scaffold for Iterator impl has been added (partially resolved).
+- **Changelog reconciliation**: impl Iterator scaffold flagged since v4 -- template has been added to task file (partially resolved)
+- **Genuinely unresolved**: (1) Exercise 3 should provide trial-division algorithm for primes. (2) Exercise 4 should be marked [STRETCH].
+- **Recommendation**: Supply trial-division algorithm in Exercise 3 and mark Exercise 4 as [STRETCH] before lesson start
 
-### v11-fix - Clarified Exercise 4 dispatch mechanism (2026-03-04)
-- Added note to use trait bounds (impl Drawable / generics), not trait objects (dyn)
-- **Why**: Ambiguous wording could lead learner to lesson 043 content prematurely
-- **Resolves**: Minor item from v11
+### v11-fix - Added prime algorithm scaffold and marked Exercise 4 [STRETCH] (2026-03-04)
+- Provided is_prime() helper function for Exercise 3
+- Marked Exercise 4 as [STRETCH]
+- **Why**: Exercise combined algorithmic complexity with unfamiliar Iterator syntax; Exercise 4 was an unnecessary time burden
+- **Resolves**: Genuinely unresolved items from v11
 
 ### v12 - Full curriculum pacing and progression review (2026-03-04)
 - Reviewed all active tasks for realistic human pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 55-70min
-- **Pacing**: Good
-- **Issues**: None
-- **Recommendations**: None
+- **Estimated time**: 100-120min
+- **Pacing**: Heavy (borderline OVERLOADED)
+- **Issues**: SIGNIFICANT prerequisite — impl Iterator for Type before traits taught in lesson 042. Scaffold helps but conceptual gap remains structural.
+- **Recommendations**: Add 2-paragraph "mini-intro to trait implementation" at lesson top; consider making IntoIterator for both &Playlist and Playlist a stretch goal.
 - **Changes made**: Changelog updated only
+
+### v12-fix - Task file changes applied (2026-03-04)
+- Added a 2-paragraph "Prerequisite Note: Implementing a Trait" section after Objectives, before the template code
+- Explains the `impl TraitName for TypeName { ... }` syntax pattern and connects it to the derive attribute from lesson 023
+- Notes that traits are formally taught in lesson 042 and directs the learner to follow the template
+- **Why**: Addresses the SIGNIFICANT prerequisite gap flagged since v4 -- learner needs to understand trait implementation syntax to complete Iterator exercises, but traits are not formally taught until 2 lessons later. The mini-intro bridges this gap without duplicating lesson 042 content.
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 65-80min
-- **Pacing**: Good
-- **Issues**: None — excellent backward references to prior informal trait usage in lessons 031 and 038
+- **Estimated time**: 75-95min
+- **Pacing**: Good-Heavy
+- **Issues**: Exercise 2 IntoIterator for &Playlist requires lifetime annotations not yet taught (lessons 46-50) — consider simplifying to consuming IntoIterator only, or provide borrowing impl as starter code
 - **Changes made**: Changelog updated only
 
 ### v14 - Full curriculum review (2026-03-04)
 - Reviewed task file for pacing, prerequisites, progression, and content quality
-- **Estimated time**: 60-80min
-- **Pacing**: Medium
-- **Issues**: No issues
-- **Changes made**: Changelog updated only
+- **Estimated time**: 75-100min
+- **Pacing**: Heavy
+- **Issues**: Exercise 2 required implementing `IntoIterator for &Playlist` with lifetime annotations not taught until lessons 048-050
+- **Changes made**: Simplified Exercise 2 to only require implementing consuming `IntoIterator for Playlist`. The borrowed `IntoIterator for &Playlist` variant is now provided as read-only sample code with a note that lifetime syntax is covered in lesson 048.
 
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. **Time**: 60-80min. **Pacing**: Medium. **Issues**: None — retroactive formalization note effective. **Changes**: Changelog only.
+- Reviewed. **Time**: 75-100min. **Pacing**: Heavy. **Issues**: None — all prior concerns well-mitigated. Third heavy in 036-038 cluster. **Changes**: Changelog only.

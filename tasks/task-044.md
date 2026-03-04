@@ -1,27 +1,24 @@
-# Lesson 044: Common std traits - Display, Debug, Default, From/Into
+# Lesson 044: impl Trait in argument vs return position, when to use which
 
 ## Section 9: Generics & Traits
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Initial curriculum design [NEW - bridging lesson]
 
 ## Objectives
-- [ ] Implement `std::fmt::Display` for custom types to control how they are printed with `{}`, and understand how it differs from `Debug` (which is for developers, `Display` is for users)
-- [ ] Use the `Default` trait to provide sensible default values for structs, both via `#[derive(Default)]` and manual `impl Default`, and use it with struct update syntax and `Option::unwrap_or_default()`
-- [ ] Implement `From<T>` for type conversions and understand that implementing `From` automatically gives you `Into` for free (blanket impl). Know the convention: implement `From`, call via `Into`
-- [ ] Implement `TryFrom<T>` and `TryInto<T>` for fallible conversions that return `Result`, and choose between `From` (infallible) and `TryFrom` (fallible) based on whether the conversion can fail
-- [ ] Recognize and use the ecosystem of common std traits: `Clone`, `PartialEq`/`Eq`, `PartialOrd`/`Ord`, `Hash` -- understanding when to derive vs manually implement
+- [ ] Understand `impl Trait` in argument position as syntactic sugar for a generic type parameter -- the caller chooses the concrete type, and the function is monomorphized for each type used
+- [ ] Understand `impl Trait` in return position as an existential type -- the function chooses a single concrete type to return, but hides it from the caller. The caller only knows it implements the trait
+- [ ] Know when return-position `impl Trait` is appropriate (returning iterators, closures, or complex types whose concrete name is unwieldy) and when it falls short (cannot return different concrete types from different branches)
+- [ ] Understand the key limitation: return-position `impl Trait` requires all return paths to produce the same concrete type -- `if cond { vec.iter() } else { slice.iter() }` will not compile because they are different iterator types
+- [ ] Compare `impl Trait` (static dispatch, one concrete type) with `dyn Trait` (dynamic dispatch, multiple concrete types) as a preview of lesson 045
 
 ## Exercises
-- [ ] **Display implementation**: Create a `Color` struct with `r`, `g`, `b` fields (u8). Implement `Display` to format as `#RRGGBB` hex string, and `Debug` (via derive) for developer output. Verify `println!("{}", color)` uses Display and `println!("{:?}", color)` uses Debug
-- [ ] **Default with builder pattern**: Create a `Config` struct with 5+ fields, derive `Default`, and write a builder-style API. Show how `Config { name: "app".into(), ..Default::default() }` fills in remaining fields. Compare with Go's zero-value initialization
-- [ ] **From/Into conversions**: Create `Celsius` and `Fahrenheit` tuple structs. Implement `From<Celsius> for Fahrenheit` and vice versa. Write code using `.into()` to convert between them. Then implement `From<Celsius> for f64` so temperatures can be used in arithmetic
-- [ ] **TryFrom with validation**: Create an `Email` struct that can only be constructed from a valid email string. Implement `TryFrom<&str> for Email` that validates the string contains `@` and a domain. Return a custom error type on failure. Write tests for valid and invalid inputs. *Optional*: also implement `TryFrom<String> for Email` to see how the two impls differ
-- [ ] **Derive vs manual impl [STRETCH]**: Create a `Point { x: f64, y: f64 }` struct. Derive `Clone` and `Debug`. Manually implement `PartialEq` to compare points within an epsilon tolerance (since `f64` equality is tricky). Explain why you cannot derive `Eq` or `Hash` for `f64` fields, and show how using `OrderedFloat` from the `ordered-float` crate would let you derive all of them
+- [ ] **Argument position equivalence**: Write the same function three ways -- (a) `fn process(item: impl Summary)`, (b) `fn process<T: Summary>(item: T)`, (c) [Preview] Write a version using `&dyn Summary` -- observe that it compiles. We'll explain how dynamic dispatch works via vtables in lesson 045. For now, just note that it looks different from `impl Summary`. Write tests calling all three
+- [ ] **Return-position iterator**: Write a function `fn even_numbers(up_to: u32) -> impl Iterator<Item = u32>` that returns a chained iterator filtering even numbers. Note how without `impl Iterator`, you would need to spell out the full iterator adapter type
+- [ ] **Return-position limitation**: Write a function that tries to return different iterator types from different `if/else` branches using `impl Iterator`. Read the compiler error, then fix it two ways: (a) collect into a `Vec` and return `vec.into_iter()`, (b) use `Box<dyn Iterator>` instead
+- [ ] **Closure return**: Write a function `fn make_multiplier(factor: i32) -> impl Fn(i32) -> i32` that returns a closure multiplying its argument by `factor`. Explain why `impl Fn` is necessary here (closures have anonymous types that cannot be named)
 
 ## Notes
-> **Cross-reference**: Lesson 021 introduced `#[derive(Debug, Clone, PartialEq, Eq, Hash)]`. This lesson goes deeper: manual implementations, `Display`, `Default`, `From`/`Into`, `TryFrom`, and when derive is insufficient.
-
 _Lesson not yet started._

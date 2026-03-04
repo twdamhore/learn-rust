@@ -1,6 +1,6 @@
-# Lesson 029: Panic, unwrap, expect, when to panic
+# Lesson 029: Cargo workspaces, features, profiles
 
-## Section 7: Error Handling
+## Section 6: Project Organization
 
 ## Status: pending
 
@@ -8,30 +8,33 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Understand the `panic!` macro and how stack unwinding works (vs abort), including how Rust cleans up resources on panic
-- [ ] Use `unwrap()` and `expect()` on `Option` and `Result`, and understand the difference in error messages they produce
-- [ ] Know when panicking is appropriate: unrecoverable errors, violated invariants, prototyping, and tests
-- [ ] Configure `panic = 'abort'` in `Cargo.toml` and understand the trade-off (binary size vs cleanup)
-- [ ] Compare Rust's panic model with Java's unchecked exceptions and Go's `panic`/`recover` mechanism
+- [ ] Create a Cargo workspace with a root `Cargo.toml` containing `[workspace] members = [...]` and multiple member packages that share a `target/` directory and `Cargo.lock`
+- [ ] Understand how workspace members depend on each other using `path` dependencies in their individual `Cargo.toml` files
+- [ ] Define and use Cargo features with `[features]` in `Cargo.toml` for conditional compilation using `#[cfg(feature = "...")]`, understanding that features are additive
+- [ ] Understand build profiles (`dev`, `release`, `test`, `bench`) and customize settings like `opt-level`, `debug`, `lto`, and `overflow-checks` in `[profile.*]`
+- [ ] Compare Cargo workspaces with Java multi-module projects (Maven/Gradle) and Go workspaces (`go.work`), noting shared lock files and unified builds
 
 ## Exercises
-- [ ] **Exercise 1 - Trigger panics**: Write code that panics via array out-of-bounds access, `unwrap()` on `None`, and an explicit `panic!("message")` call. Run each and read the backtrace (`RUST_BACKTRACE=1`)
-- [ ] **Exercise 2 - unwrap vs expect**: Create a function that parses a string to an integer. Call it with valid and invalid input using both `unwrap()` and `expect("context message")`. Compare the panic output and explain why `expect` is preferred
-- [ ] **Exercise 3 - Intentional panic with guard**: Write a `fn divide(a: i32, b: i32) -> i32` that panics with a descriptive message when `b == 0`. Call it from `main` and verify the message appears in the output
-- [ ] **Exercise 4 - Panic abort mode**: Set `[profile.dev] panic = 'abort'` in `Cargo.toml`, trigger a panic, and observe that the backtrace is different (no unwinding). Revert the setting afterward and note when abort mode is useful (embedded, binary size)
-- [ ] **Stretch Activity - `catch_unwind`** [STRETCH]: Experiment with `std::panic::catch_unwind` to recover from a panic. Note that this is rarely used in normal Rust code — it exists mainly for FFI boundaries and test harnesses.
-  ```rust
-  use std::panic;
+- [ ] **Exercise 1 - Workspace setup**: Create a workspace with three members: `shared` (library crate with shared types and logic), `cli` (binary crate depending on `shared`), and `server` (binary crate depending on `shared`). Add a shared struct and function in `shared`, use them from both `cli` and `server`. Run `cargo build` from the workspace root and verify all members compile together.
 
-  fn main() {
-      let result = panic::catch_unwind(|| {
-          panic!("oh no!");
-      });
-      println!("Caught panic: {:?}", result);
-  }
-  ```
+  > **Starter skeleton**:
+  > ```toml
+  > # Root Cargo.toml
+  > [workspace]
+  > members = ["shared", "cli", "server"]
+  >
+  > # cli/Cargo.toml (similar for server/)
+  > [package]
+  > name = "cli"
+  > version = "0.1.0"
+  > edition = "2021"
+  >
+  > [dependencies]
+  > shared = { path = "../shared" }
+  > ```
+- [ ] **Exercise 2 - Feature flags**: In the `shared` library, add a feature called `verbose` that enables extra debug output. Use `#[cfg(feature = "verbose")]` to conditionally compile a `debug_info()` function. In `cli/Cargo.toml`, depend on `shared` with `features = ["verbose"]` while `server` does not enable it. Verify that `cargo build -p cli` includes the verbose code and `cargo build -p server` does not. Add a `default` feature and practice `default-features = false`.
+- [ ] **Exercise 3 - Build profiles** [STRETCH]: In the workspace `Cargo.toml`, configure `[profile.dev]` with `opt-level = 1` and `[profile.release]` with `lto = true`. Build the `cli` crate in both debug and release mode (`cargo build -p cli` vs `cargo build -p cli --release`). Compare the binary sizes. Add a custom profile `[profile.profiling]` that inherits from `release` but keeps `debug = true` for profiling with debug symbols.
+- [ ] **Exercise 4 - Workspace-level commands**: Practice running workspace-wide commands: `cargo test --workspace` (runs tests in all members), `cargo clippy --workspace`, `cargo check --workspace`. Then run commands for individual members: `cargo test -p shared`, `cargo run -p cli`. Understand how `Cargo.lock` is shared across the workspace and why this matters for reproducible builds.
 
 ## Notes
 _Lesson not yet started._
-
-> **Supplementary reading**: If you finish early, read [The Rust Programming Language, Chapter 9.1 - Unrecoverable Errors with panic!](https://doc.rust-lang.org/book/ch09-01-unrecoverable-errors-with-panic.html) for additional context on panic behavior, stack unwinding, and abort mode.

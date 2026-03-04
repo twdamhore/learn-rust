@@ -1,26 +1,26 @@
-# Lesson 093: Cross-compilation, conditional compilation, cfg attributes
+# Lesson 093: Fuzzing with cargo-fuzz
 
-## Section 20: Special Targets
+## Section 18: Testing & Quality
 
 ## Status: pending
 
+## Prerequisites
+- Nightly Rust toolchain (`rustup install nightly`)
+- Lesson 092 (property-based testing with proptest)
+
 ## Added
-- Initial curriculum design
+- Split from lesson 092 (v6 pacing review)
 
 ## Objectives
-- [ ] Understand target triples (e.g., `x86_64-unknown-linux-gnu`, `aarch64-apple-darwin`) and how to add cross-compilation targets with `rustup target add`
-- [ ] Use `#[cfg(...)]` attributes for conditional compilation: `target_os`, `target_arch`, `target_family`, `feature`, `test`, and `debug_assertions` -- and understand how this differs from Go's build tags
-- [ ] Use the `cfg!()` macro for runtime checks vs `#[cfg()]` for compile-time code elimination, understanding when to use each
-- [ ] Organize platform-specific code using `cfg` on modules, functions, and entire files (e.g., `#[cfg(unix)] mod unix_impl;`)
-- [ ] Use Cargo features to enable optional dependencies and conditional code paths, defining features in `Cargo.toml` and gating code with `#[cfg(feature = "...")]`
+- [ ] Understand fuzzing vs property-based testing: fuzzing feeds random/mutated byte sequences to find crashes and panics, while property testing verifies logical invariants with structured data
+- [ ] Set up `cargo-fuzz` with nightly Rust: install the tool, initialize a fuzz project, and understand the fuzz target structure
+- [ ] Write fuzz targets and interpret results: create fuzz targets for parsing/deserialization functions, run the fuzzer, analyze crash reports, and add regression tests
 
 ## Exercises
-- [ ] **Exercise 1 - Cross-Compilation**: Install a cross-compilation target (e.g., `wasm32-unknown-unknown` or a different architecture if available) with `rustup target add`, then cross-compile a simple hello-world binary and inspect the output with `file` to verify the target architecture
-- [ ] **Exercise 2 - Platform-Specific Config Dirs**: Write a module that provides a `get_config_dir() -> PathBuf` function using `#[cfg(target_os = "linux")]`, `#[cfg(target_os = "macos")]`, and `#[cfg(target_os = "windows")]` to return the OS-appropriate configuration directory -- use `cfg!(target_os = "...")` in a fallback to print a warning at runtime
-- [ ] **Exercise 3 - Feature-Gated Serialization**: Create a library crate with a `serde` Cargo feature (not enabled by default) that optionally depends on `serde` and `serde_json` -- when the feature is enabled, derive `Serialize`/`Deserialize` on your types using `#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]` and provide a `to_json`/`from_json` function; write tests that run with `--features serde` to verify serialization works, and tests without the feature to verify the library still compiles and functions without serde
-
-  > **Note**: Lesson 082 Exercise 3 used simple boolean feature flags (`#[cfg(feature = "verbose")]`). This exercise goes further: the feature controls an **optional dependency** (`serde`), uses `cfg_attr` for **conditional derives**, and provides **feature-gated public API** (`to_json`/`from_json`) -- a real-world pattern used by crates like `uuid`, `chrono`, and `time`.
-- [ ] **Exercise 4 - Debug vs Release Instrumentation**: Write a program that uses `#[cfg(debug_assertions)]` to include verbose debug logging and timing instrumentation, then compile in both debug and release modes and compare the output -- also use `#[cfg(test)]` to include test helper functions that are excluded from the final binary
+- [ ] **Exercise 1 -- Fuzz a parser**: Write a simple `fn parse_key_value(input: &[u8]) -> Result<(String, String), ParseError>` that parses `key=value` from raw bytes. Set up `cargo-fuzz` with a fuzz target that feeds random bytes to this parser. Run the fuzzer for 1-2 minutes and document any panics or unexpected behaviors found.
+- [ ] **Exercise 2 -- Fix and regress**: Fix the bugs found by fuzzing in Exercise 1. Add the crash inputs as regression tests (unit tests with the exact byte sequences that caused crashes). Re-run the fuzzer to verify the fixes hold.
 
 ## Notes
 _Lesson not yet started._
+_Split from original lesson 092 which covered both proptest and cargo-fuzz (~1.75-2.5 hr estimated). This part focuses on cargo-fuzz only._
+_Requires nightly Rust: `rustup install nightly`. Run cargo-fuzz commands with `cargo +nightly fuzz`._

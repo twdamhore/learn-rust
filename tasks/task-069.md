@@ -1,24 +1,28 @@
-# Lesson 069: Practical declarative macros - useful patterns, debugging macros
+# Lesson 069: Tokio basics - tasks, spawn, select!, join!
 
-## Section 15: Macros
+## Section 14: Async Rust
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design [NEW - bridging lesson]
+- Initial curriculum design
 
 ## Objectives
-- [ ] Write macros that reduce real-world boilerplate (enum variant constructors, repetitive `impl` blocks)
-- [ ] Create a `hashmap!{}` macro for convenient `HashMap` initialization (similar to how `vec![]` works)
-- [ ] Build macros that generate builder-pattern or constructor code for structs
-- [ ] Debug macros using `cargo expand` and `trace_macros!(true)` to trace macro invocation at compile time
-- [ ] Identify and avoid common macro pitfalls: unexpected token captures, eager vs lazy evaluation, type ambiguity
+- [ ] Set up a tokio runtime using `#[tokio::main]` and understand the difference between `current_thread` and `multi_thread` flavors
+- [ ] Spawn concurrent tasks with `tokio::spawn` and understand that spawned tasks require `'static + Send` bounds
+- [ ] Use `tokio::select!` to race multiple futures and handle whichever completes first
+- [ ] Use `tokio::join!` (and `tokio::try_join!`) to run multiple futures concurrently and wait for all of them
+- [ ] Explain the difference between a tokio task and an OS thread, including the cooperative scheduling model
 
 ## Exercises
-- [ ] **hashmap! macro**: Write a `hashmap!` macro that accepts `key => value` pairs and returns a `HashMap`; support both trailing comma and no trailing comma; test with `hashmap!{ "a" => 1, "b" => 2 }` and verify the contents
-- [ ] **Impl block generator**: Write a `impl_display!` macro that takes a struct name and a format string, and generates an `impl std::fmt::Display` for that struct; test with at least 2 different structs
-- [ ] **Struct constructor macro [STRETCH]**: Write a `new_struct!` macro that takes a struct name and field definitions, generates the struct definition AND a `new()` associated function that takes all fields as parameters; test by constructing instances with the generated `new()`
-- [ ] **Debug a broken macro**: Start with a deliberately broken macro (provided as a comment with known bugs -- e.g., wrong fragment specifier, missing repetition separator); use `cargo expand` to diagnose the issue, fix the macro, and add comments explaining what was wrong
+- [ ] **Concurrent tasks**: Spawn 5 tasks with `tokio::spawn`, each sleeping for a random duration (100-500ms) and printing its ID; use `JoinHandle` to await all of them and collect their results
+- [ ] **Select racing**: Use `tokio::select!` to race two `tokio::time::sleep` futures (200ms vs 500ms); print which branch won; add a third branch that receives from an `mpsc` channel
+
+  > **Note:** `tokio::sync::mpsc` is the async equivalent of `std::sync::mpsc` from lesson 064. The API is similar but `send()` and `recv()` are async (you `.await` them).
+- [ ] **Join all**: Simulate 4 concurrent "API calls" using `async fn`s that sleep for different durations; use `tokio::join!` to run them all concurrently and print the total elapsed wall-clock time (should be close to the longest sleep, not the sum)
+- [ ] **Task vs thread comparison**: Write the same workload (spawn 1000 units of work that each sleep 10ms) once with `tokio::spawn` and once with `std::thread::spawn`; compare wall-clock time (primary metric) and optionally memory usage
+
+  > **Tip:** Compare wall-clock time first (this alone is dramatic at 1000 units). For optional memory comparison on Linux: `cat /proc/self/status | grep VmRSS` from within the program, or observe with `htop` in another terminal.
 
 ## Notes
 _Lesson not yet started._

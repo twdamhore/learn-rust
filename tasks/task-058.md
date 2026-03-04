@@ -1,6 +1,6 @@
-# Lesson 058: Threads - std::thread, move, join, scoped threads
+# Lesson 058: Box<T> - heap allocation, recursive types
 
-## Section 13: Concurrency
+## Section 12: Smart Pointers & Interior Mutability
 
 ## Status: pending
 
@@ -8,17 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Spawn OS threads with `std::thread::spawn` and understand that the closure must be `'static` (own all its data) unless using scoped threads
-- [ ] Use `move` closures with threads to transfer ownership of data into the spawned thread
-- [ ] Join threads with `JoinHandle::join()` and handle the `Result` it returns (which carries panics from the child thread)
-- [ ] Use `std::thread::scope` to spawn scoped threads that can borrow data from the parent stack without `'static` requirements
-- [ ] Compare Rust threads with Java's `Thread`/`Runnable` and Go's goroutines (lightweight vs OS threads, compile-time safety vs runtime race detection)
+- [ ] Understand that `Box<T>` allocates data on the heap and owns it, with automatic cleanup via the `Drop` trait when the `Box` goes out of scope
+- [ ] Create recursive data types (linked lists, trees) using `Box<T>` to give them a known size at compile time
+- [ ] Understand `Box<T>` as a smart pointer that implements `Deref` (auto-dereferencing to `&T`) and `Drop` (automatic heap cleanup)
+- [ ] Use `Box<dyn Trait>` for dynamic dispatch when you need to store different concrete types behind a common trait interface
+- [ ] Compare `Box<T>` with Java's `new` (everything is heap-allocated in Java) and Go's pointer semantics, understanding that Rust makes heap allocation explicit
 
 ## Exercises
-- [ ] **Basic thread spawning**: Spawn 5 threads, each printing its index and thread ID (`std::thread::current().id()`). Join all threads and print "all done" from the main thread. Observe that print order is non-deterministic.
-- [ ] **Move and ownership**: Create a `Vec<String>` of names. Spawn a thread with `move` that sorts and prints the names. After joining, verify the original variable is no longer accessible. Then refactor to clone the data so both threads can use it.
-- [ ] **Scoped threads for borrowing**: Use `std::thread::scope` to spawn threads that borrow slices of a shared `&[i32]` array. Each thread computes the sum of its slice. Collect the partial sums and compute the total. Explain why this doesn't need `move` or `Arc`.
-- [ ] **Parallel computation [STRETCH]**: Implement a parallel `map` function: given a `Vec<i32>` and a function `fn(i32) -> i32`, split the vector into N chunks (one per available CPU via `std::thread::available_parallelism()`), process each chunk in a scoped thread, and combine results into a single `Vec<i32>`. Test with a computationally expensive closure (e.g., checking primality).
+- [ ] **Singly linked list**: Implement `enum List { Cons(i32, Box<List>), Nil }` with methods `push_front`, `to_vec`, and `len`. Create a list `3 -> 2 -> 1 -> Nil` and verify its contents. Explain why `Box` is required here (what error do you get without it?).
+- [ ] **Binary tree [STRETCH]**: Define `enum Tree<T> { Leaf, Node { value: T, left: Box<Tree<T>>, right: Box<Tree<T>> } }`. Implement `insert` for a binary search tree, `contains` to search, and [OPTIONAL within STRETCH] implement `in_order` traversal to return a sorted `Vec<T>` if time permits. Test with integers.
+- [ ] **Box for large values**: Create a large struct (e.g., `[u8; 1_000_000]`) and demonstrate boxing it to avoid stack overflow. Use `std::mem::size_of_val` to show the size of a `Box<T>` is always pointer-sized regardless of `T`.
+- [ ] **Box<dyn Trait> dispatch**: Define a `Logger` trait with `log(&self, message: &str)` and `level(&self) -> &str` methods. Implement it for `ConsoleLogger`, `FileLogger`, and `JsonLogger`. Create a `Vec<Box<dyn Logger>>` containing all three and iterate to log a test message with each, printing the logger's level. Compare this with Java interfaces and Go interfaces.
 
 ## Notes
 _Lesson not yet started._

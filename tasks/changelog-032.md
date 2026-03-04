@@ -1,4 +1,4 @@
-# Changelog - Lesson 032: Error ecosystem - thiserror, anyhow, best practices
+# Changelog - Lesson 032: Result<T,E>, the ? operator, propagation
 
 ## Section 7: Error Handling
 
@@ -12,30 +12,28 @@
 
 ### v3 - Concrete objectives and exercises (2026-03-03)
 - Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: thiserror derive macros, anyhow for application errors, thiserror vs anyhow guidance, Context for enriching errors, downcasting
-- **Exercises added**: rewrite manual errors with thiserror, CLI app with anyhow, adding context to errors, library+binary pattern with both crates
+- **Objectives added**: Result<T,E> enum, match on Result, ? operator, chaining ?, comparison with Java try/catch and Go (val, err)
+- **Exercises added**: file reading with Result, error propagation with ?, converting unwrap to Result, multi-step pipeline with map_err
 
 ### v4 - Comprehensive pacing and content review (2026-03-03)
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
 - **Pacing**: Moderate for 1-hour lesson
-- **Issues found**:
-  - Requires internet access to download thiserror and anyhow crates
-- **Recommendations**: None - good progression, thiserror/anyhow simplify the manual approach from lesson 031
+- **Issues found**: None
+- **Recommendations**: None - good progression from match-based handling to `?` to pipelines
 
 ### v5 - Cross-curriculum review (2026-03-03)
 - Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
 - **Pacing**: Moderate (~1 hr) for 1-2 hour target
-- **Changes noted**: Actually simplifies lesson 31 by using thiserror to auto-generate boilerplate. Good teaching pattern (hard way first, then ecosystem solution). Internet access needed for crate downloads.
-- **Why**: Well-structured progression from lesson 31.
-- **v4 recommendations status**: Not yet applied -- v4 noted internet requirement.
-- **Gradual progression**: Good relief after heavy lesson 31.
+- **Changes noted**: No issues. Good progression from match-based handling to ? operator to pipelines. Go devs find Result familiar (explicit error returns).
+- **Why**: Well-structured error handling core lesson.
+- **v4 recommendations status**: N/A. Gradual progression: Smooth step up from lesson 29.
 
 ### v6 - Pacing review and split assessment (2026-03-03)
 - Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
 - **Estimated time**: ~50-60 min
 - **Pacing verdict**: Moderate
 - **Split needed**: No
-- **Key issues**: None - simplifies lesson 031's boilerplate with thiserror; good "hard way first, then ecosystem" pattern; requires internet
+- **Key issues**: None - good progression from match-based Result to ? operator; Go devs find Result familiar
 - **Action taken**: Changelog updated with pacing assessment
 
 ## v7 — Relaxed Pacing Review (2026-03-03)
@@ -47,8 +45,8 @@
 - Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
 - **Estimated time**: ~50-60 min (Moderate)
 - **Needs split**: No
-- **Progression**: Excellent. The "manual boilerplate in 031, then thiserror eliminates it in 032" is one of the best teaching patterns in the curriculum.
-- **Issues**: None (requires internet for crate downloads).
+- **Progression**: Core error handling. Good match-first-then-? pedagogy. Go's (val, err) pattern helps.
+- **Issues**: None
 - **Changes made**: None
 
 ### v9 - Full curriculum review — pacing, progression, and content audit (2026-03-03)
@@ -56,7 +54,7 @@
 - **Estimated time**: ~50-60 min
 - **Pacing**: Good
 - **Needs split**: No
-- **Issues**: None. Requires internet for thiserror/anyhow downloads. Excellent lesson pair with 031 — manual boilerplate first, then thiserror eliminates it.
+- **Issues**: None
 - **Changes made**: Changelog updated only
 
 ## v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
@@ -64,23 +62,23 @@
 - **Alignment**: Exact match
 - **Time estimate**: 50-60 minutes (Moderate)
 - **Needs splitting**: No
-- **Pacing context**: Good relief after heavy lesson 031. Excellent "hard way first, then thiserror" pedagogy.
+- **Pacing context**: Good match-first-then-? pedagogy. Go experience with explicit (val, err) returns helps learner grasp Result quickly.
 - **Unresolved from prior reviews**: None
 - **New findings**: None
-- **Recommendation**: No changes needed. One of the strongest lesson pairs in the curriculum (031+032).
+- **Recommendation**: No changes needed
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
-- **Estimated time**: 50-65min (Moderate)
+- **Estimated time**: 50-70min (Moderate)
 - **Needs split**: No
-- **Progression**: 031+032 pair praised as strongest teaching sequence. Internet needed for thiserror/anyhow.
+- **Progression**: Excellent match-first-then-? pedagogy.
 - **Changelog reconciliation**: All prior findings consistent
 - **Genuinely unresolved**: None
 - **Recommendation**: No changes needed
 
 ### v12 - Full curriculum pacing and progression review (2026-03-04)
 - Reviewed all active tasks for realistic human pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 50-65min
+- **Estimated time**: 50-70min
 - **Pacing**: Good
 - **Issues**: None
 - **Recommendations**: None
@@ -88,17 +86,17 @@
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 55-70min
+- **Estimated time**: 60-75min
 - **Pacing**: Good
-- **Issues**: None
+- **Issues**: Exercise 3 references code 'that uses unwrap() everywhere' but does not provide starter code — should add the actual code to refactor
 - **Changes made**: Changelog updated only
 
 ### v14 - Full curriculum review (2026-03-04)
 - Reviewed task file for pacing, prerequisites, progression, and content quality
-- **Estimated time**: 55-70min
+- **Estimated time**: 60-75min
 - **Pacing**: Medium
-- **Issues**: None
-- **Changes made**: Added downcasting syntax (`error.downcast_ref::<YourErrorType>()` with example) to Exercise 4, task file updated
+- **Issues**: None (v13 concerns resolved)
+- **Changes made**: Added starter code (read_config with 4 unwraps) to Exercise 3; added map_err explanation to Exercise 4, task file updated
 
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. **Time**: 55-70min. **Pacing**: Medium. **Issues**: None — excellent complement to lesson 031. **Changes**: Changelog only.
+- Reviewed. **Time**: 60-75min. **Pacing**: Medium. **Issues**: None — solid core error handling lesson. **Changes**: Changelog only.

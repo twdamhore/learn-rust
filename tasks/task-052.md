@@ -1,24 +1,23 @@
-# Lesson 052: move closures, closures as parameters and return values
+# Lesson 052: Lifetime Practice Part B: Lifetime Design Patterns
 
-## Section 11: Closures & Functional Patterns
+## Section 10: Lifetimes
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Split from original lesson 051 (v7 pacing review)
 
 ## Objectives
-- [ ] Use the `move` keyword with closures to force ownership transfer of captured variables, even when the closure body only needs a reference
-- [ ] Pass closures as function parameters using both generic bounds (`impl Fn`, `where F: Fn`) and trait objects (`&dyn Fn`, `Box<dyn Fn>`)
-- [ ] Return closures from functions using `impl Fn(...)` syntax, understanding why the concrete type cannot be named
-- [ ] Store closures in structs and collections using `Box<dyn Fn>` for heterogeneous closure storage
-- [ ] Compare `move` closure semantics with Java's effectively-final lambda restriction and Go's closure-over-variable behavior
+- [ ] Understand when to restructure code vs when to add annotations: if annotations become deeply nested or confusing, the design may need rethinking rather than more annotations
+- [ ] Recognize unnecessary lifetime annotations and simplify them using Rust's lifetime elision rules
+- [ ] Use `cargo clippy` to detect over-annotated lifetimes (the `needless_lifetimes` lint)
+- [ ] Handle the common "cannot borrow as mutable because it is also borrowed as immutable" pattern when building cache-like structures, and understand the design strategies for resolving it
 
 ## Exercises
-- [ ] **Move closures — returning closures that capture locals**: Write a function `make_greeting(name: String) -> impl Fn() -> String` that captures `name` by moving it into the closure and returns a greeting string. Call it, then try to use `name` after passing it to the function and observe the move error. Compare: in Go, the closure would capture a reference to `name` and both could still use it — in Rust, ownership is transferred
-- [ ] **Returning closures**: Write a function `make_scaler(factor: f64) -> impl Fn(f64) -> f64` that returns a closure scaling its argument by `factor`. Then write `make_greeter(name: String) -> impl Fn() -> String` that returns the captured name in a greeting. Explain why `move` is needed in the second case.
-- [ ] **Callback system [STRETCH]**: Build a simple `EventEmitter` struct that stores a `Vec<Box<dyn Fn(&str)>>` of listener callbacks. Implement `on(&mut self, callback: impl Fn(&str) + 'static)` to register listeners and `emit(&self, event: &str)` to call all listeners. Test it with multiple closures that capture different data.
-- [ ] **Closure trait selection**: Write three functions that each accept a different closure trait bound (`Fn`, `FnMut`, `FnOnce`) and demonstrate which closures can be passed to which. Show that an `Fn` closure can satisfy `FnMut` and `FnOnce` bounds (trait hierarchy).
+- [ ] **Over-annotated simplification**: Given a function with unnecessary explicit lifetime annotations on every reference (e.g., `fn process<'a, 'b, 'c>(a: &'a str, b: &'b i32, c: &'c [u8]) -> usize`), simplify by removing annotations that elision handles. Use `cargo clippy` to verify
+- [ ] **Cache struct**: Build a `Cache<'a>` struct that holds a `&'a str` key and a computed `String` value. Implement a `fn get_or_compute()` method that returns the cached value or computes it. Encounter the common "cannot borrow as mutable because it is also borrowed as immutable" pattern and resolve it
+
+  **Hint**: Resolve this by restructuring the code, not with `RefCell` (which is taught in lesson 060). Try the `contains_key` + `insert` pattern: check if the key exists first, compute the value in a local variable, then insert. This avoids holding an immutable borrow while trying to mutably borrow.
 
 ## Notes
 _Lesson not yet started._

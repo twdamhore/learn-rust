@@ -1,6 +1,6 @@
-# Lesson 091: no_std - embedded basics, core vs std
+# Lesson 091: Integration tests, test fixtures, conditional compilation
 
-## Section 20: Special Targets
+## Section 18: Testing & Quality
 
 ## Status: pending
 
@@ -8,17 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Understand what `#![no_std]` removes from the default environment: the `std` crate (heap allocation, I/O, threading, networking) and why `core` remains available with all language primitives (Option, Result, iterators, traits)
-- [ ] Know the role of the `alloc` crate as a middle ground -- heap allocation (Vec, String, Box, Rc) without the full std library, and how to use it with `extern crate alloc`
-- [ ] Write `no_std`-compatible library code using only `core` types and traits, understanding which common features are and are not available
-- [ ] Use conditional compilation to make a crate work in both `std` and `no_std` environments using Cargo features (e.g., a default `std` feature that falls back to `core`)
-- [ ] Understand real-world `no_std` use cases: embedded systems (microcontrollers), WebAssembly modules, OS kernels, and bootloaders -- and how this compares to Go's single-runtime approach that makes bare-metal Go impractical
+- [ ] Set up the `tests/` directory for integration tests and understand how each file in `tests/` is compiled as a separate crate that can only access the library's public API
+- [ ] Create shared test utility modules in `tests/common/mod.rs` and use them across multiple integration test files
+- [ ] Use conditional compilation with `#[cfg(test)]`, `#[cfg(feature = "...")]`, and `#[cfg(target_os = "...")]` to include test-only code and feature-gated tests
+- [ ] Understand the difference between unit tests (test internals, in `src/`) and integration tests (test public API, in `tests/`) and when to use each
+- [ ] Test error conditions and edge cases from an external user's perspective, verifying that the public API returns correct error types
 
 ## Exercises
-- [ ] **Exercise 1 -- no_std Fixed-Size Stack**: Create a `#![no_std]` library crate that implements a fixed-size stack (`ArrayStack<T, const N: usize>`) using only `core` types -- support `push`, `pop`, `peek`, `is_empty`, and `len`, with no heap allocation
-- [ ] **Exercise 2 -- Conditional std Feature**: Add a Cargo feature called `std` (set as default) to the library: when enabled, implement `std::error::Error` for your error type and provide `Display`; when disabled, use `core::fmt::Display` only -- use `#[cfg(feature = "std")]` to gate the std-dependent code
-- [ ] **Exercise 3 -- alloc-Based SortedVec**: **Note on `extern crate alloc`**: In `no_std` code, the standard library's prelude is not available, so `Vec`, `String`, `Box`, etc. are not automatically imported. The `extern crate alloc;` declaration makes the `alloc` crate available, giving you access to heap-allocated types via `use alloc::vec::Vec;` etc. This `extern crate` syntax is rarely needed in normal Rust (the 2018 edition made it mostly unnecessary) but is still required for `alloc` in `no_std` contexts. Write a second `no_std` library that uses `extern crate alloc` to provide a `SortedVec<T: Ord>` type backed by `alloc::vec::Vec` -- implement insert (maintaining sort order), contains (binary search), and iteration
-- [ ] **Exercise 4 -- Testing no_std Libraries**: Write tests for both libraries: test the `no_std` + `core`-only library with `--no-default-features` to verify it compiles without std, and test the `alloc`-based library to verify heap-backed functionality works correctly
+- [ ] **Exercise 1 -- Integration test setup**: Create a small library crate with a public API for a `Calculator` struct (methods: `new()`, `add()`, `subtract()`, `multiply()`, `divide() -> Result`). Write integration tests in `tests/calculator_tests.rs` that test the public API end-to-end, including error handling for divide-by-zero. Confirm that private helper functions are NOT accessible from integration tests.
+- [ ] **Exercise 2 -- Shared test utilities**: Create `tests/common/mod.rs` with helper functions (e.g., `setup_temp_dir() -> TempDir`, `create_test_file(dir: &Path, name: &str, content: &str)`). Use these helpers in two separate integration test files (`tests/read_tests.rs` and `tests/write_tests.rs`) that test a file-processing library. Verify both test files can share the common module.
+- [ ] **Exercise 3 -- Feature-gated tests**: Add a `verbose` feature to your library's `Cargo.toml` (`[features] default = [] verbose = []`). Write a `#[cfg(feature = "verbose")] fn log_detail(msg: &str) { println!("[VERBOSE] {}", msg); }` helper and call it from library functions. Write `#[cfg(feature = "verbose")]` tests that verify verbose output is produced. Write `#[cfg(not(feature = "verbose"))]` tests that verify the library works without verbose logging. Run `cargo test`, `cargo test --features verbose`, and `cargo test --all-features` to see the differences.
+- [ ] **Exercise 4 -- Error condition testing**: For the calculator library, write integration tests that exhaustively test error conditions: division by zero, overflow for large numbers, and invalid operations. Use `matches!` macro to assert specific error variants. Write a test that verifies the `Display` implementation on your error type produces human-readable messages.
 
 ## Notes
 _Lesson not yet started._

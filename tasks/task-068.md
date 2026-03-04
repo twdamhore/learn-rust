@@ -1,6 +1,6 @@
-# Lesson 068: Declarative macros - macro_rules!, matchers, repetition
+# Lesson 068: Futures, async fn, .await, what the runtime does
 
-## Section 15: Macros
+## Section 14: Async Rust
 
 ## Status: pending
 
@@ -8,19 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Write `macro_rules!` macros with basic matchers and understand the invocation syntax
-- [ ] Understand the available fragment specifiers: `expr`, `ident`, `ty`, `tt`, `literal`, `pat`, `path`, `stmt`, `block`, and when to use each
-- [ ] Use repetition patterns (`$( ... )*`, `$( ... )+`, `$( ... ),*`) to handle variable numbers of arguments
-- [ ] Understand macro hygiene in Rust -- why macro-generated variables do not collide with caller variables
-- [ ] Use `cargo expand` (via `cargo-expand` crate) to inspect macro expansion output
+- [ ] Understand the `Future` trait and its `poll`-based execution model (`Poll::Ready` vs `Poll::Pending`)
+- [ ] Write `async fn` functions and chain them with `.await`, understanding that each `.await` is a yield point
+- [ ] Explain what an async runtime does (executor polls futures, reactor watches I/O) and why Rust has no built-in runtime
+- [ ] Compare Rust's async model with Java's `CompletableFuture` (callback-based) and Go's goroutines (preemptive green threads)
+- [ ] Demonstrate that Rust futures are lazy -- they do nothing until polled by an executor
 
 ## Exercises
-- [ ] **Custom vec macro**: Write a `my_vec!` macro that accepts a comma-separated list of expressions and creates a `Vec` by calling `push` for each element; test with `my_vec![1, 2, 3]` and verify it equals `vec![1, 2, 3]`
-- [ ] **Function generator macro**: Write a `make_adder!` macro that takes an identifier and a number, and generates a function with that name which adds the number to its argument; e.g., `make_adder!(add_five, 5)` generates `fn add_five(x: i32) -> i32 { x + 5 }`
-- [ ] **Variadic print macro**: Write a `debug_print!` macro that takes any number of expressions, and for each one prints the expression text (using `stringify!`) and its value; e.g., `debug_print!(1+2, "hello".len())` prints `1+2 = 3` and `"hello".len() = 5`
-- [ ] **Expand and inspect**: Install `cargo-expand` and run it on your macros from the previous exercises; study the expanded output and write comments in your code explaining any surprises in the expansion
+- [ ] **Lazy futures demo**: Write an `async fn` that prints a message and returns a value; call the function without `.await` and observe that nothing prints; then `.await` it and confirm the output appears
+- [ ] **Chaining awaits**: Write three `async fn`s that simulate stages of a pipeline (fetch, transform, store) with `println!` markers; chain them with `.await` in a fourth `async fn` and verify the execution order
+- [ ] **Tokio hello world**: Add `tokio` as a dependency, annotate `main` with `#[tokio::main]`, and run an async function that sleeps for 1 second using `tokio::time::sleep` then prints a greeting
+- [ ] **Future trait exploration**: Read the signature of `std::future::Future` in the docs; write a short summary in comments explaining what `type Output`, `fn poll`, `Context`, and `Waker` each do
 
 ## Notes
-> **Setup**: `cargo-expand` requires the nightly toolchain. Install it with: `rustup toolchain install nightly` and then `cargo install cargo-expand`. Run with: `cargo +nightly expand`
-
 _Lesson not yet started._

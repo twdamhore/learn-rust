@@ -1,25 +1,25 @@
-# Lesson 016: Thinking in ownership - refactoring patterns, borrow checker battles
+# Lesson 016: Ownership Patterns and Strategies
 
 ## Section 3: Ownership System
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design [NEW - bridging lesson]
+- Split from task-016 [NEW - bridging lesson] due to overloaded pacing (~3-4 hr)
+- Part A focuses on concepts and simple ownership exercises using only lessons 001-015 concepts (~1.5 hr)
 
 ## Objectives
-- [ ] Recognize common ownership patterns: returning owned data from constructors, borrowing in read-only functions, taking `&mut` for modification, consuming `self` for transformations
-- [ ] Refactor code from excessive `.clone()` calls to using references - understand when cloning is the right choice (shared ownership boundaries, thread spawning, small data) vs when it signals a design problem
-- [ ] Develop a personal strategy for borrow checker battles: start with owned data, introduce references when needed, use the compiler errors as a design guide rather than fighting them
-- [ ] Understand the "ownership design" mindset: decide who owns each piece of data at design time, not as an afterthought - contrast with Java (GC decides) and Go (GC + escape analysis)
+- [ ] Choose between clone, borrow, and move for any given situation -- understand the tradeoffs of each strategy and when each is appropriate
+- [ ] Recognize when to restructure code to satisfy the borrow checker -- instead of fighting the compiler, use its errors as design feedback
+- [ ] Apply common ownership refactoring strategies: split structs into smaller pieces, return owned values instead of references to locals, use indices instead of references into collections, reorder operations to shorten borrow lifetimes
 
 ## Exercises
-- [ ] **Refactor 5 snippets**: Fix each of these ownership-broken programs (each is a separate function): (1) a function that builds a String and returns `&str` referencing it, (2) a loop that moves a Vec into a function on each iteration, (3) a struct constructor that takes ownership of a String unnecessarily, (4) code that clones a large Vec just to read the first element, (5) a function that takes `String` as parameter when `&str` would suffice
-- [ ] **Build a student registry**: Create a `struct Student { name: String, grades: Vec<u32> }` and a `struct Registry { students: Vec<Student> }`. Implement: `fn add_student(&mut self, student: Student)`, `fn find_student(&self, name: &str) -> Option<&Student>`, `fn add_grade(&mut self, name: &str, grade: u32)`, and `fn highest_average(&self) -> Option<&Student>`. Think carefully about what each method borrows vs owns
-- [ ] **Clone elimination**: Start with a working program that uses `.clone()` in 6+ places (e.g., a function that processes a list of names, filters them, groups them by first letter). Progressively eliminate each clone by introducing references, reordering operations, or restructuring - keep a comment for each change explaining the tradeoff
-- [ ] **Ownership puzzle challenge**: Implement a function `fn longest_name(names: &[String]) -> &str` that returns a reference to the longest name in a slice. Then implement `fn format_names(names: &[String]) -> String` that joins names with commas. Then combine them: print the longest name and the formatted list using the same input slice, dealing with any borrow issues that arise
+- [ ] **Fix 3 broken programs**: Fix each of these 3 ownership-broken programs (each is a separate small function): (1) a function that tries to return `&str` referencing a local `String` (fix the dangling reference), (2) a loop that moves a `Vec` into a function on each iteration (fix the use-after-move), (3) a function that takes `String` as parameter when `&str` would suffice (improve the API). Fix each using only the ownership strategies you know: clone, borrow, or restructure.
+- [ ] **Refactor mutate-while-iterating**: Write a function that tries to mutate a `Vec<i32>` while iterating over it (e.g., doubling values that meet a condition), fix it by collecting indices first, then mutating. Observe how the borrow checker prevents the original approach and why the index-based solution works.
+- [ ] **Compare 3 approaches to a shared-data problem**: Given a function that needs to use the same `String` in two places, implement three solutions: (1) clone everything, (2) use references/borrows, (3) restructure to avoid the conflict entirely. Add a comment to each explaining the tradeoff (simplicity vs performance vs readability).
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 16a](task-016a.md) and [Lesson 16b](task-016b.md). Use those files instead._
-
+- This lesson uses ONLY concepts from lessons 001-015: variables, types, functions, control flow, ownership, moves, references, borrowing rules.
+- No structs, no impl blocks, no Option, no iterators beyond basic `for` loops.
+- If you get stuck on a borrow checker error, read the compiler message carefully -- it is telling you exactly what went wrong.
 _Lesson not yet started._

@@ -1,25 +1,24 @@
-# Lesson 035: String in depth - UTF-8, indexing, manipulation
+# Lesson 035: Testing with ownership, Result, and custom types
 
-## Section 8: Collections & Iterators
+## Section 7: Error Handling
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Initial curriculum design [NEW - bridging lesson]
 
 ## Objectives
-- [ ] Understand `String`'s internal structure as a `Vec<u8>` wrapper that guarantees valid UTF-8
-- [ ] Work with UTF-8 encoding: understand why indexing by byte position can panic on multi-byte characters, and why `String` does not implement `Index<usize>`
-- [ ] Iterate over a `String` by `.chars()` (Unicode scalar values) vs `.bytes()` (raw bytes) and understand when to use each
-- [ ] Safely slice strings using byte ranges while ensuring you don't split a multi-byte character (and what happens if you do)
-- [ ] Use common string methods: `contains`, `replace`, `split`, `trim`, `starts_with`, `to_uppercase`, and `format!` macro for building strings
+- [ ] Write tests for functions that take ownership, borrow, or return owned data, understanding how test code interacts with the ownership system
+- [ ] Test functions that return `Result<T, E>`, using both `assert!(result.is_ok())` and the `?` operator directly in test functions that return `Result`
+- [ ] Test custom error types by verifying specific error variants, error messages, and error source chains
+- [ ] Use `#[should_panic]` and `#[should_panic(expected = "message")]` to test code that is supposed to panic
+- [ ] Organize test modules with helper/fixture functions that create test data, avoiding repetition across tests
 
 ## Exercises
-- [ ] **Exercise 1 - Chars vs bytes**: Create a string containing English, emoji, and CJK characters (e.g., `"Hello world"`). Print its `.len()` (byte count) and `.chars().count()` (character count). Iterate with `.chars()` and `.bytes()` and print each, observing how multi-byte characters appear
-- [ ] **Exercise 2 - Safe slicing**: Write a function `fn safe_substring(s: &str, start: usize, end: usize) -> Option<&str>` that returns a slice only if both `start` and `end` fall on character boundaries (use `.is_char_boundary()`). Test with ASCII strings and multi-byte strings
-- [ ] **Exercise 3 - String building**: Concatenate strings three ways: (1) using `+` operator (note it takes ownership of the left side), (2) using `format!()`, (3) using `String::new()` + `push_str()`. Build the same sentence with each approach and discuss which is clearest and most efficient
-- [ ] **Exercise 4 - CSV line parser**: Write `fn parse_csv_line(line: &str) -> Vec<&str>` that splits a line by commas, trims whitespace from each field, and returns the fields. Handle edge cases: empty fields, trailing commas, leading/trailing whitespace. Write tests for each case
-  > **Hint**: If you encounter lifetime errors when returning `&str` slices from parsed lines, remember that the slice borrows from the input string. Consider whether your function should return owned `String` values or require the caller to keep the source string alive.
+- [ ] **Exercise 1 - Testing owned data**: Create a `UserProfile` struct with `name: String` and `email: String`. Write functions `create_profile()`, `update_email()`, and `merge_profiles()`. Write tests that demonstrate Rust enforces ownership at compile time: write a test showing data is correctly accessible after a move to the new owner. In a comment, note that trying to use the original variable after a move produces a compile error (the compiler, not the test runner, enforces this)
+- [ ] **Exercise 2 - Testing Result paths**: Write a function `fn parse_age(input: &str) -> Result<u8, AgeError>` with custom error variants for empty input, non-numeric input, and out-of-range values (0 or >150). Write tests covering every Ok and Err path, using `assert_eq!` on error variants and test functions that return `Result<(), AgeError>`
+- [ ] **Exercise 3 - Testing panics**: Write `fn divide_or_panic(a: i32, b: i32) -> i32` that panics on division by zero. Write tests using `#[should_panic]` and `#[should_panic(expected = "division by zero")]`. Also test that non-panic inputs work correctly
+- [ ] **Exercise 4 - Test fixtures and helpers**: Create a test module with helper functions: `fn sample_config() -> Config`, `fn sample_config_with_errors() -> Config`, `fn assert_error_contains(result: Result<Config, ConfigError>, expected_msg: &str)`. Use these helpers across 4+ tests to verify config parsing, demonstrating DRY test organization. (Tip: You can reuse the `Config`/`ConfigError` types from lesson 033 Exercise 4 if you completed it, for cross-lesson continuity.)
 
 ## Notes
 _Lesson not yet started._

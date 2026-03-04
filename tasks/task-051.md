@@ -1,23 +1,43 @@
-# Lesson 051: Closures - syntax, capturing, Fn/FnMut/FnOnce
+# Lesson 051: Lifetime Practice Part A: Diagnosing Lifetime Errors
 
-## Section 11: Closures & Functional Patterns
+## Section 10: Lifetimes
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Split from original lesson 051 (v7 pacing review)
 
 ## Objectives
-- [ ] Write closures using `|args| body` syntax with explicit and inferred parameter types, and store them in variables
-- [ ] Understand how closures capture variables from their environment: by shared reference (`&T`), by mutable reference (`&mut T`), and by value (move)
-- [ ] Distinguish the three closure traits `Fn`, `FnMut`, and `FnOnce` and explain when each is required based on how the closure uses captured variables
-- [ ] Compare Rust closures with Java lambdas (effectively-final restriction, no mutable capture) and Go anonymous functions (capture by reference to variable, not value)
+- [ ] Diagnose common lifetime error patterns by reading compiler messages carefully: "borrowed value does not live long enough", "lifetime mismatch", "cannot infer an appropriate lifetime", and "returns a reference to data owned by the current function"
+- [ ] Develop strategies for fixing lifetime errors: extend the scope of the borrowed data, restructure code to avoid the borrow, return owned data instead of a reference, or use `clone()` as a deliberate trade-off
+- [ ] Practice reading complex lifetime error messages from the compiler and translating them into actionable fixes
+- [ ] Build intuition for when references are the right tool and when owned data (`String` instead of `&str`, `Vec<T>` instead of `&[T]`) simplifies the design without meaningful performance cost
 
 ## Exercises
-- [ ] **Closure basics**: Write closures that add, multiply, and greet by name; store each in a variable and call it. Annotate one with explicit types and let the others infer. Verify you cannot give a closure two different signatures.
-- [ ] **Capture modes**: Create a `Vec<String>`, then write three closures: one that reads it (borrows `&`), one that pushes to it (borrows `&mut`), and one that moves it into the closure and drops it. Print the closure trait each requires (`Fn`, `FnMut`, `FnOnce`) by passing them to helper functions with those bounds.
-- [ ] **Passing closures to functions**: Write a function `apply_twice<F: Fn(i32) -> i32>(f: F, x: i32) -> i32` that applies the closure twice. Test it with a closure that doubles its input and one that adds 10.
-- [ ] **FnOnce in practice**: Write a closure that captures a `String` by value and returns it (consuming the captured value). Demonstrate that calling it a second time causes a compile error. Then write a function `consume_and_print<F: FnOnce() -> String>(f: F)` and pass the closure to it.
+- [ ] **Lifetime puzzle set (3 broken programs)**: Fix each of these programs that fail to compile due to lifetime issues: (1) a function returning `&str` that was created inside the function, (2) a struct holding `&str` that outlives the source `String`, (3) a method returning a reference where the borrow checker cannot determine the lifetime
+- [ ] **Borrowed-to-owned refactor**: Take a `Tokenizer<'a>` struct that borrows a `&'a str` source and produces `Token<'a>` values (also borrowing). Refactor it to an owned `Tokenizer` that takes `String` and produces `Token` values with `String` fields. Compare the API complexity and discuss when each approach is preferable
+
+  > **Time-box**: Aim for ~30 minutes on this exercise. If you get stuck on the refactor, focus on explaining *why* the borrow checker rejects specific patterns rather than completing the full refactor.
+  >
+  > **Starter code:**
+  > ```rust
+  > struct Tokenizer<'a> {
+  >     input: &'a str,
+  >     pos: usize,
+  > }
+  >
+  > struct Token<'a> {
+  >     text: &'a str,
+  >     kind: TokenKind,
+  > }
+  >
+  > enum TokenKind { Word, Number, Whitespace }
+  >
+  > impl<'a> Tokenizer<'a> {
+  >     fn new(input: &'a str) -> Self { Tokenizer { input, pos: 0 } }
+  >     fn next_token(&mut self) -> Option<Token<'a>> { todo!() }
+  > }
+  > ```
 
 ## Notes
 _Lesson not yet started._

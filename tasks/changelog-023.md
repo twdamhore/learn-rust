@@ -1,51 +1,54 @@
-# Changelog - Lesson 023: Pattern matching - match, if let, while let, destructuring
+# Changelog - Lesson 023: The derive attribute - Debug, Clone, PartialEq, Eq, Hash
 
 ## Section 5: Structuring Data
 
 ### v1 - Initial creation
 - Lesson added to curriculum
+- **NEW**: Bridging lesson added after gap analysis
 
 ### v2 - Review audit (2026-03-03)
 - Reviewed task file against CLAUDE.md curriculum
-- **Result**: Title, section assignment, and topic all align with curriculum
+- **Result**: Title, section assignment, and bridging lesson tag all align with curriculum
+- Correctly tagged as [NEW - bridging lesson] matching CLAUDE.md [NEW] designation
 - **Status**: pending (no content changes needed)
 
 ### v3 - Concrete objectives and exercises (2026-03-03)
 - Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: Exhaustive match expressions, destructuring in match arms, if let and while let syntax, _ wildcard and .. for ignoring fields, match as expression returning values
-- **Exercises added**: Exhaustive Message enum matching, Shape enum area/describe with struct destructuring, if let/while let with Option and Vec, command parser with parse_command and execute functions
+- **Objectives added**: Understand #[derive] syntax, Debug for printing, Clone/Copy for duplication, PartialEq/Eq for comparison, Hash for HashMap keys
+- **Exercises added**: Student/Classroom Debug printing with {:?} and {:#?}, Clone vs Copy with Point and Label, equality comparison with Coordinate, HashMap key usage with Tile struct requiring Hash+Eq+PartialEq
 
 ### v4 - Comprehensive pacing and content review (2026-03-03)
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
 - **Pacing**: Moderate for 1-hour lesson
 - **Issues found**: None
-- **Recommendations**: None - good cross-lesson continuity (references Message enum from lesson 022)
+- **Recommendations**: None - well-scoped bridging lesson, each exercise targets one derive trait
 
 ### v5 - Cross-curriculum review (2026-03-03)
 - Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
 - **Pacing**: Moderate (~1 hr) for 1-2 hour target
-- **Changes noted**: No issues. Good cross-lesson continuity referencing Message enum from lesson 22. Pattern matching is new but exercises build logically.
-- **Why**: Well-structured with good continuity.
-- **v4 recommendations status**: N/A. Gradual progression: Good recovery after heavy lesson 22.
+- **Changes noted**: Well-scoped bridging lesson. Each exercise targets one derive trait. Copy vs Clone is the only genuinely new concept.
+- **Why**: Java/Go devs will find Debug/PartialEq natural.
+- **v4 recommendations status**: N/A. Gradual progression: Smooth start to Section 5.
 
 ### v6 - Pacing review and split assessment (2026-03-03)
 - Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
 - **Estimated time**: ~50-60 min
 - **Pacing verdict**: Moderate
 - **Split needed**: No
-- **Key issues**: None - good recovery after heavy lesson 022; good cross-lesson continuity with Message enum from 022
+- **Key issues**: None - derive attribute is natural for Java/Go devs (Debug ~ toString, PartialEq ~ equals)
 - **Action taken**: Changelog updated with pacing assessment
 
 ## v7 — Relaxed Pacing Review (2026-03-03)
 - **Threshold change**: Lessons now OK at 1-2 hours; only split if >2hrs
 - **Pacing**: Moderate (~50-60 min)
 - **Status**: No changes needed
+- Good breather lesson
 
 ### v8 - Full curriculum pacing review (2026-03-03)
 - Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
 - **Estimated time**: ~50-60 min (Moderate)
 - **Needs split**: No
-- **Progression**: Excellent recovery after heavy 022. Reusing Message enum from 022 is strong pedagogy.
+- **Progression**: Comfortable on-ramp to Section 5. Low cognitive load.
 - **Issues**: None
 - **Changes made**: None
 
@@ -62,23 +65,23 @@
 - **Alignment**: Exact match
 - **Time estimate**: 50-60 minutes (Moderate)
 - **Needs splitting**: No
-- **Pacing context**: Good breather after heavy lesson 022. Cross-lesson continuity with 022's Message enum is strong pedagogy.
+- **Pacing context**: Clean lesson. Java/Go devs find Debug ~ toString and PartialEq ~ equals natural. Good on-ramp to Section 5.
 - **Unresolved from prior reviews**: None
 - **New findings**: None
 - **Recommendation**: No changes needed
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
-- **Estimated time**: 50-70min (Moderate)
+- **Estimated time**: 50-60min (Moderate)
 - **Needs split**: No
-- **Progression**: Excellent cross-lesson continuity with 022's Message enum.
+- **Progression**: Cleanest lesson in the 021-033 range. Bridging lesson fits well as on-ramp to Section 5.
 - **Changelog reconciliation**: All prior findings consistent
 - **Genuinely unresolved**: None
 - **Recommendation**: No changes needed
 
 ### v12 - Full curriculum pacing and progression review (2026-03-04)
 - Reviewed all active tasks for realistic human pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 50-70min
+- **Estimated time**: 50-60min
 - **Pacing**: Good
 - **Issues**: None
 - **Recommendations**: None
@@ -86,17 +89,21 @@
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: 65-80min
+- **Estimated time**: 50-60min
 - **Pacing**: Good
-- **Issues**: None
+- **Issues**: Exercise 4 uses HashMap (lesson 36) — minor forward reference; add brief note
 - **Changes made**: Changelog updated only
 
 ### v14 - Full curriculum review (2026-03-04)
 - Reviewed task file for pacing, prerequisites, progression, and content quality
-- **Estimated time**: 60-80min
-- **Pacing**: Medium
+- **Estimated time**: 50-60min
+- **Pacing**: Light-Medium
 - **Issues**: None
-- **Changes made**: Added simpler while-let introductory example (drain a Vec<i32>) before nested `while let Some(Some(val))` pattern in Exercise 3, task file updated
+- **Changes made**: Changelog updated only
 
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. **Time**: 60-80min. **Pacing**: Medium. **Issues**: None — excellent cross-lesson continuity with lesson 022. **Changes**: Changelog only.
+- Reviewed task file for pacing, progression, and content quality
+- **Estimated time**: 50-60min
+- **Pacing**: Light-Medium
+- **Changes made**: Added HashMap usage note to Exercise 4 explaining minimal HashMap usage needed and pointing to lesson 038
+- **Why**: Minor forward reference to HashMap (lesson 038) lacked usage context

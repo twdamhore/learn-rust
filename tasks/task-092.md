@@ -1,26 +1,25 @@
-# Lesson 092: WebAssembly - wasm-pack, wasm-bindgen, browser integration
+# Lesson 092: Property-Based Testing with proptest
 
-## Section 20: Special Targets
+## Section 18: Testing & Quality
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Split from lesson 092 (v6 pacing review)
 
 ## Objectives
-- [ ] Set up a Rust-to-WebAssembly toolchain using `wasm-pack` and the `wasm32-unknown-unknown` target, understanding the build pipeline from Rust source to `.wasm` binary
-- [ ] Use `wasm-bindgen` to expose Rust functions to JavaScript and call JavaScript functions from Rust, understanding how the binding layer handles type conversions
-- [ ] Handle data types across the WASM boundary: numbers pass directly, strings require allocation/copying, and complex types need serialization (via `serde-wasm-bindgen` or `JsValue`)
-- [ ] Build and deploy a WASM module to a browser environment using `wasm-pack build --target web` and load it from an HTML page with JavaScript
-- [ ] Understand WASM limitations (no direct DOM access, no threads in basic WASM, linear memory model) and how `web-sys` and `js-sys` crates bridge the gap -- compare with Go's WASM support which bundles the entire Go runtime
+- [ ] Understand property-based testing vs example-based testing: instead of testing specific examples, describe properties that must hold for ALL inputs and let the framework generate thousands of test cases
+- [ ] Set up the `proptest` crate and write property tests using built-in strategies (`any::<T>()`, ranges, regex strings, `prop_oneof!`)
+- [ ] Use `proptest` strategies to generate complex test data: `prop::collection::vec()` for vectors, string regex strategies, and `prop_compose!` for custom composite strategies
+- [ ] Understand shrinking and how to read proptest failure output: when a test fails, proptest automatically reduces the failing input to the minimal reproducing case
 
 ## Exercises
-- [ ] Use `wasm-pack new` to scaffold a project, then write a Rust function annotated with `#[wasm_bindgen]` that takes two numbers and returns their GCD using Euclid's algorithm -- build it with `wasm-pack build --target web` and call it from a JavaScript console
-- [ ] Create a WASM module that exposes a `Markdown` struct with a `new(input: &str)` constructor and a `to_html(&self) -> String` method that converts simple markdown (headers, bold, italics) to HTML -- demonstrate string passing across the WASM boundary by calling it from JS
-- [ ] Build a small interactive web page: write a Rust WASM module that implements a Caesar cipher (encrypt/decrypt), create an HTML page with input fields and buttons, and use JavaScript to call the WASM functions and display results -- serve locally with a simple HTTP server
-- [ ] Write a Rust function that takes a `Vec<u32>` (passed via `wasm-bindgen` as a `JsValue` using serde), sorts it, and returns the sorted vector -- benchmark in the browser console against a native JavaScript sort on an array of 100,000 elements to see WASM performance characteristics
+- [ ] **Exercise 1 -- Proptest a sort function**: Write a `my_sort(vec: Vec<i32>) -> Vec<i32>` function. Use proptest to verify: (1) output is sorted, (2) output has same length as input, (3) output contains exactly the same elements, (4) sorting twice gives the same result as sorting once. Generate vectors of varying lengths with `prop::collection::vec(any::<i32>(), 0..1000)`.
+- [ ] **Exercise 2 -- Custom strategy with prop_compose!**: Define a `struct Order { id: u64, items: Vec<Item>, total: f64 }` and write a custom proptest strategy using `prop_compose!` that generates valid orders (total matches sum of item prices, at least 1 item, valid prices). Test a `validate_order` function against these generated orders.
+
+  **Note**: When comparing `f64` totals in property tests, use approximate comparison (e.g., `(total - expected).abs() < 1e-10`) rather than exact equality, since floating-point arithmetic is not exact.
+- [ ] **Exercise 3 -- Finding edge cases**: Create an `encode(input: &str) -> String` / `decode(encoded: &str) -> Result<String, DecodeError>` pair (e.g., run-length encoding). First write 3-4 example-based tests that pass. Then use proptest with `"[a-zA-Z0-9 ]{0,100}"` strategies to verify `decode(encode(s)) == Ok(s)` -- observe proptest finding edge cases your example tests missed. Examine the shrunk minimal failing case.
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 92a](task-092a.md) and [Lesson 92b](task-092b.md). Use those files instead._
-
 _Lesson not yet started._
+_Split from original lesson 092 which covered both proptest and cargo-fuzz (~1.75-2.5 hr estimated). This part focuses on proptest only._

@@ -1,6 +1,6 @@
-# Lesson 086: Serde - Serialize/Deserialize, JSON, TOML, custom
+# Lesson 086: Associated types, GATs (generic associated types)
 
-## Section 19: Ecosystem & Tooling
+## Section 17: Advanced Type System
 
 ## Status: pending
 
@@ -8,19 +8,24 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Derive `Serialize` and `Deserialize` on structs and enums using serde, and understand what the derive macro generates under the hood
-- [ ] Use `serde_json` to serialize Rust types to JSON and deserialize JSON strings/files back into Rust types, handling errors with `serde_json::Error`
-- [ ] Use the `toml` crate to read and write TOML configuration files, a common pattern in Rust CLI tools and services
-- [ ] Customize serialization behavior with serde attributes: `#[serde(rename)]`, `#[serde(default)]`, `#[serde(skip)]`, `#[serde(flatten)]`, `#[serde(tag)]`, `#[serde(untagged)]`
-- [ ] Write a custom `Deserialize` implementation for a type that needs special parsing logic (e.g., deserializing a date string into a custom `Date` struct)
-
-**Note on `DeserializeOwned`**: In generic functions, you'll see `T: DeserializeOwned` instead of `T: Deserialize<'de>`. `DeserializeOwned` means the type can be deserialized without borrowing from the input data (it owns all its data). Use it in generic contexts where the input lifetime is not available.
+- [ ] Understand associated types in traits (`type Item`) and how they differ from generic type parameters on the trait itself
+- [ ] Compare when to use associated types vs type parameters by examining real std traits (`Iterator`, `Add`, `Deref`) and articulating the "one impl per type" rule
+- [ ] Understand GATs (generic associated types) -- what they are, why they were stabilized, and the problems they solve (lending iterators, async-in-traits return types)
+- [ ] Write a GAT-based trait that returns references tied to `&self` lifetime (a lending iterator pattern), something impossible with plain associated types
+- [ ] Recognize the compile errors you get when you need a GAT but use a plain associated type, and know how to refactor
 
 ## Exercises
-- [ ] **Exercise 1 -- JSON roundtrip**: Define a `#[derive(Serialize, Deserialize)]` struct `ApiResponse<T: Serialize + DeserializeOwned>` with fields `status: u16`, `message: String`, `data: Option<T>`, and a nested `User` struct with `name`, `email`, `age`. Serialize to JSON, deserialize back, and verify equality. Test with `data: None` and `data: Some(user)`.
-- [ ] **Exercise 2 -- TOML config**: Create an `AppConfig` struct with nested sections (`database: DbConfig`, `server: ServerConfig`, `logging: LogConfig`). Write a sample `config.toml` file. Deserialize it into `AppConfig` using `toml::from_str`. Add `#[serde(default)]` for optional fields so missing keys get sensible defaults. Serialize the config back to TOML and compare.
-- [ ] **Exercise 3 -- Serde attributes**: Create an enum `Event` with variants `UserCreated { user_id: u64, name: String }`, `OrderPlaced { order_id: u64, total: f64 }`, `SystemAlert(String)`. Use `#[serde(tag = "type", content = "payload")]` for adjacently tagged representation. Add `#[serde(rename_all = "camelCase")]`. Serialize each variant and verify the JSON shape. Then try `#[serde(untagged)]` and compare.
-- [ ] **Exercise 4 [STRETCH] -- Custom deserializer**: Create a `struct HexColor { r: u8, g: u8, b: u8 }` that should deserialize from a JSON string like `"#FF8800"`. Implement `Deserialize` manually (using a visitor or `deserialize_with`) to parse the hex string. Also implement `Serialize` to produce the `"#RRGGBB"` format. Write tests that round-trip through JSON.
+- [ ] **Exercise 1 -- Graph trait with associated types**: Define a `trait Graph { type Node; type Edge; ... }` with methods `nodes(&self) -> Vec<Self::Node>` and `edges(&self, from: &Self::Node) -> Vec<Self::Edge>`. Implement it for an adjacency-list struct. Compare this design to `trait Graph<N, E>` and explain why associated types are better here.
+- [ ] **Exercise 2 -- Refactor generic to associated**: Start with `trait Storage<K, V> { fn get(&self, key: &K) -> Option<&V>; }` where K and V are type parameters. Refactor to use associated types instead. Discuss: when would you keep the generics?
+- [ ] **Exercise 3 -- Iterator-like trait**: Implement `trait Summarizable { type Summary: Display; fn summarize(&self) -> Self::Summary; }` for at least two different types (e.g., `Article` returns `String`, `Tweet` returns a custom `TweetSummary` struct). Write a generic function `fn print_summary<T: Summarizable>(item: &T)` that works with any implementor.
+- [ ] **Exercise 4 [STRETCH] -- Lending iterator with GATs**: _You'll rarely write GATs yourself, but understanding them helps when you encounter them in libraries like lending iterators, async traits, and database query builders._ Implement a `WindowsMut` struct that yields overlapping mutable slices from a `Vec<i32>`. Use the provided trait definition below and implement it for `WindowsMut`. Verify that this cannot be done with the standard `Iterator` trait.
+  ```rust
+  // Provided trait definition — implement this for WindowsMut
+  trait LendingIterator {
+      type Item<'a> where Self: 'a;
+      fn next(&mut self) -> Option<Self::Item<'_>>;
+  }
+  ```
 
 ## Notes
 _Lesson not yet started._

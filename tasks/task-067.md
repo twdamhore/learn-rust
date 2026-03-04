@@ -1,6 +1,6 @@
-# Lesson 067: Advanced async - Pin/Unpin in depth, writing a mini executor, cancellation
+# Lesson 067: Atomics - AtomicBool, AtomicUsize, ordering, lock-free basics
 
-## Section 14: Async Rust
+## Section 13: Concurrency
 
 ## Status: pending
 
@@ -8,19 +8,48 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Understand what `Pin<T>` guarantees (the pointed-to value will not be moved in memory) and why async futures need it
-- [ ] Explain the `Unpin` marker trait -- most types are `Unpin` and can be freely moved even when pinned
-- [ ] Understand why self-referential futures (created by `async fn` with references across `.await` points) require pinning
-- [ ] Understand async cancellation: what happens when a future is dropped before completion, and how to handle cleanup
-- [ ] Trace through a minimal executor loop conceptually: `poll` -> `Pending` -> `Waker::wake` -> `poll` -> `Ready`
+- [ ] Use `AtomicBool`, `AtomicUsize`, and `AtomicI64` for lock-free shared state between threads using `load`, `store`, `fetch_add`, and `compare_exchange`
+- [ ] Understand memory ordering levels: `Relaxed` (no ordering guarantees), `Acquire`/`Release` (paired for synchronization), and `SeqCst` (strongest, total ordering)
+- [ ] Know when atomics are appropriate (simple counters, flags, statistics) vs when a `Mutex` is needed (complex multi-field updates, conditional logic on shared state)
+- [ ] Understand that atomics are the building blocks of all synchronization primitives (`Mutex`, channels, etc.)
+
+### Memory Ordering Quick Reference
+
+For most use cases, these two orderings are sufficient:
+
+| Ordering | When to use |
+|----------|-------------|
+| `Relaxed` | Simple counters, statistics -- when you don't need ordering guarantees between threads |
+| `SeqCst` | Everything else -- when in doubt, use this (it's the strongest/safest) |
+
+> **Rule of thumb**: Start with `SeqCst`. Only switch to weaker orderings (`Acquire`/`Release`, `Relaxed`) when you understand why and have measured a performance need.
 
 ## Exercises
-- [ ] **Implement a Future by hand**: Create a struct `Countdown { remaining: u32 }` that implements `Future` manually; each `poll` call decrements the counter; when it reaches 0, return `Poll::Ready("done!")`; test it with `tokio::runtime`
-- [ ] **Cancellation observation**: Spawn an async task that prints "started", sleeps for 5 seconds, then prints "finished"; drop the `JoinHandle` (or use `select!` with a timeout) after 1 second and observe that "finished" never prints; add a `Drop` impl on a guard struct to print "cancelled"
-- [ ] **Basic poll loop**: Write a function that creates a `Countdown` future, wraps it in `Box::pin`, and manually calls `poll` in a loop using a no-op waker from `std::task::Wake`; print the poll results until `Ready`
-- [ ] **Pin exploration**: Demonstrate that a `Vec<u8>` (which is `Unpin`) can be moved after pinning with `Pin::new`, but a `!Unpin` type created with `pin!()` macro cannot; write code that would fail to compile if you tried to move a pinned `!Unpin` value, and comment out the failing line with an explanation
+- [ ] **Atomic counter**: Create an `AtomicUsize` shared across 10 threads (each incrementing 10,000 times using `fetch_add(1, Ordering::Relaxed)`). Verify the final count is exactly 100,000. Compare the code simplicity and performance against the `Arc<Mutex<usize>>` version from lesson 065.
+- [ ] **Shutdown flag**: Use an `AtomicBool` as a shutdown signal. Spawn a worker thread that loops and checks the flag each iteration using `load(Ordering::Acquire)`. The main thread sleeps for 100ms, then sets the flag to `true` using `store(true, Ordering::Release)`. Verify the worker stops. Explain why `Acquire`/`Release` ordering is used here.
+- [ ] **Atomic vs Mutex benchmark**: Implement a shared counter using (a) `AtomicUsize` with `fetch_add`, (b) `Arc<Mutex<usize>>`, and (c) `Arc<RwLock<usize>>`. Run each with 8 threads doing 1,000,000 increments. Time each approach and print a comparison table. Discuss when the performance difference matters.
+
+  **Starter code** -- Use this timing harness. Your job is to fill in each closure with the threaded counter implementation.
+
+  ```rust
+  use std::time::Instant;
+
+  fn bench(label: &str, f: impl Fn()) {
+      let start = Instant::now();
+      f();
+      println!("{}: {:?}", label, start.elapsed());
+  }
+
+  fn main() {
+      let iterations = 1_000_000;
+      let threads = 8;
+
+      bench("AtomicUsize", || { /* your atomic implementation */ });
+      bench("Mutex<usize>", || { /* your Mutex implementation */ });
+      bench("RwLock<usize>", || { /* your RwLock implementation */ });
+  }
+  ```
+- [ ] **Simple spin lock [STRETCH]**: Implement a basic `SpinLock` struct using `AtomicBool`. The `lock()` method loops calling `compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)` until it succeeds. The `unlock()` method calls `store(false, Ordering::Release)`. Test it with multiple threads protecting a shared `Vec`. Discuss why real code uses `Mutex` instead of spin locks.
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 67a](task-067a.md) and [Lesson 67b](task-067b.md). Use those files instead._
-
 _Lesson not yet started._

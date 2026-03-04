@@ -1,24 +1,25 @@
-# Lesson 054: Box<T> - heap allocation, recursive types
+# Lesson 054: Variance and Subtyping
 
-## Section 12: Smart Pointers & Interior Mutability
+## Section 10: Lifetimes
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Split from original lesson 053 (v6 pacing review)
 
 ## Objectives
-- [ ] Understand that `Box<T>` allocates data on the heap and owns it, with automatic cleanup via the `Drop` trait when the `Box` goes out of scope
-- [ ] Create recursive data types (linked lists, trees) using `Box<T>` to give them a known size at compile time
-- [ ] Understand `Box<T>` as a smart pointer that implements `Deref` (auto-dereferencing to `&T`) and `Drop` (automatic heap cleanup)
-- [ ] Use `Box<dyn Trait>` for dynamic dispatch when you need to store different concrete types behind a common trait interface
-- [ ] Compare `Box<T>` with Java's `new` (everything is heap-allocated in Java) and Go's pointer semantics, understanding that Rust makes heap allocation explicit
+- [ ] Understand covariance, contravariance, and invariance at an awareness level: these describe how subtyping relationships between types change when those types are used inside other types (e.g., inside references, mutable references, function arguments)
+- [ ] Know that `&'a T` is covariant in `'a`: a longer lifetime can be used where a shorter one is expected (e.g., `&'static str` can be used where `&'a str` is expected), because it's always safe to use a reference that lives longer
+- [ ] Understand why `&mut T` is invariant: if `&mut &'static str` could be used where `&mut &'a str` is expected, you could write a short-lived reference through it, corrupting the `'static` guarantee. Invariance prevents this aliasing bug.
+- [ ] Recognize when variance matters in practice: primarily when working with mutable references to references, generic type parameters, and (later) when using `PhantomData` to control variance in custom types
 
 ## Exercises
-- [ ] **Singly linked list**: Implement `enum List { Cons(i32, Box<List>), Nil }` with methods `push_front`, `to_vec`, and `len`. Create a list `3 -> 2 -> 1 -> Nil` and verify its contents. Explain why `Box` is required here (what error do you get without it?).
-- [ ] **Binary tree [STRETCH]**: Define `enum Tree<T> { Leaf, Node { value: T, left: Box<Tree<T>>, right: Box<Tree<T>> } }`. Implement `insert` for a binary search tree, `contains` to search, and [OPTIONAL within STRETCH] implement `in_order` traversal to return a sorted `Vec<T>` if time permits. Test with integers.
-- [ ] **Box for large values**: Create a large struct (e.g., `[u8; 1_000_000]`) and demonstrate boxing it to avoid stack overflow. Use `std::mem::size_of_val` to show the size of a `Box<T>` is always pointer-sized regardless of `T`.
-- [ ] **Box<dyn Trait> dispatch**: Define a `Logger` trait with `log(&self, message: &str)` and `level(&self) -> &str` methods. Implement it for `ConsoleLogger`, `FileLogger`, and `JsonLogger`. Create a `Vec<Box<dyn Logger>>` containing all three and iterate to log a test message with each, printing the logger's level. Compare this with Java interfaces and Go interfaces.
+- [ ] **Demonstrate covariance**: Write a function `fn print_str(s: &str)` and call it with a `&'static str` (a string literal). Then write a function `fn pick_first<'a>(a: &'a str, b: &'a str) -> &'a str` and call it with one `&'static str` and one local `&'a str`. Observe how the compiler shortens the `'static` lifetime to match -- this is covariance in action. Add comments explaining why this is safe.
+- [ ] **Demonstrate invariance**: Write a function that takes `&mut &str` and tries to assign a locally-scoped string reference through it. Observe the compiler error. Then try to pass a `&mut &'static str` where `&mut &'a str` is expected and observe the rejection. Write comments explaining why `&mut` must be invariant to prevent dangling references.
+- [ ] **(Optional) Rustonomicon summary**: Read the [Rustonomicon chapter on variance](https://doc.rust-lang.org/nomicon/subtyping.html) and write a comment block summarizing: (a) what is covariant, contravariant, and invariant in Rust's type system, (b) the variance of `&'a T`, `&'a mut T`, `fn(T)`, `Cell<T>`, and (c) why `Vec<T>` is covariant in `T` but `Cell<T>` is invariant.
 
 ## Notes
+- This lesson is at **awareness level**, not mastery. Variance is a topic even experienced Rustaceans revisit. The goal is to recognize when variance is relevant and have a mental model, not to memorize the full variance table.
+- Raw pointer / unsafe exercises from the original lesson 053 were removed (prerequisite violation -- unsafe not taught until lesson 73).
+- PhantomData exercises were removed (covered in lesson 062).
 _Lesson not yet started._

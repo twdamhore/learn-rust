@@ -104,7 +104,7 @@
 - **Estimated time**: 65-90min
 - **Pacing**: Heavy
 - **Issues**: Exercise 4 needed match template for tuple pattern syntax
-- **Changes made**: Task file updated — added match tuple pattern code template to Exercise 4 with note that it previews lesson 023
+- **Changes made**: Task file updated — added match tuple pattern code template to Exercise 4 with note that it previews lesson 025
 
 ### v15 - Full curriculum review (2026-03-04)
 - Reviewed task file for pacing, progression, and content quality

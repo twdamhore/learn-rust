@@ -1,37 +1,29 @@
-# Lesson 018: Strings in Rust for Java/Go devs - String, &str, when to use which
+# Lesson 018: Slices - string slices, array slices, &str vs String
 
 ## Section 4: Strings & Slices
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design [NEW - bridging lesson]
+- Initial curriculum design
 
 ## Objectives
-- [ ] Understand `String` vs `&str` thoroughly: `String` is an owned, growable, heap-allocated UTF-8 string; `&str` is a borrowed, immutable view into UTF-8 bytes (either heap-allocated String data, static binary data, or a slice of either)
-- [ ] Know when to use each in function signatures: accept `&str` for read-only access (most common), accept `String` when the function needs to own/store the data, return `String` when creating new string data, return `&str` when returning a slice of input
-- [ ] Understand UTF-8 implications: Rust strings are not indexable by character position (`s[0]` does not compile), `.len()` returns byte count not character count, `.chars()` iterates by Unicode scalar value, multi-byte characters affect slicing
-- [ ] Convert fluently between `String` and `&str`: `&str` to `String` via `.to_string()`, `.to_owned()`, `String::from()`, or `.into()`; `String` to `&str` via `&s`, `&s[..]`, or `.as_str()`
-- [ ] Know essential string methods: `.contains()`, `.starts_with()`, `.find()`, `.replace()`, `.trim()`, `.split()`, `.chars()`, `.push_str()`, `.push()`, `format!()` for building strings
+- [ ] Understand slices as fat pointers (pointer + length) that provide a view into a contiguous sequence of elements without owning them
+- [ ] Create string slices (`&str`) from `String` using range indexing (`&s[0..5]`, `&s[..]`) - understand that string slices must land on valid UTF-8 character boundaries
+- [ ] Create array and Vec slices (`&[T]`) using range syntax - know that `&v[1..4]` gives a slice of 3 elements, `&v[..]` gives the full slice
+- [ ] Understand the parallel relationships: `String` owns heap data / `&str` borrows it, `Vec<T>` owns heap data / `&[T]` borrows it - slices are the borrowed form of owned collections
+- [ ] Know that `&str` and `&[T]` are the idiomatic parameter types for functions that only need to read string or sequence data (not `&String` or `&Vec<T>`)
 
 ## Exercises
-- [ ] **Function signature practice**: Write these functions with the most idiomatic signature: (1) `is_palindrome` - checks if a string reads the same forwards and backwards, (2) `make_uppercase` - returns a new uppercase string, (3) `greet` - takes a name and returns "Hello, {name}!", (4) `add_greeting` - takes a mutable `Vec<String>` and a name, pushes "Hello, {name}!" into the Vec (shows when a function needs to own a `String`). For each, explain in comments why you chose `&str` vs `String` for the parameter and return type
-- [ ] **String processing pipeline**: Build a function that takes a multi-line `&str` of CSV data (name,age,city), splits it into lines, splits each line by commas, and extracts the names (first field) into a `Vec<String>`. Use `.lines()`, `.split(',')`, and `.trim()`. Focus on when you need to convert `&str` slices into owned `String` values (e.g., when collecting into the Vec) and when you can work with borrowed `&str` slices
-- [ ] **UTF-8 exploration**: Create strings containing ASCII ("Hello"), accented characters ("cafe\u{0301}"), emoji ("Hello "), and CJK characters ("Hello"). For each, print: `.len()` (bytes), `.chars().count()` (scalar values), and iterate with `.char_indices()` showing each character's byte offset. Compare with Java's `.length()` (UTF-16 code units) and Go's `len()` (bytes) vs `utf8.RuneCountInString()` (runes)
-- [ ] **Word counter**: Implement a word-frequency counter using `HashMap`. Count how many times each word appears in a given `&str` (use `.split_whitespace()`). Note the ownership challenge: `.to_lowercase()` returns a `String`, but using `&str` as keys borrows from the input — solve this by using `HashMap<String, usize>` with owned keys. Write both a case-sensitive version (keys borrow from input: `HashMap<&str, usize>`) and a case-insensitive version (keys are owned: `HashMap<String, usize>`), and compare the tradeoffs in comments
 
-  > **Scaffolding**: `HashMap` is covered fully in lesson 36. For now, use this template:
-  >
-  > ```rust
-  > use std::collections::HashMap;
-  >
-  > let mut map = HashMap::new();
-  > map.insert("key", 1);            // insert a key-value pair
-  > let count = map.entry("key").or_insert(0);  // get or create entry
-  > *count += 1;                      // modify the value
-  > ```
+> **Preview**: `Option<T>` is Rust's way of representing "might not have a value" — it's either `Some(value)` or `None`. Covered fully in lesson 22.
+
+- [ ] **First word finder**: Write a function `fn first_word(s: &str) -> &str` that returns a slice of the first word (up to the first space, or the whole string if no space). Test it with both `String` values (passing `&my_string`) and string literals (which are already `&str`). [STRETCH] Then extend it to `fn nth_word(s: &str, n: usize) -> Option<&str>`
+- [ ] **Array slice operations**: Write a function `fn sum_slice(numbers: &[i32]) -> i32` that sums a slice. Call it with: a full array `&arr`, a partial array `&arr[1..3]`, a full Vec `&vec`, and a partial Vec `&vec[2..]`. Verify they all work with the same function. Then write `fn largest(list: &[i32]) -> Option<&i32>` that returns a reference to the largest element
+- [ ] **UTF-8 boundary panic**: Create a String containing a multi-byte character (e.g., `"Hello, world"` with an emoji or `"Zdravo"` with Cyrillic). Try to slice it at a byte position that falls in the middle of a multi-byte character - observe the panic. Then write a safe version using `.char_indices()` that slices at character boundaries
+- [ ] **Slice vs owned comparison**: Write two versions of a function that extracts the domain from an email address - one returning `String` (using allocation) and one returning `&str` (using slicing). Write comments comparing: Which is more efficient? When would you need the String version? Connect this to Java's `substring()` (which used to share the backing array pre-Java 7u6, then switched to copying)
+
+    > **Hint**: `.find('@')` returns `Option<usize>` — the byte index of `'@'` if found, or `None`. `Option` was previewed at the top of this lesson and is covered fully in lesson 22.
 
 ## Notes
-**SUPERSEDED**: This lesson was split into task-018a.md (String vs &str, when to use which) and task-018b.md (UTF-8 and string manipulation) during the v13 pacing review on 2026-03-04. The original was ~2+ hours with a HashMap forward reference and 4 substantial exercises.
-
 _Lesson not yet started._

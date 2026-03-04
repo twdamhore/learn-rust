@@ -1,6 +1,6 @@
-# Lesson 066: Streams, async iterators, async channels
+# Lesson 066: Send and Sync traits, thread safety guarantees
 
-## Section 14: Async Rust
+## Section 13: Concurrency
 
 ## Status: pending
 
@@ -8,20 +8,19 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Understand the `Stream` trait as the async equivalent of `Iterator` (yields items over time via `poll_next`)
-- [ ] Use `tokio-stream` crate utilities to create, transform, and consume streams (`StreamExt::map`, `filter`, `take`, `next`)
-- [ ] Use `tokio::sync::mpsc` channels to build async producer-consumer patterns and convert the receiver into a stream
-- [ ] Understand backpressure in async systems -- how bounded channels naturally apply it when the buffer is full
+- [ ] Understand the `Send` marker trait: a type is `Send` if it can be safely transferred (moved) to another thread
+- [ ] Understand the `Sync` marker trait: a type is `Sync` if a shared reference `&T` can be safely shared between threads (i.e., `T: Sync` means `&T: Send`)
+- [ ] Know which standard library types are `Send`/`Sync` and which are not: `Rc` is `!Send` and `!Sync`, `RefCell` is `!Sync`, raw pointers are `!Send` and `!Sync`, `Arc` and `Mutex` are both `Send` and `Sync`
+- [ ] Use `Send + Sync` bounds in generic functions and trait objects to require thread safety
+- [ ] Understand that `Send` and `Sync` are auto-traits: the compiler derives them automatically for your types based on their fields, and you rarely need to implement them manually
 
 ## Exercises
+- [ ] **Rc is not Send**: Attempt to send an `Rc<i32>` to a spawned thread. Read and annotate the compiler error message. Replace `Rc` with `Arc` and verify it compiles. Explain in comments why `Rc`'s non-atomic reference count makes it unsafe to share across threads.
+- [ ] **Sync exploration**: Create a struct containing a `Cell<i32>` field. Try to share a reference to it across threads (e.g., using `std::thread::scope`). Observe the `!Sync` error. Replace `Cell` with `AtomicI32` and verify it works. Explain the relationship between `Sync` and `&T: Send`.
 
-**Setup**: Add `tokio-stream` to your dependencies: `cargo add tokio-stream --features sync`. This crate provides stream adaptors and wrappers for tokio channels.
-
-- [ ] **Channel to stream**: Create a `tokio::sync::mpsc::channel(10)`, spawn a producer that sends numbers 1-20 with small delays, and consume the receiver as a stream using `tokio_stream::wrappers::ReceiverStream`; print each item as it arrives
-- [ ] **Stream processing pipeline**: Create a stream of integers 1-100, use `filter` to keep only even numbers, `map` to square them, and `take(10)` to limit results; collect into a `Vec` and print it
-  Hint: Use `tokio_stream::iter(1..=100)` to create the initial stream of integers.
-- [ ] **Rate-limited consumer**: Create a producer that sends items as fast as possible into a bounded channel (capacity 5); in the consumer, add a 100ms delay per item; observe how the producer blocks when the channel is full (backpressure)
-- [ ] **Async producer-consumer [STRETCH]**: Build a system with 3 producer tasks each sending tagged messages into a single `mpsc` channel, and 1 consumer task that processes them; use the stream API to merge and process messages; print statistics (count per producer) at the end
+  > **Note:** `AtomicI32` is covered in the next lesson (062). For now, just know it's an integer that can be safely shared between threads without a lock. Alternatively, you could fix this with `Arc<Mutex<i32>>` using knowledge from lesson 065.
+- [ ] **Custom struct analysis**: Create several structs with different field combinations: (a) all `Send + Sync` fields, (b) one `Rc` field, (c) one `RefCell` field, (d) one raw pointer field. Write a compile-time assertion function `fn assert_send<T: Send>() {}` and `fn assert_sync<T: Sync>() {}` and call them for each struct. Document which pass and which fail, and why.
+- [ ] **Thread-safe trait object**: Define a trait `Task` with `fn execute(&self)`. Write a function `run_tasks(tasks: Vec<Box<dyn Task + Send + Sync>>)` that spawns a thread for each task. Implement `Task` for a struct with `Arc<Mutex<Vec<String>>>` logging. Demonstrate that removing the `Send` bound causes a compile error when spawning threads.
 
 ## Notes
 _Lesson not yet started._

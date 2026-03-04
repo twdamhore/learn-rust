@@ -1,4 +1,4 @@
-# Lesson 043: Trait objects - dyn Trait, vtables, object safety
+# Lesson 043: Trait bounds, where clauses, impl Trait syntax
 
 ## Section 9: Generics & Traits
 
@@ -8,19 +8,17 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Understand dynamic dispatch: when you use `dyn Trait`, the compiler generates a vtable (virtual method table) and method calls are resolved at runtime via pointer indirection, unlike static dispatch which resolves at compile time
-- [ ] Create trait objects using `Box<dyn Trait>` and `&dyn Trait`, and understand why trait objects must be behind a pointer (the compiler does not know their size at compile time). (Arc<dyn Trait> for thread-safe trait objects is covered in lesson 055.)
-- [ ] Know the object safety rules: a trait is object-safe only if its methods do not use `Self` by value, do not use generic type parameters, and do not return `Self` (with some exceptions). Understand why these rules exist
-- [ ] Compare static dispatch (generics/`impl Trait`: monomorphized, inlined, larger binary, faster) vs dynamic dispatch (`dyn Trait`: single function, smaller binary, vtable indirection overhead, flexible)
-- [ ] Use trait objects to build heterogeneous collections and plugin-like architectures where you need to store or process values of different concrete types through a shared interface
-
-**Quick note on `Box<T>`**: `Box::new(value)` allocates the value on the heap and gives you an owned pointer to it. We use `Box<dyn Trait>` for trait objects because the compiler doesn't know the concrete type's size at compile time. Full `Box<T>` coverage comes in lesson 054.
+- [ ] Use trait bounds on generic functions to constrain type parameters (`fn print_it<T: Display>(item: T)`) and understand that bounds tell the compiler what capabilities a type must have
+- [ ] Refactor inline trait bounds to `where` clauses for readability, especially when there are multiple type parameters or complex bounds (`fn foo<T, U>(t: T, u: U) where T: Display + Clone, U: Debug`)
+- [ ] Use `impl Trait` in argument position as syntactic sugar for generic bounds (`fn print_it(item: impl Display)`) and understand that it is equivalent to the generic form for function arguments
+- [ ] Combine multiple trait bounds with `+` syntax (e.g., `T: Display + Clone + PartialOrd`) and understand that each bound further constrains which types are accepted
+- [ ] Understand `Sized` as an implicit default bound on all generic types, and use `?Sized` to opt out when you want to accept dynamically-sized types like `str` or `[T]`
 
 ## Exercises
-- [ ] **Heterogeneous collection**: Define a `Widget` trait with `fn render(&self) -> String` and `fn name(&self) -> &str`. Implement it for `Button`, `TextBox`, and `Checkbox`. Create a `Vec<Box<dyn Widget>>` containing all three and iterate to print each widget's name and rendered output
-- [ ] **Object safety violation**: Add a method `fn duplicate(&self) -> Self` to your `Widget` trait and try to create a `Box<dyn Widget>` -- read and understand the object safety error. Fix it by returning `Box<dyn Widget>` instead of `Self`
-- [ ] **Plugin system**: Build a simple plugin system: define a `Plugin` trait with `fn name(&self) -> &str` and `fn execute(&self, input: &str) -> String`. Create 3 plugins (e.g., UppercasePlugin, ReversePlugin, CensorPlugin), store them in a `Vec<Box<dyn Plugin>>`, and run each on user input
-- [ ] **Static vs dynamic dispatch comparison [STRETCH]**: Write both a generic (static dispatch) version `fn process<T: Widget>(s: &T)` and a trait object (dynamic dispatch) version `fn process_dyn(s: &dyn Widget)` of the same function. Compile with `cargo build --release && ls -la target/release/your_binary` and compare binary sizes between the two approaches. Note which produces a larger binary and hypothesize why (hint: monomorphization vs vtable indirection)
+- [ ] **Exercise 1 - Bounded print function**: Write a function `fn print_labeled<T: Display + Clone>(label: &str, item: T)` that prints a label and the item, then returns a clone of the item. Test with `String`, `i32`, and a custom struct that derives both traits
+- [ ] **Exercise 2 - Where clause refactoring**: Start with a function signature that has 3 type parameters with inline bounds (making the signature hard to read), then refactor it to use a `where` clause. Verify both versions compile identically
+- [ ] **Exercise 3 - impl Trait parameter**: Write a function `fn summarize_all(items: &[impl Summary])` that calls `summarize()` on each item in a slice. Compare this with the explicit generic form `fn summarize_all<T: Summary>(items: &[T])` and note that `impl Trait` in argument position means all items must be the same concrete type
+- [ ] **Exercise 4 - ?Sized exploration**: Write a function `fn print_ref<T: Display + ?Sized>(item: &T)` that can accept both `&String` and `&str`. Then try removing `?Sized` and observe which calls no longer compile, understanding why `Sized` matters
 
 ## Notes
 _Lesson not yet started._

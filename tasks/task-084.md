@@ -1,26 +1,46 @@
-_**SUPERSEDED**: This lesson has been split into [Lesson 84a](task-084a.md) and [Lesson 84b](task-084b.md). Use those files instead._
+# Lesson 084: Exposing Rust to C (cdylib, cbindgen)
 
-# Lesson 084: Benchmarking - criterion, profiling, flamegraphs
-
-## Section 18: Testing & Quality
+## Section 16: Unsafe & FFI
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Split from lesson 084 (v6 pacing review)
+
+## Prerequisites
+```bash
+# Required for C compilation
+sudo apt install build-essential
+# Verify gcc is available
+gcc --version
+# Install cbindgen for generating C headers from Rust
+cargo install cbindgen
+```
 
 ## Objectives
-- [ ] Set up the `criterion` crate for micro-benchmarking and understand its statistical approach (warm-up, sample collection, confidence intervals) vs naive timing
-- [ ] Interpret criterion benchmark results: mean, median, standard deviation, throughput, and comparison with previous runs (regression detection)
-- [ ] Use `perf` (or equivalent) and `cargo-flamegraph` to generate flamegraphs that visually show where time is spent in a program
-- [ ] Identify hot spots from profiling data and apply targeted optimizations (algorithmic changes, allocation reduction, cache-friendly access patterns)
-- [ ] Understand the impact of optimization levels (`--release` vs debug), LTO, codegen-units, and PGO on performance
+- [ ] Build a Rust library as a C dynamic library (`cdylib` crate type)
+- [ ] Write `extern "C"` functions with `#[no_mangle]` for C-compatible export
+- [ ] Use `cbindgen` to auto-generate C header files from Rust source
+- [ ] Call the Rust library from a C program, linking against the cdylib
 
 ## Exercises
-- [ ] **Exercise 1 -- Criterion benchmark**: Create two implementations of "find all duplicates in a Vec<i32>": one using nested loops (O(n^2)) and one using a HashSet (O(n)). Write criterion benchmarks for both with input sizes of 100, 1000, and 10000 elements. Run `cargo bench`, interpret the HTML report criterion generates, and document the performance difference.
-- [ ] **Exercise 2 -- Flamegraph**: Write a program that builds a large `HashMap<String, Vec<u64>>` (100K entries, each with 100 values), then iterates all values to compute a sum. Generate a flamegraph with `cargo flamegraph`. Identify the hottest functions. Optimize by switching to `FxHashMap` or pre-allocating capacity, re-profile, and compare the flamegraphs.
-- [ ] **Exercise 3 -- Optimization from profiling**: Write a deliberately slow `fn process_text(input: &str) -> HashMap<String, usize>` that counts word frequencies using unnecessary allocations (e.g., `to_uppercase()` on every comparison, cloning strings needlessly). Benchmark it with criterion. Profile to identify waste. Optimize step by step (reuse allocations, use `&str` keys, avoid redundant work). Show benchmark improvement at each step.
-- [ ] **Exercise 4 -- Debug vs release comparison**: Take the word-frequency counter from Exercise 3 and benchmark it in both debug and release mode. Document the performance difference. Then experiment with `Cargo.toml` settings: `opt-level`, `lto`, `codegen-units = 1`. Create a table showing how each setting affects runtime for a large input.
+- [ ] **Rust math library as cdylib**: Create a Rust library with `add` and `multiply` as `extern "C"` functions; configure `Cargo.toml` with `crate-type = ["cdylib"]`; build and verify symbols exist with `nm` or `objdump`
+- [ ] **cbindgen header generation**: Use `cbindgen` to generate a `.h` header file; write a C program that `#include`s the header, links against the Rust cdylib, and calls the math functions; compile and run the C program
+
+  **gcc compilation commands:**
+  ```bash
+  # Build the Rust library first
+  cargo build --release
+
+  # Compile the C program, linking against the Rust library
+  gcc -o main main.c -L target/release -l <your_crate_name> -Wl,-rpath,./target/release
+
+  # Run it
+  ./main
+  ```
+
+  > **Note:** Replace `<your_crate_name>` with the `lib` name from your Cargo.toml's `[lib]` section (with hyphens replaced by underscores).
+- [ ] **String FFI boundary**: Handle strings across the FFI boundary -- write an `extern "C"` function that accepts `*const c_char` and returns `*mut c_char`; use `CString` and `CStr` for safe conversion; document the ownership contract (who allocates, who frees)
 
 ## Notes
 _Lesson not yet started._

@@ -1,6 +1,6 @@
-# Lesson 046: What lifetimes are, lifetime annotations 'a
+# Lesson 046: Common std traits - Display, Debug, Default, From/Into
 
-## Section 10: Lifetimes
+## Section 9: Generics & Traits
 
 ## Status: pending
 
@@ -8,17 +8,20 @@
 - Initial curriculum design
 
 ## Objectives
-- [ ] Understand what lifetimes represent: every reference in Rust has a lifetime, which is the scope during which that reference is valid. Lifetimes are the compiler's tool for ensuring references never outlive the data they point to
-- [ ] Read and write lifetime annotations (`'a`, `'b`, etc.) on function signatures, understanding that annotations do not change how long values live -- they describe relationships between the lifetimes of references
-- [ ] Understand why the compiler needs lifetime hints: when a function takes multiple references and returns a reference, the compiler cannot always determine which input the return value borrows from without annotations
-- [ ] Write the classic `longest()` function with lifetime annotations and trace through how the compiler uses the annotations to validate calling code
-- [ ] Understand dangling reference prevention: Rust will not compile code where a reference could outlive the data it refers to, and compare this with Java (no dangling references due to GC) and Go (GC + escape analysis)
+- [ ] Implement `std::fmt::Display` for custom types to control how they are printed with `{}`, and understand how it differs from `Debug` (which is for developers, `Display` is for users)
+- [ ] Use the `Default` trait to provide sensible default values for structs, both via `#[derive(Default)]` and manual `impl Default`, and use it with struct update syntax and `Option::unwrap_or_default()`
+- [ ] Implement `From<T>` for type conversions and understand that implementing `From` automatically gives you `Into` for free (blanket impl). Know the convention: implement `From`, call via `Into`
+- [ ] Implement `TryFrom<T>` and `TryInto<T>` for fallible conversions that return `Result`, and choose between `From` (infallible) and `TryFrom` (fallible) based on whether the conversion can fail
+- [ ] Recognize and use the ecosystem of common std traits: `Clone`, `PartialEq`/`Eq`, `PartialOrd`/`Ord`, `Hash` -- understanding when to derive vs manually implement
 
 ## Exercises
-- [ ] **Trigger the error**: Write a function `fn first_word(s: &str) -> &str` that returns a substring -- it compiles fine (elision). Then write `fn pick(a: &str, b: &str) -> &str` that returns one of its arguments -- observe the "missing lifetime specifier" error and understand why elision cannot help here
-- [ ] **Annotate longest()**: Implement `fn longest<'a>(x: &'a str, y: &'a str) -> &'a str` that returns the longer string. Write test cases including one where `x` and `y` have different scopes, and verify the returned reference is only valid for the shorter of the two lifetimes
-- [ ] **Lifetime scope tracing**: Given this code pattern, predict whether it compiles and explain why: `let result; { let s = String::from("hello"); result = &s; } println!("{}", result);` -- then try variations where the string outlives the reference and verify your predictions
-- [ ] **Single-input lifetime**: Write `fn first_sentence(text: &str) -> &str` that returns everything up to the first period. Observe that this compiles without annotations (elision rule 1). Then write the explicitly annotated version and confirm both are equivalent
+- [ ] **Display implementation**: Create a `Color` struct with `r`, `g`, `b` fields (u8). Implement `Display` to format as `#RRGGBB` hex string, and `Debug` (via derive) for developer output. Verify `println!("{}", color)` uses Display and `println!("{:?}", color)` uses Debug
+- [ ] **Default with builder pattern**: Create a `Config` struct with 5+ fields, derive `Default`, and write a builder-style API. Show how `Config { name: "app".into(), ..Default::default() }` fills in remaining fields. Compare with Go's zero-value initialization
+- [ ] **From/Into conversions**: Create `Celsius` and `Fahrenheit` tuple structs. Implement `From<Celsius> for Fahrenheit` and vice versa. Write code using `.into()` to convert between them. Then implement `From<Celsius> for f64` so temperatures can be used in arithmetic
+- [ ] **TryFrom with validation**: Create an `Email` struct that can only be constructed from a valid email string. Implement `TryFrom<&str> for Email` that validates the string contains `@` and a domain. Return a custom error type on failure. Write tests for valid and invalid inputs. *Optional*: also implement `TryFrom<String> for Email` to see how the two impls differ
+- [ ] **Derive vs manual impl [STRETCH]**: Create a `Point { x: f64, y: f64 }` struct. Derive `Clone` and `Debug`. Manually implement `PartialEq` to compare points within an epsilon tolerance (since `f64` equality is tricky). Explain why you cannot derive `Eq` or `Hash` for `f64` fields, and show how using `OrderedFloat` from the `ordered-float` crate would let you derive all of them
 
 ## Notes
+> **Cross-reference**: Lesson 023 introduced `#[derive(Debug, Clone, PartialEq, Eq, Hash)]`. This lesson goes deeper: manual implementations, `Display`, `Default`, `From`/`Into`, `TryFrom`, and when derive is insufficient.
+
 _Lesson not yet started._

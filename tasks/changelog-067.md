@@ -1,6 +1,6 @@
-# Changelog - Lesson 067: Advanced async - Pin/Unpin in depth, writing a mini executor, cancellation
+# Changelog - Lesson 067: Atomics - AtomicBool, AtomicUsize, ordering, lock-free basics
 
-## Section 14: Async Rust
+## Section 13: Concurrency
 
 ### v1 - Initial creation
 - Lesson added to curriculum
@@ -12,88 +12,105 @@
 
 ### v3 - Concrete objectives and exercises (2026-03-03)
 - Replaced TODO placeholders with concrete objectives and exercises
-- **Objectives added**: Pin<T> guarantees, Unpin marker trait, self-referential futures and pinning, async cancellation and drop, minimal executor loop walkthrough
-- **Exercises added**: Hand-implement a Countdown Future, cancellation observation with Drop guard, manual poll loop with no-op waker, Pin/Unpin exploration with compile-error demonstration
+- **Objectives added**: AtomicBool/AtomicUsize/AtomicI64 operations (load, store, fetch_add, compare_exchange), memory ordering levels (Relaxed, Acquire/Release, SeqCst), atomics vs Mutex decision criteria, atomics as synchronization building blocks
+- **Exercises added**: Atomic counter with 10 threads and Relaxed ordering, AtomicBool shutdown flag with Acquire/Release, atomic vs Mutex vs RwLock benchmark comparison, SpinLock implementation with compare_exchange
 
 ### v4 - Comprehensive pacing and content review (2026-03-03)
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
 - **Pacing**: Heavy for 1-hour lesson
 - **Issues found**:
-  - Pin/Unpin is one of the most conceptually difficult topics in Rust
-  - Hand-implementing Future + manual poll loop + cancellation is very ambitious
-  - **Hardest lesson in the async section**
+  - Memory ordering (Relaxed vs Acquire/Release vs SeqCst) is conceptually dense for someone without C/C++ background
+  - Benchmark exercise (Exercise 3) may take 20+ minutes to set up and run
 - **Recommendations**:
-  - Keep Future implementation and cancellation as core exercises
-  - Make the manual poll loop or Pin/Unpin exploration a stretch goal
+  - Consider providing the benchmark harness so learners focus on understanding ordering
+  - SpinLock exercise (Exercise 4) could be made optional
 
 ### v5 - Cross-curriculum review (2026-03-03)
 - Full 100-lesson review for pacing realism, prerequisite ordering, and progressive difficulty
-- **Pacing**: VERY HEAVY (~2-3 hr) for 1-2 hour target
-- **Changes noted**: Likely hardest single lesson in entire curriculum. Pin/Unpin is notoriously most difficult Rust concept. Combines: hand-implementing Future + building manual poll loop + understanding cancellation + Pin/Unpin -- 4 major topics. For learner with no C/C++ background, this is unrealistic in any timeframe under 2 hours
-- **Why**: Too much for one lesson; Pin/Unpin + Future impl + manual executor + cancellation = 4 distinct hard topics
-- **v4 recommendations status**: Not yet applied -- v4 recommended making poll loop or Pin/Unpin a stretch goal. Gradual progression: CRITICAL -- hardest lesson in async section; consider splitting
+- **Pacing**: Heavy (~1.5-2 hr) for 1-2 hour target
+- **Changes noted**: Memory ordering (Acquire/Release/SeqCst) is extremely dense with no C/C++ background. Benchmark exercise (Exercise 3) requires setup of three implementations. SpinLock exercise (Exercise 4) with compare_exchange is non-trivial
+- **Why**: Memory ordering is a steep cliff for this learner
+- **v4 recommendations status**: Not yet applied -- v4 recommended providing benchmark harness and making SpinLock optional. Gradual progression: Heavy spike ending concurrency section
 
 ### v6 - Pacing review and split assessment (2026-03-03)
 - Full review of all 100 tasks for realistic human pacing (1-2 hr target per lesson)
-- **Estimated time**: ~2-3 hours
-- **Pacing verdict**: OVERLOADED - split required
-- **Split needed**: Yes - split into 067a/067b
+- **Estimated time**: ~1.5-2 hours
+- **Pacing verdict**: Heavy - borderline 2hr threshold
+- **Split needed**: No
 - **Key issues**:
-  - Likely hardest single lesson in entire curriculum
-  - Combines Future trait impl, manual poll loop, Pin/Unpin, and cancellation
-  - Four major hard topics for someone with no C/C++ background
-- **Action taken**: Split into two lessons:
-  - **067a**: "Advanced Async - Part A: The Future Trait and Cancellation" -- Future trait, hand-implementing futures, cancellation/drop semantics
-  - **067b**: "Advanced Async - Part B: Pin, Unpin, and Executor Internals" -- Pin/Unpin, self-referential futures, mini executor. Pin content from lesson 057 consolidated here where it has proper async context
-  - Original task-067.md preserved as-is for reference; new task-067a.md and task-067b.md created
+  - Memory ordering (Relaxed, Acquire/Release, SeqCst) is a steep cliff for non-C/C++ background
+  - SpinLock with compare_exchange is non-trivial
+  - Heavy ending to the concurrency section
+- **Action taken**: No split required, but remains borderline. Previous v4 recommendations (provide benchmark harness, make SpinLock optional) should be applied when lesson is started
 
 ### v7 — Relaxed Pacing Review (2026-03-03)
 - **Threshold change**: Lessons now OK at 1-2 hours; only split if >2hrs
-- **Pacing**: N/A (already split in v6)
-- **Status**: No changes needed
-- The v6 split into 067a/067b was already the right call -- no additional changes needed under relaxed threshold
+- **Pacing**: Heavy (~1.5-2 hr borderline)
+- **Status**: No changes needed under relaxed threshold
+- SpinLock exercise should be made optional when lesson is started
+- Memory ordering is dense but acceptable at the relaxed 2hr pace
 
 ### v8 - Full curriculum pacing review (2026-03-03)
-- Original lesson correctly split into 067a/067b at v6. Original was ~2.5-3 hrs (hardest single lesson in curriculum).
-- **Changes made**: None (split already done)
+- Reviewed task file and all prior changelog entries for pacing, progression, and 1-2hr achievability
+- **Estimated time**: ~110 min (Heavy, borderline 2hr)
+- **Needs split**: No
+- **Issues**: Memory ordering is steepest cliff for non-C/C++ learner. Add preamble with "practical recipes" approach (Relaxed for counters, Acquire/Release for flags, SeqCst when in doubt). Exercise 3 should provide benchmark harness. Exercise 4 (SpinLock) should be [STRETCH]. All flagged since v4, unresolved.
+- **Changes made**: None (content fix deferred to lesson start)
 
 ### v9 - Full curriculum review — pacing, progression, and content audit (2026-03-03)
 - Reviewed all 100 tasks for realistic human pacing (1-2 hr target, split if >2 hrs)
-- **Estimated time**: ~150-180 min
-- **Pacing**: OVERLOADED
-- **Needs split**: Yes (already split into 067a/067b)
-- **Issues**: Hardest single lesson in entire curriculum. Future trait + cancellation vs Pin/Unpin + executor was right division.
+- **Estimated time**: ~100-120 min
+- **Pacing**: Heavy
+- **Needs split**: No (borderline)
+- **Issues**: Memory ordering (Relaxed/Acquire/Release/SeqCst) is extremely dense for non-C/C++ background. Exercise 4 (SpinLock with compare_exchange) should be [STRETCH]. Exercise 3 should provide benchmark harness. Add "practical recipes" preamble for memory ordering. Unresolved since v4.
 - **Changes made**: Changelog updated only
 
 ## v10 - Comprehensive Cross-Curriculum Pacing Review (2026-03-03)
 - **Reviewer**: Full curriculum audit (lessons 001-100 reviewed against CLAUDE.md)
-- **Alignment**: SUPERSEDED by 067a/067b
-- **Time estimate**: 150-180 minutes (original, before split)
-- **Needs splitting**: Already split correctly at v6. Hardest single lesson in entire curriculum.
-- **Pacing context**: Combined Future trait impl, manual poll loop, Pin/Unpin, and cancellation -- four major hard topics for non-C/C++ learner.
-- **Unresolved from prior reviews**: None (issues tracked in 067a/067b changelogs)
+- **Alignment**: Exact match
+- **Time estimate**: 100-120 minutes (Heavy-Borderline)
+- **Needs splitting**: No (borderline but under 2hr threshold)
+- **Pacing context**: Steepest cliff in concurrency section for non-C/C++ learner. Memory ordering concepts are extremely dense.
+- **Unresolved from prior reviews**: (1) Exercise 4 SpinLock should be [STRETCH], (2) Exercise 3 needs benchmark harness provided, (3) Add practical memory ordering recipes preamble (Relaxed for counters, Acquire/Release for flags, SeqCst when in doubt). All unresolved since v4.
 - **New findings**: None
-- **Recommendation**: No action on this file; see changelog-067a.md and changelog-067b.md
+- **Recommendation**: Apply all three unresolved fixes when lesson is started
 
 ### v11 - Comprehensive curriculum review with changelog reconciliation (2026-03-03)
 - Full review of all 100 tasks: pacing realism, progression, prerequisite audit, and changelog-vs-task-file reconciliation
-- **Estimated time**: N/A (SUPERSEDED)
-- **Needs split**: N/A
-- **Progression**: SUPERSEDED by 067a/067b. Split at v6 was correct. Hardest single lesson in curriculum before split.
-- **Changelog reconciliation**: All prior findings consistent
-- **Genuinely unresolved**: None (tracked in 067a/067b)
-- **Recommendation**: No action on this file; see changelog-067a.md and changelog-067b.md
+- **Estimated time**: 100-120min (Heavy-Borderline)
+- **Needs split**: No
+- **Progression**: Steepest cliff in concurrency section for non-C/C++ learner
+- **Changelog reconciliation**: (1) "Exercise 4 SpinLock should be [STRETCH]" — already in task file. Resolved. (2) "Add memory ordering recipes" — quick reference table and rule-of-thumb box already in task file. Resolved.
+- **Genuinely unresolved**: Exercise 3 benchmark harness (minor, defer to lesson start)
+- **Recommendation**: Provide benchmark harness for Exercise 3 at lesson start
 
 ### v12 - Full curriculum pacing and progression review (2026-03-04)
 - Reviewed all active tasks for realistic human pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- SUPERSEDED by 067a/067b. No changes to parent.
+- **Estimated time**: 100-120min
+- **Pacing**: Heavy (borderline)
+- **Issues**: Ex 3 (atomic vs Mutex vs RwLock benchmark) needs a benchmark harness — 20-30min of boilerplate otherwise
+- **Recommendations**: Provide benchmark scaffold with timing loop and output formatting
+- **Changes made**: Changelog updated only
+
+### v12-fix - Task file changes applied (2026-03-04)
+- Added benchmark harness starter code to Exercise 3 (atomic vs Mutex vs RwLock benchmark)
+- Provides `bench()` timing function and `main()` with three labeled closures for the learner to fill in
+- **Why**: Exercise 3 requires 20-30min of boilerplate setup; learner should focus on understanding atomics vs locks, not on writing timing infrastructure
+- **Resolves**: Unresolved item from v4/v8/v9/v10/v11/v12
 
 ### v13 - Full curriculum pacing, progression, and prerequisite review (2026-03-04)
 - Reviewed task file for realistic pacing (1-2hr target, split if >2hr), prerequisite ordering, and gradual progression
-- **Estimated time**: N/A
-- **Pacing**: SUPERSEDED
-- **Issues**: SUPERSEDED by 067a/067b
+- **Estimated time**: 75-90min
+- **Pacing**: Good (borderline Heavy)
+- **Issues**: None
+- **Changes made**: Changelog updated only
+
+### v14 - Full curriculum review (2026-03-04)
+- Reviewed task file for pacing, prerequisites, progression, and content quality
+- **Estimated time**: 75-90min
+- **Pacing**: Heavy
+- **Issues**: None
 - **Changes made**: Changelog updated only
 
 ### v15 - Full curriculum review (2026-03-04)
-- Reviewed. Correctly superseded by 067a/067b. **Changes**: Changelog only.
+- Reviewed. **Time**: 80-95min. **Pacing**: Heavy. **Issues**: None — all mitigations in place (memory ordering reference, benchmark harness, STRETCH). **Changes**: Changelog only.

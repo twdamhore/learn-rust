@@ -1,25 +1,24 @@
-# Lesson 076: FFI - exposing Rust to C/Python, cbindgen, PyO3
+# Lesson 076: Practical declarative macros - useful patterns, debugging macros
 
-## Section 16: Unsafe & FFI
+## Section 15: Macros
 
 ## Status: pending
 
 ## Added
-- Initial curriculum design
+- Initial curriculum design [NEW - bridging lesson]
 
 ## Objectives
-- [ ] Use `#[no_mangle]` and `extern "C"` to export Rust functions with C-compatible ABI
-- [ ] Generate C header files from Rust code using `cbindgen`
-- [ ] Understand `PyO3` basics for creating Python modules from Rust (`#[pyfunction]`, `#[pymodule]`, `#[pyclass]`)
-- [ ] Handle memory ownership across FFI boundaries: who allocates, who frees, and how to avoid leaks or double-frees
+- [ ] Write macros that reduce real-world boilerplate (enum variant constructors, repetitive `impl` blocks)
+- [ ] Create a `hashmap!{}` macro for convenient `HashMap` initialization (similar to how `vec![]` works)
+- [ ] Build macros that generate builder-pattern or constructor code for structs
+- [ ] Debug macros using `cargo expand` and `trace_macros!(true)` to trace macro invocation at compile time
+- [ ] Identify and avoid common macro pitfalls: unexpected token captures, eager vs lazy evaluation, type ambiguity
 
 ## Exercises
-- [ ] **Export Rust to C**: Write a Rust library (`crate-type = ["cdylib"]`) that exports `extern "C" fn add(a: i32, b: i32) -> i32` and `extern "C" fn greet(name: *const c_char)` (prints a greeting); compile it and verify the symbols exist with `nm` or `objdump`
-- [ ] **Generate C header with cbindgen**: Add `cbindgen` to the project from the previous exercise; configure `cbindgen.toml` and a `build.rs` that generates a `.h` file; inspect the generated header and verify it matches the exported functions
-- [ ] **PyO3 Python module**: Create a new crate with `pyo3` and `maturin`; implement a `#[pyfunction] fn fibonacci(n: u64) -> u64` and a `#[pyclass] struct Counter` with `increment` and `get` methods; build with `maturin develop` and test from Python
-- [ ] **FFI memory ownership**: Write an `extern "C" fn create_string() -> *mut c_char` that allocates a `CString` and returns ownership to C (using `into_raw`), and an `extern "C" fn free_string(ptr: *mut c_char)` that reclaims and drops it (using `from_raw`); document the ownership contract; write a Rust test that exercises the allocate-then-free cycle
+- [ ] **hashmap! macro**: Write a `hashmap!` macro that accepts `key => value` pairs and returns a `HashMap`; support both trailing comma and no trailing comma; test with `hashmap!{ "a" => 1, "b" => 2 }` and verify the contents
+- [ ] **Impl block generator**: Write a `impl_display!` macro that takes a struct name and a format string, and generates an `impl std::fmt::Display` for that struct; test with at least 2 different structs
+- [ ] **Struct constructor macro [STRETCH]**: Write a `new_struct!` macro that takes a struct name and field definitions, generates the struct definition AND a `new()` associated function that takes all fields as parameters; test by constructing instances with the generated `new()`
+- [ ] **Debug a broken macro**: Start with a deliberately broken macro (provided as a comment with known bugs -- e.g., wrong fragment specifier, missing repetition separator); use `cargo expand` to diagnose the issue, fix the macro, and add comments explaining what was wrong
 
 ## Notes
-_**SUPERSEDED**: This lesson has been split into [Lesson 76a](task-076a.md) and [Lesson 76b](task-076b.md). Use those files instead._
-
 _Lesson not yet started._

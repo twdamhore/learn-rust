@@ -19,7 +19,7 @@
 - Reviewed all 100 tasks for pacing, prerequisites, content density, and exercise formatting
 - **Pacing**: Moderate for 1-hour lesson
 - **Issues found**:
-  - Uses `#[derive(Copy, Clone)]` before derive is formally taught in lesson 021
+  - Uses `#[derive(Copy, Clone)]` before derive is formally taught in lesson 023
   - Exercise 3 previews references (lesson 014) as one of three fix strategies
 - **Recommendations**:
   - Both forward references are pragmatically necessary and acceptable
